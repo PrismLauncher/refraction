@@ -57,7 +57,19 @@ client.once('ready', async () => {
     if (e.author.bot) return;
     if (e.author === client.user) return;
 
-    const profane = new Filter().isProfane(e.content);
+    if (
+      process.env.NODE_ENV === 'development' &&
+      e.channelId !== '977401259260788756'
+    ) {
+      return;
+    } else if (
+      process.env.NODE_ENV !== 'development' &&
+      e.channelId === '977401259260788756'
+    ) {
+      return;
+    }
+
+    const profane = new Filter({ exclude: ['damn'] }).isProfane(e.content);
 
     if (profane) {
       e.reply({

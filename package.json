@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --watch index.ts --exec esno index.ts",
+    "dev": "NODE_ENV=development nodemon --watch index.ts --exec esno index.ts",
     "build": "esbuild index.ts --format=cjs --platform=node --bundle --minify --outfile=index.js",
     "lint": "eslint **/*.ts"
   },
