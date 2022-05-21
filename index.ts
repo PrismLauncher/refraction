@@ -3,8 +3,10 @@ import { commands, aliases } from './commands';
 
 import * as BuildConfig from './constants';
 import Filter from 'bad-words';
+import { isBad } from './badLinks';
 
 import { green, bold, blue, underline } from 'kleur/colors';
+import urlRegex from 'url-regex';
 
 const client = new Client({
   intents: [
@@ -67,6 +69,34 @@ client.once('ready', async () => {
           },
         ],
       });
+    }
+
+    {
+      const urlMatches = e.content.matchAll(urlRegex());
+
+      if (urlMatches) {
+        console.log('Found links in message!');
+
+        for (const match of urlMatches) {
+          console.log('[link]', match[0]);
+          if (await isBad(match[0])) {
+            await e.delete();
+            await e.channel.send({
+              content: `<@${e.author.id}>`,
+              embeds: [
+                {
+                  title: 'Hold on!',
+                  description:
+                    'There seems to be a phishing / malware link in your message.',
+                  color: 'RED',
+                },
+              ],
+            });
+
+            return;
+          }
+        }
+      }
     }
 
     const cmd = e.content.split(' ')[0];

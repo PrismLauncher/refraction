@@ -11,7 +11,9 @@
     "@cliqz/adblocker": "^1.23.8",
     "bad-words": "^3.0.4",
     "discord.js": "^13.7.0",
-    "kleur": "^4.1.4"
+    "kleur": "^4.1.4",
+    "node-fetch": "^3.2.4",
+    "url-regex": "^5.0.0"
   },
   "devDependencies": {
     "@types/bad-words": "^3.0.1",
