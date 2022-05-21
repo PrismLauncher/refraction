@@ -76,6 +76,10 @@ We probably can't fully fix this. If you find out which mod is causing this, tel
   '!build': async (c, e) => {
     await e.reply('https://polymc.org/wiki/development/build-instructions/');
   },
+
+  '!eta': async (c, e) => {
+    await e.reply('Sometime');
+  },
 };
 
 export const aliases = {
