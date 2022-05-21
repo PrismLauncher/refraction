@@ -13,6 +13,7 @@ const client = new Client({
     Intents.FLAGS.DIRECT_MESSAGES,
     Intents.FLAGS.GUILD_MEMBERS,
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    Intents.FLAGS.GUILD_BANS,
   ],
 });
 
@@ -22,7 +23,14 @@ client.once('ready', async () => {
   console.log(green(bold('Discord bot ready!')));
   console.log(
     'Invite link:',
-    blue(underline(client.generateInvite({ scopes: ['bot'] })))
+    blue(
+      underline(
+        client.generateInvite({
+          scopes: ['bot'],
+          permissions: ['ADMINISTRATOR'],
+        })
+      )
+    )
   );
 
   const POLYMC_GUILD = await client.guilds.fetch(BuildConfig.GUILD_ID);
