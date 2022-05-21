@@ -3,20 +3,6 @@ import { commands, aliases } from './commands';
 
 import * as BuildConfig from './constants';
 import Filter from 'bad-words';
-import Koa from 'koa';
-
-{
-  const app = new Koa();
-
-  app.use(async (ctx) => {
-    ctx.body = 'Hello there';
-    ctx.res.setHeader('content-type', 'text/plain');
-  });
-
-  app.listen(3000, () => {
-    console.log('Started server!');
-  });
-}
 
 const client = new Client({
   intents: [
