@@ -2,7 +2,7 @@ import { Client, Intents } from 'discord.js';
 import { commands, aliases } from './commands';
 
 import * as BuildConfig from './constants';
-import Filter from 'bad-words';
+// import Filter from 'bad-words';
 import { isBad } from './badLinks';
 
 import { green, bold, blue, underline } from 'kleur/colors';
@@ -69,19 +69,19 @@ client.once('ready', async () => {
       return;
     }
 
-    const profane = new Filter({ exclude: ['damn'] }).isProfane(e.content);
+    // const profane = new Filter({ exclude: ['damn'] }).isProfane(e.content);
 
-    if (profane) {
-      e.reply({
-        embeds: [
-          {
-            title: 'Profanity detected!',
-            description: 'Please try not to use these words 😄',
-            color: 'FUCHSIA',
-          },
-        ],
-      });
-    }
+    // if (profane) {
+    //   e.reply({
+    //     embeds: [
+    //       {
+    //         title: 'Profanity detected!',
+    //         description: 'Please try not to use these words 😄',
+    //         color: 'FUCHSIA',
+    //       },
+    //     ],
+    //   });
+    // }
 
     {
       const urlMatches = e.content.matchAll(urlRegex());
