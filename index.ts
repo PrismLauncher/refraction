@@ -4,6 +4,8 @@ import { commands, aliases } from './commands';
 import * as BuildConfig from './constants';
 import Filter from 'bad-words';
 
+import { green, bold, blue, underline } from 'kleur/colors';
+
 const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
@@ -17,8 +19,11 @@ const client = new Client({
 client.login(process.env.DISCORD_TOKEN);
 
 client.once('ready', async () => {
-  console.log('Discord bot ready!');
-  console.log('Invite link:', client.generateInvite({ scopes: ['bot'] }));
+  console.log(green(bold('Discord bot ready!')));
+  console.log(
+    'Invite link:',
+    blue(underline(client.generateInvite({ scopes: ['bot'] })))
+  );
 
   const POLYMC_GUILD = await client.guilds.fetch(BuildConfig.GUILD_ID);
   const MAINTAINERS_CHANNEL = POLYMC_GUILD.channels.cache.get(
