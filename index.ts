@@ -26,12 +26,12 @@ client.once('ready', async () => {
   );
 
   const POLYMC_GUILD = await client.guilds.fetch(BuildConfig.GUILD_ID);
-  const MAINTAINERS_CHANNEL = POLYMC_GUILD.channels.cache.get(
-    BuildConfig.MAINTAINERS_CHANNEL_ID
+  const DEBUG_CHANNEL = POLYMC_GUILD.channels.cache.get(
+    BuildConfig.DEBUG_CHANNEL_ID
   );
 
-  if (!MAINTAINERS_CHANNEL.isText()) throw new Error();
-  MAINTAINERS_CHANNEL.send({
+  if (!DEBUG_CHANNEL.isText()) throw new Error();
+  DEBUG_CHANNEL.send({
     embeds: [
       {
         title: 'Started!',
