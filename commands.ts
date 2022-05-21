@@ -54,7 +54,7 @@ export const commands: Commands = {
   },
 
   '!cursed': async (c, e) => {
-    e.reply({
+    await e.reply({
       embeds: [
         {
           title: "What's wrong with CurseForge?",
@@ -67,6 +67,10 @@ We probably can't fully fix this. If you find out which mod is causing this, tel
         },
       ],
     });
+  },
+
+  '!migrate': async (c, e) => {
+    await e.reply('https://polymc.org/wiki/getting-started/migrating-multimc/');
   },
 };
 
