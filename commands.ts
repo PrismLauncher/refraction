@@ -72,10 +72,16 @@ We probably can't fully fix this. If you find out which mod is causing this, tel
   '!migrate': async (c, e) => {
     await e.reply('https://polymc.org/wiki/getting-started/migrating-multimc/');
   },
+
+  '!build': async (c, e) => {
+    await e.reply('https://polymc.org/wiki/development/build-instructions/');
+  },
 };
 
 export const aliases = {
   '!curse': '!cursed',
   '!curseforge': '!cursed',
   '!diff': '!why',
+  '!migr': '!migrate',
+  '!multimc': '!migrate',
 };
