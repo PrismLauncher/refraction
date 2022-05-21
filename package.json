@@ -1,10 +1,10 @@
 {
-  "name": "potat-bot",
+  "name": "polly",
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development nodemon --watch index.ts --exec esno index.ts",
-    "build": "esbuild index.ts --format=cjs --platform=node --bundle --minify --outfile=index.js",
+    "build": "esbuild index.ts --format=cjs --platform=node --target=node17 --minify --bundle --sourcemap --external:discord.js --outdir=dist",
     "lint": "eslint **/*.ts"
   },
   "dependencies": {
@@ -16,6 +16,7 @@
     "url-regex": "^5.0.0"
   },
   "devDependencies": {
+    "@esbuild-plugins/node-resolve": "^0.1.4",
     "@types/bad-words": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^5.25.0",
     "@typescript-eslint/parser": "^5.25.0",

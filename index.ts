@@ -92,9 +92,7 @@ client.once('ready', async () => {
         for (const match of urlMatches) {
           console.log('[link]', match[0]);
           if (await isBad(match[0])) {
-            await e.delete();
-            await e.channel.send({
-              content: `<@${e.author.id}>`,
+            await e.reply({
               embeds: [
                 {
                   title: 'Hold on!',
