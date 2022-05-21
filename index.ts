@@ -1,9 +1,9 @@
 import { Client, Intents } from 'discord.js';
+import { commands, aliases } from './commands';
+
+import * as BuildConfig from './constants';
+import Filter from 'bad-words';
 import Koa from 'koa';
-
-const MUTED_ROLE = '976055433431240734';
-
-// Health check server
 
 {
   const app = new Koa();
@@ -19,58 +19,64 @@ const MUTED_ROLE = '976055433431240734';
 }
 
 const client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
-});
-
-client.once('ready', async () => {
-  console.log('Discord bot ready!');
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.DIRECT_MESSAGES,
+    Intents.FLAGS.GUILD_MEMBERS,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+  ],
 });
 
 client.login(process.env.DISCORD_TOKEN);
 
-client.on('messageCreate', async (e) => {
-  if (e.author === client.user) return;
+client.once('ready', async () => {
+  console.log('Discord bot ready!');
+  console.log('Invite link:', client.generateInvite({ scopes: ['bot'] }));
 
-  if ([...e.mentions.users.values()].includes(client.user)) {
-    e.reply({
-      content: `What\'s up <@${e.author.id}>`,
-      allowedMentions: {
-        parse: ['users'],
-        repliedUser: true,
+  const POLYMC_GUILD = await client.guilds.fetch(BuildConfig.GUILD_ID);
+  const MAINTAINERS_CHANNEL = POLYMC_GUILD.channels.cache.get(
+    BuildConfig.MAINTAINERS_CHANNEL_ID
+  );
+
+  if (!MAINTAINERS_CHANNEL.isText()) throw new Error();
+  MAINTAINERS_CHANNEL.send({
+    embeds: [
+      {
+        title: 'Started!',
+        description: new Date().toISOString(),
+        color: 'AQUA',
       },
-    });
+    ],
+  });
 
-    return;
-  }
+  client.on('messageCreate', async (e) => {
+    if (!e.content) return;
+    if (!e.channel.isText()) return;
+    if (e.author.bot) return;
+    if (e.author === client.user) return;
 
-  if (e.author.id === '360401361856364544') {
-    e.react('975940717622984724');
-    return;
-  }
+    const profane = new Filter().isProfane(e.content);
 
-  if (
-    e.member.roles.cache.has('975975986250256424') &&
-    e.content.startsWith('!!mute')
-  ) {
-    const [, , time, ...more] = e.content.split(' ');
-    if (more.length) {
-      e.reply('Too many arguments!');
-      return;
+    if (profane) {
+      e.reply({
+        embeds: [
+          {
+            title: 'Profanity detected!',
+            description: 'Please try not to use these words 😄',
+            color: 'FUCHSIA',
+          },
+        ],
+      });
     }
 
-    const parsedTime = parseInt(time);
-    if (isNaN(parsedTime)) {
-      e.reply('Not a number (seconds)!');
-      return;
+    const cmd = e.content.split(' ')[0];
+    if (!cmd.startsWith('!')) return;
+    let func = commands[cmd];
+    func = func ?? commands[aliases[cmd]];
+
+    if (func !== undefined) {
+      await func(client, e);
     }
-
-    const member = e.mentions.members.at(0);
-    await member.roles.add(MUTED_ROLE);
-
-    setTimeout(() => {
-      member.roles.remove(MUTED_ROLE);
-    }, parsedTime * 1000);
-
-    e.reply('Done.');
-  }
+  });
 });

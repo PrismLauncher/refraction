@@ -7,10 +7,13 @@
     "build": "esbuild index.ts --format=cjs --platform=node --bundle --minify --outfile=index.js"
   },
   "dependencies": {
+    "bad-words": "^3.0.4",
     "discord.js": "^13.7.0",
+    "kleur": "^4.1.4",
     "koa": "^2.13.4"
   },
   "devDependencies": {
+    "@types/bad-words": "^3.0.1",
     "@types/koa": "^2.13.4",
     "esbuild": "^0.14.39",
     "esno": "^0.16.3",
