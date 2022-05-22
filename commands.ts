@@ -64,7 +64,7 @@ export const commands: Commands = {
           description: `
 There is a new option to block third party clients from accessing mod files. CurseForge started to enforce the option for modders to disallow third-party applications like PolyMC and other launchers.
 
-We probably can't fully fix this. If you find out which mod is causing this, tell the modder to toggle that option.
+We probably can't fully fix this. We have **already implemented a workaround**. If you find out which mod is causing this, tell the modder to toggle that option.
 `.trim(),
           color: 'ORANGE',
         },
@@ -141,6 +141,7 @@ We probably can't fully fix this. If you find out which mod is causing this, tel
 export const aliases: { [a: string]: string } = {
   '!curse': '!cursed',
   '!curseforge': '!cursed',
+  '!cf': '!cursed',
   '!diff': '!why',
   '!migr': '!migrate',
   '!multimc': '!migrate',
