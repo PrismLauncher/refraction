@@ -1,4 +1,5 @@
 import type { Client, Message } from 'discord.js';
+import fetch from 'node-fetch';
 import pLimit from 'p-limit';
 import { POLYCAT_CHANNEL_ID } from './constants';
 
@@ -94,6 +95,21 @@ We probably can't fully fix this. If you find out which mod is causing this, tel
           description: `${
             mems.filter((m) => m.presence?.status === 'online').length
           } online members`,
+          color: 'GOLD',
+        },
+      ],
+    });
+  },
+
+  '!stars': async (c, e) => {
+    const count = await fetch('https://api.github.com/repos/PolyMC/PolyMC')
+      .then((r) => r.json() as Promise<{ stargazers_count: number }>)
+      .then((j) => j.stargazers_count);
+
+    await e.reply({
+      embeds: [
+        {
+          title: `⭐ ${count} total stars!`,
           color: 'GOLD',
         },
       ],
