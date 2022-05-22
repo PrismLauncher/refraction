@@ -1,4 +1,6 @@
 import type { Client, Message } from 'discord.js';
+import pLimit from 'p-limit';
+import { POLYCAT_CHANNEL_ID } from './constants';
 
 type Commands = {
   [cmd: string]: (c: Client, e: Message) => void | Promise<void>;
@@ -96,6 +98,27 @@ We probably can't fully fix this. If you find out which mod is causing this, tel
         },
       ],
     });
+  },
+
+  '!polycatgen': async (c, e) => {
+    if (!e.guild) return;
+    if (e.channelId !== POLYCAT_CHANNEL_ID) return;
+
+    await e.guild.emojis.fetch();
+    const polycat = e.guild.emojis.cache.find(
+      (emoji) => emoji.name?.toLowerCase() === 'polycat'
+    );
+
+    const lim = pLimit(2);
+    const prom = [];
+    for (let i = 0; i < 10; i++) {
+      prom.push(
+        lim(() =>
+          e.channel.send(`${polycat}${polycat}${polycat}${polycat}${polycat}`)
+        )
+      );
+    }
+    await Promise.all(prom);
   },
 };
 

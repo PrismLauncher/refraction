@@ -2,7 +2,7 @@ import { Client, Intents } from 'discord.js';
 import { commands, aliases } from './commands';
 
 import * as BuildConfig from './constants';
-// import Filter from 'bad-words';
+import Filter from 'bad-words';
 import { isBad } from './badLinks';
 
 import { green, bold, blue, underline } from 'kleur/colors';
@@ -69,24 +69,34 @@ client.once('ready', async () => {
       return;
     }
 
-    // const profane = new Filter({ exclude: ['damn'] }).isProfane(e.content);
+    const profaneFilter = new Filter({
+      emptyList: true,
+    });
 
-    // if (profane) {
-    //   e.reply({
-    //     embeds: [
-    //       {
-    //         title: 'Profanity detected!',
-    //         description: 'Please try not to use these words 😄',
-    //         color: 'FUCHSIA',
-    //       },
-    //     ],
-    //   });
-    // }
+    profaneFilter.addWords(...BuildConfig.BAD_WORDS);
+
+    if (profaneFilter.isProfane(e.content)) {
+      await e.reply({
+        embeds: [
+          {
+            title: 'Profanity detected!',
+            description: "Please don't use these words.",
+            color: 'FUCHSIA',
+          },
+        ],
+      });
+      await e.delete();
+
+      if (!e.member) return;
+      await e.member.disableCommunicationUntil(Date.now() + 5 * 60 * 1000);
+
+      return;
+    }
 
     {
       const urlMatches = [...e.content.matchAll(urlRegex())];
 
-      if (urlMatches) {
+      if (urlMatches.length) {
         console.log('Found links in message from', e.author.tag);
 
         for (const match of urlMatches) {
