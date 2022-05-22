@@ -5,7 +5,7 @@ import * as BuildConfig from './constants';
 import Filter from 'bad-words';
 import { isBad } from './badLinks';
 
-import { green, bold, blue, underline } from 'kleur/colors';
+import { green, bold, blue, underline, yellow } from 'kleur/colors';
 import urlRegex from 'url-regex';
 
 const client = new Client({
@@ -14,6 +14,7 @@ const client = new Client({
     Intents.FLAGS.GUILD_MESSAGES,
     Intents.FLAGS.DIRECT_MESSAGES,
     Intents.FLAGS.GUILD_MEMBERS,
+    Intents.FLAGS.GUILD_PRESENCES,
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     Intents.FLAGS.GUILD_BANS,
   ],
@@ -22,7 +23,11 @@ const client = new Client({
 client.login(process.env.DISCORD_TOKEN);
 
 client.once('ready', async () => {
-  console.log(green(bold('Discord bot ready!')));
+  console.log(green('Discord bot ready!'));
+
+  if (process.env.NODE_ENV !== 'development')
+    console.warn(yellow(bold('Running in production mode!')));
+
   console.log(
     'Invite link:',
     blue(
