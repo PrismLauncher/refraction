@@ -40,7 +40,7 @@ client.once('ready', async () => {
     BuildConfig.DEBUG_CHANNEL_ID
   );
 
-  if (!DEBUG_CHANNEL.isText()) throw new Error();
+  if (!DEBUG_CHANNEL || !DEBUG_CHANNEL.isText()) throw new Error();
   DEBUG_CHANNEL.send({
     embeds: [
       {
@@ -84,10 +84,10 @@ client.once('ready', async () => {
     // }
 
     {
-      const urlMatches = e.content.matchAll(urlRegex());
+      const urlMatches = [...e.content.matchAll(urlRegex())];
 
       if (urlMatches) {
-        console.log('Found links in message!');
+        console.log('Found links in message from', e.author.tag);
 
         for (const match of urlMatches) {
           console.log('[link]', match[0]);

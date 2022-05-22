@@ -80,9 +80,26 @@ We probably can't fully fix this. If you find out which mod is causing this, tel
   '!eta': async (c, e) => {
     await e.reply('Sometime');
   },
+
+  '!members': async (c, e) => {
+    const mems = await e.guild?.members.fetch().then((r) => r.toJSON());
+    if (!mems) return;
+
+    await e.reply({
+      embeds: [
+        {
+          title: `${mems.length} total members!`,
+          description: `${
+            mems.filter((m) => m.presence?.status === 'online').length
+          } online members`,
+          color: 'GOLD',
+        },
+      ],
+    });
+  },
 };
 
-export const aliases = {
+export const aliases: { [a: string]: string } = {
   '!curse': '!cursed',
   '!curseforge': '!cursed',
   '!diff': '!why',
