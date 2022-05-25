@@ -136,6 +136,19 @@ We probably can't fully fix this. We have **already implemented a workaround**. 
     }
     await Promise.all(prom);
   },
+
+  '!piracy': async (c, e) => {
+    await e.reply({
+      embeds: [
+        {
+          title: "We don't tolerate piracy!",
+          description:
+            "PolyMC has always been legal, legitimate & appropriate. We don't and never will have features such as offline login without an official account.",
+          color: 'DARK_RED',
+        },
+      ],
+    });
+  },
 };
 
 export const aliases: { [a: string]: string } = {
