@@ -62,9 +62,10 @@ export const commands: Commands = {
         {
           title: "What's wrong with CurseForge?",
           description: `
-There is a new option to block third party clients from accessing mod files. CurseForge started to enforce the option for modders to disallow third-party applications like PolyMC and other launchers.
+CurseForge added a new option to block third party clients like PolyMC from accessing mod files, and they started to enforce this option lately.
 
-We probably can't fully fix this. We have **already implemented a workaround**. If you find out which mod is causing this, tell the modder to toggle that option.
+We can't allow you to download those mods directly from PolyMC, but PolyMC 1.3.1 and higher have a workaround to let modpacks work: letting you to download those opted out mods manually.
+We highly encourage asking authors that opted out to stop doing so.
 `.trim(),
           color: 'ORANGE',
         },
