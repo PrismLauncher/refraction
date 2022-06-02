@@ -94,8 +94,15 @@ We highly encourage asking authors that opted out to stop doing so.
         {
           title: `${mems.length} total members!`,
           description: `${
-            mems.filter((m) => m.presence?.status !== 'offline').length
-          } online members`,
+            mems.filter(
+              (m) =>
+                m.presence?.status === 'online' ||
+                m.presence?.status === 'idle' ||
+                m.presence?.status === 'dnd'
+            ).length
+          } online members, and ${
+            mems.filter((m) => m.presence?.status === 'invisible').length
+          } members that are pretending to be offline`,
           color: 'GOLD',
         },
       ],
