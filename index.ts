@@ -59,7 +59,6 @@ client.once('ready', async () => {
   client.on('messageCreate', async (e) => {
     if (!e.content) return;
     if (!e.channel.isText()) return;
-    if (e.author.bot) return;
     if (e.author === client.user) return;
 
     if (
