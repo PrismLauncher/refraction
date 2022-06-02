@@ -94,7 +94,7 @@ We highly encourage asking authors that opted out to stop doing so.
         {
           title: `${mems.length} total members!`,
           description: `${
-            mems.filter((m) => m.presence?.status === 'online').length
+            mems.filter((m) => m.presence?.status !== 'offline').length
           } online members`,
           color: 'GOLD',
         },
