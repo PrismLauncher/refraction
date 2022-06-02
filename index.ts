@@ -63,12 +63,12 @@ client.once('ready', async () => {
 
     if (
       process.env.NODE_ENV === 'development' &&
-      e.channelId !== '977401259260788756'
+      e.channelId !== BuildConfig.DEBUG_CHANNEL_ID
     ) {
       return;
     } else if (
       process.env.NODE_ENV !== 'development' &&
-      e.channelId === '977401259260788756'
+      e.channelId === BuildConfig.DEBUG_CHANNEL_ID
     ) {
       return;
     }
