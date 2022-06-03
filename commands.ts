@@ -1,6 +1,5 @@
 import type { Client, Message } from 'discord.js';
 import fetch from 'node-fetch';
-import pLimit from 'p-limit';
 import { POLYCAT_CHANNEL_ID } from './constants';
 
 type Commands = {
@@ -126,23 +125,20 @@ We highly encourage asking authors that opted out to stop doing so.
 
   '!polycatgen': async (c, e) => {
     if (!e.guild) return;
-    if (e.channelId !== POLYCAT_CHANNEL_ID) return;
+    if (
+      e.channelId !== POLYCAT_CHANNEL_ID &&
+      process.env.NODE_ENV !== 'development'
+    )
+      return;
 
     await e.guild.emojis.fetch();
     const polycat = e.guild.emojis.cache.find(
       (emoji) => emoji.name?.toLowerCase() === 'polycat'
     );
 
-    const lim = pLimit(2);
-    const prom = [];
-    for (let i = 0; i < 10; i++) {
-      prom.push(
-        lim(() =>
-          e.channel.send(`${polycat}${polycat}${polycat}${polycat}${polycat}`)
-        )
-      );
-    }
-    await Promise.all(prom);
+    await e.reply(
+      `.\n${polycat}${polycat}${polycat}${polycat}${polycat}\n${polycat}${polycat}${polycat}${polycat}${polycat}\n${polycat}${polycat}${polycat}${polycat}${polycat}\n${polycat}${polycat}${polycat}${polycat}${polycat}\n${polycat}${polycat}${polycat}${polycat}${polycat}`
+    );
   },
 
   '!piracy': async (c, e) => {
