@@ -80,7 +80,7 @@ client.once('ready', async () => {
     profaneFilter.addWords(...BuildConfig.BAD_WORDS);
 
     if (profaneFilter.isProfane(e.content)) {
-      await e.reply({
+      const replyMsg = await e.reply({
         embeds: [
           {
             title: 'Profanity detected!',
@@ -91,8 +91,12 @@ client.once('ready', async () => {
       });
       await e.delete();
 
-      if (!e.member) return;
-      await e.member.disableCommunicationUntil(Date.now() + 5 * 60 * 1000);
+      setTimeout(() => {
+        replyMsg.delete();
+      }, 2500);
+
+      // if (!e.member) return;
+      // await e.member.disableCommunicationUntil(Date.now() + 5 * 60 * 1000);
 
       return;
     }
