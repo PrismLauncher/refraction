@@ -1,6 +1,5 @@
 import type { Client, Message } from 'discord.js';
 import fetch from 'node-fetch';
-import { POLYCAT_CHANNEL_ID } from './constants';
 
 type Commands = {
   [cmd: string]: (c: Client, e: Message) => void | Promise<void>;
