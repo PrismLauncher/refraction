@@ -2,11 +2,11 @@ import { Client, Intents } from 'discord.js';
 import { commands, aliases } from './commands';
 
 import * as BuildConfig from './constants';
-import Filter from 'bad-words';
 import { isBad } from './badLinks';
 
 import { green, bold, blue, underline, yellow } from 'kleur/colors';
 import urlRegex from 'url-regex';
+import removeMarkdown from 'remove-markdown';
 
 const client = new Client({
   intents: [
@@ -73,34 +73,7 @@ client.once('ready', async () => {
       return;
     }
 
-    const profaneFilter = new Filter({
-      emptyList: true,
-    });
-
-    profaneFilter.addWords(...BuildConfig.BAD_WORDS);
-
-    if (profaneFilter.isProfane(e.content)) {
-      const replyMsg = await e.reply({
-        embeds: [
-          {
-            title: 'Profanity detected!',
-            description: "Please don't use these words.",
-            color: 'FUCHSIA',
-          },
-        ],
-      });
-      await e.delete();
-
-      setTimeout(() => {
-        replyMsg.delete();
-      }, 2500);
-
-      // if (!e.member) return;
-      // await e.member.disableCommunicationUntil(Date.now() + 5 * 60 * 1000);
-
-      return;
-    }
-
+    // phishing link filter
     {
       const urlMatches = [...e.content.matchAll(urlRegex())];
 
@@ -124,6 +97,15 @@ client.once('ready', async () => {
             return;
           }
         }
+      }
+    }
+
+    // neat
+    {
+      const cleanContent = removeMarkdown(e.content).toLowerCase();
+      if (cleanContent.split(' ').includes('neat')) {
+        console.log('[neat]', cleanContent);
+        await e.reply('Neat is a mod by Vazkii.');
       }
     }
 
