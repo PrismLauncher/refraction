@@ -78,6 +78,10 @@ We highly encourage asking authors that opted out to stop doing so.
   '!build': async (c, e) => {
     await e.reply('https://polymc.org/wiki/development/build-instructions/');
   },
+  
+  '!java': async (c, e) => {
+    await e.reply('https://polymc.org/wiki/getting-started/installing-java/');
+  },
 
   '!eta': async (c, e) => {
     await e.reply('Sometime');
@@ -160,5 +164,6 @@ export const aliases: { [a: string]: string } = {
   '!cf': '!cursed',
   '!diff': '!why',
   '!migr': '!migrate',
+  '!j': '!java',
   '!multimc': '!migrate',
 };
