@@ -12,7 +12,7 @@ export const cmd: Command = {
       const tag = tags[i];
       let text = '';
       if (tag.aliases && tag.aliases[0]) {
-        text += '**Aliases**: ' + tag.aliases.join(', ');
+        text += '**Aliases**: ' + tag.aliases.join(', ') + "\n";
       }
 
       if (tag.text) {
