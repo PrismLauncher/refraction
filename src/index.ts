@@ -14,7 +14,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { SuccessfulParsedMessage } from 'discord-command-parser';
 import * as dotenv from 'dotenv';
-import { parseLog } from './mclogs';
+import { parseLog } from './logs';
 dotenv.config();
 
 export interface Command {
