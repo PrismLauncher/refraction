@@ -10,6 +10,7 @@
   },
   {
     "name": "log",
+    "aliases": ["sendlog", "log"],
     "text": "Please send logs: https://cdn.discordapp.com/attachments/981957331430539267/983680253367058452/1.png https://cdn.discordapp.com/attachments/981957331430539267/983680253715165234/2.png"
   },
   {

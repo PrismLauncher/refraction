@@ -97,6 +97,27 @@ const macOSNSWindowAnalyzer: analyzer = async (text) => {
   return null;
 };
 
+const quiltFabricInternalsAnalyzer: analyzer = async (text) => {
+  const base = 'Caused by: java.lang.ClassNotFoundException: ';
+  if (
+    text.includes(base + 'net.fabricmc.fabric.impl') ||
+    text.includes(base + 'net.fabricmc.fabric.mixin') ||
+    text.includes(base + 'net.fabricmc.loader.impl') ||
+    text.includes(base + 'net.fabricmc.loader.mixin') ||
+    text.includes(
+      'org.quiltmc.loader.impl.FormattedException: java.lang.NoSuchMethodError:'
+    )
+  ) {
+    return [
+      'Fabric Internal Access',
+      `The mod you are using is using fabric internals that are not meant to be used by anything but the loader itself.
+      Those mods break both on Quilt and with fabric updates.
+      If you're using fabric, downgrade your fabric loader could work, on Quilt you can try updating to the latest beta version, but there's nothing much to do unless the mod author stops using them.`,
+    ];
+  }
+  return null;
+};
+
 const analyzers: analyzer[] = [
   javaAnalyzer,
   versionAnalyzer,
@@ -104,6 +125,7 @@ const analyzers: analyzer[] = [
   forgeJavaAnalyzer,
   intelHDAnalyzer,
   macOSNSWindowAnalyzer,
+  quiltFabricInternalsAnalyzer,
 ];
 
 const providers: logProvider[] = [
@@ -114,6 +136,15 @@ const providers: logProvider[] = [
 ];
 
 export async function parseLog(s: string): Promise<MessageEmbed | null> {
+  if (s.includes('https://pastebin.com/')) {
+    const embed = new MessageEmbed()
+      .setTitle('pastebin.com detected')
+      .setDescription(
+        'Please use https://mclo.gs or another paste provider and send logs using the Log Upload feature in PolyMC. (See !log)'
+      )
+      .setColor('DARK_RED');
+    return embed;
+  }
   let log: string = '';
   for (let i in providers) {
     const provider = providers[i];
