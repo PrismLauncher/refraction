@@ -10,10 +10,10 @@ import * as BuildConfig from './constants';
 import { filterMessage } from './filters';
 import { green, bold, blue, underline, yellow } from 'kleur/colors';
 import * as parser from 'discord-command-parser';
-import fs from 'fs';
-import path, { dirname } from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import { SuccessfulParsedMessage } from 'discord-command-parser';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import { parseLog } from './mclogs';
 dotenv.config();
 

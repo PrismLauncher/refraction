@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development nodemon --ext ts,json --watch src --exec esno src/index.ts",
-    "build": "tsc",
+    "start": "esno src/index.ts",
     "lint": "eslint **/*.ts"
   },
   "dependencies": {
