@@ -67,7 +67,7 @@ const forgeJavaAnalyzer: analyzer = async (text) => {
   ) {
     return [
       'Forge Java Bug',
-      'Old versions of Forge crash with Java 8u321+. For this reason, using Java 8u312 or lower is reccomended.\nYou can also update Forge via the Versions tab.',
+      'Old versions of Forge crash with Java 8u321+.\nTo fix this, update forge to the latest version via the Versions tab \n(right click on Forge, click Change Version, and choose the latest one)\nAlternatively, you can download 8u312 or lower. See [archive](https://github.com/adoptium/temurin8-binaries/releases/tag/jdk8u312-b07)',
     ];
   }
   return null;
