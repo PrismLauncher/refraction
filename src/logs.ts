@@ -118,6 +118,16 @@ const quiltFabricInternalsAnalyzer: analyzer = async (text) => {
   return null;
 };
 
+const oomAnalyzer: analyzer = async (text) => {
+  if (text.includes('java.lang.OutOfMemoryError: Java heap space')) {
+    return [
+      'Out of Memory',
+      'Allocate more RAM to your instance to prevent this crash.',
+    ];
+  }
+  return null;
+};
+
 const analyzers: analyzer[] = [
   javaAnalyzer,
   versionAnalyzer,
@@ -126,6 +136,7 @@ const analyzers: analyzer[] = [
   intelHDAnalyzer,
   macOSNSWindowAnalyzer,
   quiltFabricInternalsAnalyzer,
+  oomAnalyzer,
 ];
 
 const providers: logProvider[] = [
