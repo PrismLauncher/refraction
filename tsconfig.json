@@ -3,6 +3,9 @@
     "strict": true,
     "esModuleInterop": true,
     "downlevelIteration": true,
-    "target": "ES5"
+    "target": "ES2018",
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "outDir": "dist"
   }
 }
