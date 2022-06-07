@@ -48,7 +48,7 @@ export async function parseLog(s: string): Promise<MessageEmbed | null> {
   const id = link.replace('https://mclo.gs/', '');
   if (!id) return null;
   const apiUrl = 'https://api.mclo.gs/1/raw/' + id;
-  console.log(apiUrl);
+
   let log: string;
   try {
     const f = await fetch(apiUrl);
@@ -56,9 +56,11 @@ export async function parseLog(s: string): Promise<MessageEmbed | null> {
       throw 'nope';
     }
     log = await f.text();
-  } catch (_) {
+  } catch (err) {
+    console.log('Log analyze fail', err);
     return null;
   }
+  console.log(apiUrl);
   const embed = new MessageEmbed()
     .setTitle('Log analyzer')
     .setColor('DARK_GREEN')
