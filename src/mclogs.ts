@@ -48,6 +48,7 @@ export async function parseLog(s: string): Promise<MessageEmbed | null> {
   const id = link.replace('https://mclo.gs/', '');
   if (!id) return null;
   const apiUrl = 'https://api.mclo.gs/1/raw/' + id;
+  console.log(apiUrl);
   let log: string;
   try {
     const f = await fetch(apiUrl);
