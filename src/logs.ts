@@ -122,7 +122,17 @@ const oomAnalyzer: analyzer = async (text) => {
   if (text.includes('java.lang.OutOfMemoryError: Java heap space')) {
     return [
       'Out of Memory',
-      'Allocate more RAM to your instance to prevent this crash.',
+      'Allocating more RAM to your instance could help prevent this crash.',
+    ];
+  }
+  return null;
+};
+
+const shenadoahGCAnalyzer: analyzer = async (text) => {
+  if (text.includes("Unrecognized VM option 'UseShenandoahGC'")) {
+    return [
+      "Java 8 doesn't support ShenandoahGC",
+      'Remove `UseShenandoahGC` from your Java Arguments',
     ];
   }
   return null;
@@ -137,6 +147,7 @@ const analyzers: analyzer[] = [
   macOSNSWindowAnalyzer,
   quiltFabricInternalsAnalyzer,
   oomAnalyzer,
+  shenadoahGCAnalyzer,
 ];
 
 const providers: logProvider[] = [
