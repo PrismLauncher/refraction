@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon --ext ts,json --watch src --exec esno src/index.ts",
-    "start": "esno src/index.ts",
+    "dev": "NODE_ENV=development tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
     "lint": "eslint **/*.ts"
   },
   "dependencies": {
@@ -15,6 +15,7 @@
     "kleur": "^4.1.4",
     "node-fetch": "^3.2.4",
     "remove-markdown": "^0.5.0",
+    "tsx": "^3.4.2",
     "url-regex": "^5.0.0"
   },
   "devDependencies": {
@@ -24,7 +25,6 @@
     "@typescript-eslint/parser": "^5.25.0",
     "esbuild": "^0.14.39",
     "eslint": "^8.16.0",
-    "esno": "^0.16.3",
     "nodemon": "^2.0.16",
     "prettier": "^2.6.2",
     "typescript": "^4.6.4"

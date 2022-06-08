@@ -45,28 +45,28 @@
   resolved "https://registry.yarnpkg.com/@discordjs/collection/-/collection-0.6.0.tgz#ee9c7b349a61d081fcdbda36df4187e575510952"
   integrity sha512-Ieaetb36l0nmAS5X9Upqk4W7euAO6FdXPxn3I8vBAKEcoIzEZI1mcVcPfCfagGJZSgBKpENnAnKkP4GAn+MV8w==
 
-"@esbuild-kit/cjs-loader@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@esbuild-kit/cjs-loader/-/cjs-loader-2.0.0.tgz#f385aed0ba482cb9de28880e7401259311cacbd7"
-  integrity sha512-1ijCpmiCQcOcr0dmwwwCpzv0inWpNtEgiXDWc74AL52AhvY108M26suhWe9PMDcF1esnPJf0YSeVBLLZS6SQvg==
+"@esbuild-kit/cjs-loader@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@esbuild-kit/cjs-loader/-/cjs-loader-2.0.1.tgz#3684cb94a79ce19eb73c76e9d79547634732dcc3"
+  integrity sha512-KmE8XouKm6m05jPIsf5CTIZZ4171GHd+PUts1mtti2tzoiD228qCRjpkCwg540c3fMUweKupO+PIpkJ9+Z7vPg==
   dependencies:
-    "@esbuild-kit/core-utils" "^1.1.0"
+    "@esbuild-kit/core-utils" "^1.2.0"
     get-tsconfig "^3.0.1"
 
-"@esbuild-kit/core-utils@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@esbuild-kit/core-utils/-/core-utils-1.1.0.tgz#03347ab62ee4daffba71a6446188c6fe1812c081"
-  integrity sha512-BPWlYIrfxIrjV3wzHsfOOiXgDWbh3vrveB+kr/ASTctI9tLF/k6bFo9PBiHxMGlbZCyWn8Ry3aeOB15ceHeqFw==
+"@esbuild-kit/core-utils@^1.2.0", "@esbuild-kit/core-utils@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@esbuild-kit/core-utils/-/core-utils-1.3.1.tgz#9a35e1d30eae63dfa7f791abbea9a3802a0b4252"
+  integrity sha512-QXWJKf3mEIs+jgUCrY2YWJ2cr9e9asRYRwDhxit+wkCaQbSfV6fCCgs8KjRsrkIdMBcWsjbWnFKfwZ9kjILPrw==
   dependencies:
     esbuild "0.14.38"
+    source-map-support "^0.5.21"
 
-"@esbuild-kit/esm-loader@^2.0.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@esbuild-kit/esm-loader/-/esm-loader-2.1.0.tgz#5c2939917e6a35e5ea2c76037dccad0b9614bdc3"
-  integrity sha512-zE7BepoWvVhyoHDEnc2whD9x27UzdRIcUguOD6mUx8PzYjEw2pdNsY+2sP9PeGxW6YJvtLOqcDj3tqhxj61IPw==
+"@esbuild-kit/esm-loader@^2.1.3":
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/@esbuild-kit/esm-loader/-/esm-loader-2.1.5.tgz#6cd6e3d7dde6db0cc030713c8bbb43d74d5cd81b"
+  integrity sha512-G0HZSh53dXOb42xR14zEASXtVWFNX2itREVPnh6BWU2PcApbSzFEIUpknotpybuu6QupuW9sS9hVVpJjuyZlSw==
   dependencies:
-    "@esbuild-kit/core-utils" "^1.1.0"
-    es-module-lexer "^0.10.5"
+    "@esbuild-kit/core-utils" "^1.3.1"
     get-tsconfig "^3.0.1"
 
 "@esbuild-plugins/node-resolve@^0.1.4":
@@ -442,6 +442,11 @@ braces@^3.0.2, braces@~3.0.2:
   dependencies:
     fill-range "^7.0.1"
 
+buffer-from@^1.0.0:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.2.tgz#2b146a6fd72e80b4f55d255f35ed59a3a9a41bd5"
+  integrity sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==
+
 cacheable-request@^6.0.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/cacheable-request/-/cacheable-request-6.1.0.tgz#20ffb8bd162ba4be11e9567d823db651052ca912"
@@ -673,11 +678,6 @@ end-of-stream@^1.1.0:
   integrity sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==
   dependencies:
     once "^1.4.0"
-
-es-module-lexer@^0.10.5:
-  version "0.10.5"
-  resolved "https://registry.yarnpkg.com/es-module-lexer/-/es-module-lexer-0.10.5.tgz#06f76d51fa53b1f78e3bd8bb36dd275eda2fdd53"
-  integrity sha512-+7IwY/kiGAacQfY+YBhKMvEmyAJnw5grTUgjG85Pe7vcUI/6b7pZjZG8nQ7+48YhzEAEqrEgD2dCz/JIK+AYvw==
 
 esbuild-android-64@0.14.38:
   version "0.14.38"
@@ -1015,13 +1015,6 @@ eslint@^8.16.0:
     text-table "^0.2.0"
     v8-compile-cache "^2.0.3"
 
-esno@^0.16.3:
-  version "0.16.3"
-  resolved "https://registry.yarnpkg.com/esno/-/esno-0.16.3.tgz#182bf9b9608278fba1ba2f97d589cb80ba731bc5"
-  integrity sha512-6slSBEV1lMKcX13DBifvnDFpNno5WXhw4j/ff7RI0y51BZiDqEe5dNhhjhIQ3iCOQuzsm2MbVzmwqbN78BBhPg==
-  dependencies:
-    tsx "^3.2.1"
-
 espree@^9.3.2:
   version "9.3.2"
   resolved "https://registry.yarnpkg.com/espree/-/espree-9.3.2.tgz#f58f77bd334731182801ced3380a8cc859091596"
@@ -1188,9 +1181,9 @@ get-stream@^5.1.0:
     pump "^3.0.0"
 
 get-tsconfig@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/get-tsconfig/-/get-tsconfig-3.0.1.tgz#02cadb5abc5f0d53033c8b2f3005b84134ba22e9"
-  integrity sha512-+m30eQjbcf3xMNdnacXH5IDAKUMbI7Mhbf3e1BHif1FzBlUhBzBlmOVc7kL4+kB035l8OCyBdI3dNXZ3of9HqA==
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/get-tsconfig/-/get-tsconfig-3.1.0.tgz#4491699356861f53ffc68477f20c259146530a30"
+  integrity sha512-/8GSkE76aYtvKYX+uNShbgxI0tRbksEbbjgPOpk0Ca8QqkVZDxTmh6OCQXZaqqOSdfXkEHkvLQ7iPvFd2fnwVQ==
 
 glob-parent@^5.1.2, glob-parent@~5.1.2:
   version "5.1.2"
@@ -1857,6 +1850,19 @@ slash@^3.0.0:
   resolved "https://registry.yarnpkg.com/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"
   integrity sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
 
+source-map-support@^0.5.21:
+  version "0.5.21"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.21.tgz#04fe7c7f9e1ed2d662233c28cb2b35b9f63f6e4f"
+  integrity sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==
+  dependencies:
+    buffer-from "^1.0.0"
+    source-map "^0.6.0"
+
+source-map@^0.6.0:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
+  integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
+
 string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.2:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
@@ -1970,14 +1976,14 @@ tsutils@^3.21.0:
   dependencies:
     tslib "^1.8.1"
 
-tsx@^3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/tsx/-/tsx-3.2.1.tgz#2c9cc0837af3f7f8cdabf1c523ee3e6c6782ca22"
-  integrity sha512-j+Z0kzm/+WMMgbKotcOJml3hHd4Tq1Dr/V5rL82NrNP2dbq0DbyQ9TplIZ1xOZQcsZmb4W1IrK7tueGWyppJjg==
+tsx@^3.4.2:
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/tsx/-/tsx-3.4.2.tgz#6197b57a07dbaad5bcdc7e1a5a1be4fc88bdb64d"
+  integrity sha512-Rd1gm2noOUiVynF+VFxo4bVBNbzS6haWKWtlQ0bEfCLLEqm+GG3R98D3Rqk6foQ3NnJk6JAWOx1ragwcAPj4Lg==
   dependencies:
-    "@esbuild-kit/cjs-loader" "^2.0.0"
-    "@esbuild-kit/core-utils" "^1.1.0"
-    "@esbuild-kit/esm-loader" "^2.0.0"
+    "@esbuild-kit/cjs-loader" "^2.0.1"
+    "@esbuild-kit/core-utils" "^1.2.0"
+    "@esbuild-kit/esm-loader" "^2.1.3"
   optionalDependencies:
     fsevents "~2.3.2"
 
