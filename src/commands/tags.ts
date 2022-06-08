@@ -22,6 +22,6 @@ export const cmd: Command = {
       }
       em.addField(tag.name, text);
     }
-    return e.reply({ embeds: [em] });
+    await e.reply({ embeds: [em] });
   },
 };

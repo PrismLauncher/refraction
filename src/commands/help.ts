@@ -30,6 +30,6 @@ export const cmd: Command = {
       embed.addField('!' + cmd.name, resp.join('\n'));
     }
 
-    return e.reply({ embeds: [embed] });
+    await e.reply({ embeds: [embed] });
   },
 };
