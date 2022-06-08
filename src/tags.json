@@ -14,6 +14,15 @@
     "text": "Please send logs: https://cdn.discordapp.com/attachments/981957331430539267/983680253367058452/1.png https://cdn.discordapp.com/attachments/981957331430539267/983680253715165234/2.png"
   },
   {
+    "name": "optifine",
+    "aliases": ["of", "optimize"],
+    "embed": {
+      "color": "DARK_GREEN",
+      "title": "OptiFine",
+      "description": "OptiFine is known to cause problems when paired with other mods.\nPlease see [Installing OptiFine Alternatives](https://polymc.org/wiki/getting-started/install-of-alternatives/).\nIf you really want to use OptiFine, see [Installing OptiFine](https://polymc.org/wiki/getting-started/installing-optifine/)"
+    }
+  },
+  {
     "name": "java",
     "text": "https://polymc.org/wiki/getting-started/installing-java/",
     "aliases": ["j"]

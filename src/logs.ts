@@ -136,6 +136,18 @@ const shenadoahGCAnalyzer: analyzer = async (text) => {
   return null;
 };
 
+const optifineAnalyzer: analyzer = async (text) => {
+  const matchesOpti = text.match(/\[✔️\] OptiFine_[\w,.]*/);
+  const matchesOptiFabric = text.match(/\[✔️\] optifabric-[\w,.]*/);
+  if (matchesOpti || matchesOptiFabric) {
+    return [
+      'Possible Optifine Problems',
+      'OptiFine is known to cause problems when paired with other mods. Try to disable OptiFine and see if the issue persists.\nCheck `!optifine` for more info & alternatives you can use.',
+    ];
+  }
+  return null;
+};
+
 const analyzers: analyzer[] = [
   javaAnalyzer,
   versionAnalyzer,
@@ -146,6 +158,7 @@ const analyzers: analyzer[] = [
   quiltFabricInternalsAnalyzer,
   oomAnalyzer,
   shenadoahGCAnalyzer,
+  optifineAnalyzer,
 ];
 
 const providers: logProvider[] = [
