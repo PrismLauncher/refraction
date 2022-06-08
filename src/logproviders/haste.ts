@@ -1,4 +1,4 @@
-const reg = /https\:\/\/hst.sh\/[\w]*/;
+const reg = /https:\/\/hst.sh\/[\w]*/;
 
 export async function readHastebin(s: string): Promise<string | null> {
   const r = s.match(reg);

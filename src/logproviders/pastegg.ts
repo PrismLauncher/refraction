@@ -1,4 +1,4 @@
-const reg = /https\:\/\/paste.gg\/p\/[\w]*\/[\w]*/;
+const reg = /https:\/\/paste.gg\/p\/[\w]*\/[\w]*/;
 
 export async function readPasteGG(s: string): Promise<null | string> {
   const r = s.match(reg);

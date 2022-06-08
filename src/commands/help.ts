@@ -9,10 +9,12 @@ export const cmd: Command = {
     const embed = new MessageEmbed()
       .setTitle('Help Menu')
       .setColor('DARK_GREEN');
-    let comman = commands;
+
+    const comman = commands;
     comman.sort((x, y) => {
       return x.name == 'help' ? -1 : y.name == 'help' ? 1 : 0;
     });
+
     for (const i in comman) {
       const cmd = comman[i];
       const resp = [];
@@ -27,6 +29,7 @@ export const cmd: Command = {
       }
       embed.addField('!' + cmd.name, resp.join('\n'));
     }
+
     return e.reply({ embeds: [embed] });
   },
 };

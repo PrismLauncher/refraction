@@ -1,5 +1,5 @@
 import { MessageEmbed } from 'discord.js';
-import { Command } from '../index';
+import type { Command } from '../index';
 import { tags } from '../index';
 
 export const cmd: Command = {
@@ -8,11 +8,11 @@ export const cmd: Command = {
   exec: async (e) => {
     const em = new MessageEmbed().setTitle('tags').setColor('DARK_GREEN');
 
-    for (let i in tags) {
+    for (const i in tags) {
       const tag = tags[i];
       let text = '';
       if (tag.aliases && tag.aliases[0]) {
-        text += '**Aliases**: ' + tag.aliases.join(', ') + "\n";
+        text += '**Aliases**: ' + tag.aliases.join(', ') + '\n';
       }
 
       if (tag.text) {

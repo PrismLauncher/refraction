@@ -1,4 +1,3 @@
-import * as BuildConfig from './constants';
 import { Message } from 'discord.js';
 import { isBad } from './badLinks';
 import urlRegex from 'url-regex';

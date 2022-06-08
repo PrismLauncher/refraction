@@ -12,7 +12,7 @@ import { green, bold, blue, underline, yellow } from 'kleur/colors';
 import * as parser from 'discord-command-parser';
 import * as fs from 'fs';
 import * as path from 'path';
-import { SuccessfulParsedMessage } from 'discord-command-parser';
+import type { SuccessfulParsedMessage } from 'discord-command-parser';
 import * as dotenv from 'dotenv';
 import { parseLog } from './logs';
 dotenv.config();
@@ -29,7 +29,7 @@ export interface Command {
 }
 
 type Commands = Array<Command>;
-export let commands: Commands = [];
+export const commands: Commands = [];
 
 interface Tag {
   name: string;

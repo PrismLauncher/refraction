@@ -1,4 +1,4 @@
-const reg = /https\:\/\/mclo.gs\/[^ ]*/;
+const reg = /https:\/\/mclo.gs\/[^ ]*/;
 
 export async function readMcLogs(s: string): Promise<null | string> {
   const r = s.match(reg);

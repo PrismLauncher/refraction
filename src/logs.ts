@@ -6,8 +6,6 @@ import { read0x0 } from './logproviders/0x0';
 import { readPasteGG } from './logproviders/pastegg';
 import { readHastebin } from './logproviders/haste';
 
-const reg = /https\:\/\/mclo.gs\/[^ ]*/g;
-
 type analyzer = (text: string) => Promise<Array<string> | null>;
 type logProvider = (text: string) => Promise<null | string>;
 
@@ -167,8 +165,9 @@ export async function parseLog(s: string): Promise<MessageEmbed | null> {
       .setColor('DARK_RED');
     return embed;
   }
-  let log: string = '';
-  for (let i in providers) {
+
+  let log = '';
+  for (const i in providers) {
     const provider = providers[i];
     const res = await provider(s);
     if (res) {
@@ -183,7 +182,7 @@ export async function parseLog(s: string): Promise<MessageEmbed | null> {
   const embed = new MessageEmbed()
     .setTitle('Log analysis')
     .setColor('DARK_GREEN');
-  for (let i in analyzers) {
+  for (const i in analyzers) {
     const analyzer = analyzers[i];
     const out = await analyzer(log);
     if (out) embed.addField(out[0], out[1]);
