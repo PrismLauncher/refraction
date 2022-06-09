@@ -25,7 +25,7 @@ export interface Command {
   exec(
     m: Message,
     p: SuccessfulParsedMessage<Message<boolean>>
-  ): Promise<Message> | Promise<any> | any;
+  ): Promise<void> | void;
 }
 
 type Commands = Array<Command>;
@@ -80,7 +80,7 @@ client.once('ready', async () => {
     )
   );
 
-  const POLYMC_GUILD = await client.guilds.fetch(BuildConfig.GUILD_ID);
+  // const POLYMC_GUILD = await client.guilds.fetch(BuildConfig.GUILD_ID);
 
   client.on('messageCreate', async (e) => {
     if (!e.content) return;

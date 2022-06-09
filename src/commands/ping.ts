@@ -5,6 +5,6 @@ export const cmd: Command = {
   desc: 'Shows the ping of the bot',
   aliases: ['test'],
   exec: async (e) => {
-    return await e.reply(`${e.client.ws.ping}ms`);
+    await e.reply(`${e.client.ws.ping}ms`);
   },
 };

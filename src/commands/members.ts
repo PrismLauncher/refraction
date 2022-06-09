@@ -8,7 +8,7 @@ export const cmd: Command = {
     const memes = await e.guild?.members.fetch().then((r) => r.toJSON());
     if (!memes) return;
 
-    return e.reply({
+    await e.reply({
       embeds: [
         {
           title: `${memes.length} total members!`,

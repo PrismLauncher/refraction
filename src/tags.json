@@ -2,7 +2,7 @@
   {
     "name": "migrate",
     "text": "https://polymc.org/wiki/getting-started/migrating-multimc/",
-    "aliases": ["migr", "mmc"]
+    "aliases": ["migr", "mmc", "multimc"]
   },
   {
     "name": "thematrix",
@@ -10,12 +10,12 @@
   },
   {
     "name": "log",
-    "aliases": ["sendlog", "log"],
+    "aliases": ["sendlog", "logs"],
     "text": "Please send logs: https://cdn.discordapp.com/attachments/981957331430539267/983680253367058452/1.png https://cdn.discordapp.com/attachments/981957331430539267/983680253715165234/2.png"
   },
   {
     "name": "optifine",
-    "aliases": ["of", "optimize"],
+    "aliases": ["of", "optimize", "opticrap", "notfine"],
     "embed": {
       "color": "DARK_GREEN",
       "title": "OptiFine",
@@ -64,7 +64,13 @@
   },
   {
     "name": "eta",
-    "text": "Sometime"
+    "text": "Sometime",
+    "aliases": ["wen", "when"]
+  },
+  {
+    "name": "why",
+    "text": "https://polymc.org/wiki/overview/faq/#why-did-our-community-choose-to-fork https://polymc.org/news/moving-on/",
+    "aliases": ["whywaspolymcmade", "mmcdrama", "devlauncher"]
   },
   {
     "name": "curseforge",
@@ -73,7 +79,7 @@
       "description": "CurseForge added a new option to block third party clients like PolyMC from accessing mod files, and they started to enforce this option lately. We can't allow you to download those mods directly from PolyMC, but PolyMC 1.3.1 and higher have a workaround to let modpacks work: letting you to download those opted out mods manually. We highly encourage asking authors that opted out to stop doing so.",
       "color": "ORANGE"
     },
-    "aliases": ["cf", "curse", "cursed"]
+    "aliases": ["cf", "curse", "cursed", "cursedfrog"]
   },
   {
     "name": "piracy",
