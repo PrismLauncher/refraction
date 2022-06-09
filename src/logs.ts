@@ -148,6 +148,19 @@ const optifineAnalyzer: analyzer = async (text) => {
   return null;
 };
 
+const tempForge119IssueAnalyzer: analyzer = async (text) => {
+  const matches = text.match(
+    /Caused by: java.lang.RuntimeException: java.lang.reflect.InvocationTargetException\n.at MC-BOOTSTRAP\/cpw.mods.modlauncher@[0-9]\.[0-9]\.[0-9]\/cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch\(LaunchServiceHandlerDecorator.java:[0-9]*\)/
+  );
+  if (matches) {
+    return [
+      'Forge 1.19 issues',
+      'We are working on a fix for this issue. For now, using Forge on 1.19 in PolyMC is only possible on Linux, MacOS M1 and Windows 32-bit',
+    ];
+  }
+  return null;
+};
+
 const analyzers: analyzer[] = [
   javaAnalyzer,
   versionAnalyzer,
@@ -159,6 +172,7 @@ const analyzers: analyzer[] = [
   oomAnalyzer,
   shenadoahGCAnalyzer,
   optifineAnalyzer,
+  tempForge119IssueAnalyzer,
 ];
 
 const providers: logProvider[] = [
