@@ -3,33 +3,35 @@ import {
   Intents,
   Message,
   MessageEmbed,
-  MessageEmbedOptions,
+  type MessageEmbedOptions,
 } from 'discord.js';
 
 import * as BuildConfig from './constants';
+import { commands } from './commands';
 import { filterMessage } from './filters';
-import { green, bold, blue, underline, yellow } from 'kleur/colors';
-import * as parser from 'discord-command-parser';
-import * as fs from 'fs';
-import * as path from 'path';
-import type { SuccessfulParsedMessage } from 'discord-command-parser';
-import * as dotenv from 'dotenv';
 import { parseLog } from './logs';
-dotenv.config();
 
+import { green, bold, blue, underline, yellow } from 'kleur/colors';
+
+import {
+  parse as discordParse,
+  type SuccessfulParsedMessage,
+} from 'discord-command-parser';
+
+import { readFile } from 'fs/promises';
+import { join } from 'path';
+
+import 'dotenv/config';
 export interface Command {
   name: string;
-  aliases?: Array<string>;
+  aliases?: string[];
   desc?: string;
-  examples?: Array<string>;
+  examples?: string[];
   exec(
     m: Message,
     p: SuccessfulParsedMessage<Message<boolean>>
   ): Promise<void> | void;
 }
-
-type Commands = Array<Command>;
-export const commands: Commands = [];
 
 interface Tag {
   name: string;
@@ -38,10 +40,11 @@ interface Tag {
   embed?: MessageEmbedOptions;
 }
 
-type Tags = Array<Tag>;
-export const tags: Tags = JSON.parse(
-  fs.readFileSync(path.join(__dirname, 'tags.json'), 'utf8')
-);
+export const getTags = async (): Promise<Tag[]> => {
+  return JSON.parse(
+    await readFile(join(__dirname, 'tags.json'), { encoding: 'utf8' })
+  );
+};
 
 const client = new Client({
   intents: [
@@ -54,13 +57,6 @@ const client = new Client({
     Intents.FLAGS.GUILD_BANS,
   ],
 });
-
-const dir = fs.readdirSync(path.join(__dirname, '/commands'));
-for (const i in dir) {
-  const cmdName = dir[i];
-  const cmd: Command = require(path.join(__dirname, '/commands/', cmdName)).cmd;
-  commands.push(cmd);
-}
 
 client.once('ready', async () => {
   console.log(green('Discord bot ready!'));
@@ -79,8 +75,6 @@ client.once('ready', async () => {
       )
     )
   );
-
-  // const POLYMC_GUILD = await client.guilds.fetch(BuildConfig.GUILD_ID);
 
   client.on('messageCreate', async (e) => {
     if (!e.content) return;
@@ -116,7 +110,7 @@ client.once('ready', async () => {
 });
 
 async function parseMsg(e: Message) {
-  const parsed = parser.parse(e, '!', {
+  const parsed = discordParse(e, '!', {
     allowBots: true,
   });
 
@@ -126,9 +120,12 @@ async function parseMsg(e: Message) {
   );
 
   if (!cmd) {
-    const tag = tags.find(
-      (t) => t.name == parsed.command || t.aliases?.includes(parsed.command)
+    const tag = await getTags().then((r) =>
+      r.find(
+        (t) => t.name == parsed.command || t.aliases?.includes(parsed.command)
+      )
     );
+
     if (tag) {
       if (tag.text) {
         e.reply(tag.text);
@@ -143,14 +140,16 @@ async function parseMsg(e: Message) {
   }
   try {
     await cmd.exec(e, parsed);
-  } catch (err: any) {
-    // ts moment
+  } catch (err: unknown) {
     const em = new MessageEmbed()
       .setTitle('Error')
       .setColor('RED')
-      .setDescription(err);
+      // @ts-expect-error no why
+      .setDescription(err['message'] as string);
+
     e.reply({ embeds: [em] });
   }
+
   return true;
 }
 

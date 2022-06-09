@@ -1,12 +1,13 @@
 import { MessageEmbed } from 'discord.js';
-import type { Command } from '../index';
-import { tags } from '../index';
+import { getTags, type Command } from '..';
 
 export const cmd: Command = {
   name: 'tags',
   desc: 'Lists the tags available',
   exec: async (e) => {
     const em = new MessageEmbed().setTitle('tags').setColor('DARK_GREEN');
+
+    const tags = await getTags();
 
     for (const i in tags) {
       const tag = tags[i];
@@ -22,6 +23,7 @@ export const cmd: Command = {
       }
       em.addField(tag.name, text);
     }
+
     await e.reply({ embeds: [em] });
   },
 };

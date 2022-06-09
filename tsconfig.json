@@ -3,6 +3,7 @@
     "strict": true,
     "esModuleInterop": true,
     "downlevelIteration": true,
+    "module": "esnext",
     "target": "ES2018",
     "moduleResolution": "node",
     "rootDir": "src",

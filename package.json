@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "NODE_ENV=development tsx watch src/index.ts",
     "start": "tsx src/index.ts",
-    "lint": "eslint **/*.ts"
+    "lint": "tsc --noEmit && eslint **/*.ts"
   },
   "dependencies": {
     "@cliqz/adblocker": "^1.23.8",
