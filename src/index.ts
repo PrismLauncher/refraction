@@ -11,8 +11,6 @@ import { commands } from './commands';
 import { filterMessage } from './filters';
 import { parseLog } from './logs';
 
-import { green, bold, blue, underline, yellow } from 'kleur/colors';
-
 import {
   parse as discordParse,
   type SuccessfulParsedMessage,
@@ -21,7 +19,9 @@ import {
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
+import { green, bold, blue, underline, yellow } from 'kleur/colors';
 import 'dotenv/config';
+
 export interface Command {
   name: string;
   aliases?: string[];
@@ -93,17 +93,17 @@ client.once('ready', async () => {
       return;
     }
 
+    const messageIsOK = await filterMessage(e);
+    if (!messageIsOK) {
+      return;
+    }
+
     const commanded = await parseMsg(e);
     if (commanded) return;
 
     const log = await parseLog(e.content);
     if (log != null) {
       e.reply({ embeds: [log] });
-      return;
-    }
-
-    const filtered = await filterMessage(e);
-    if (!filtered) {
       return;
     }
   });
@@ -138,6 +138,7 @@ async function parseMsg(e: Message) {
     }
     return false;
   }
+
   try {
     await cmd.exec(e, parsed);
   } catch (err: unknown) {
