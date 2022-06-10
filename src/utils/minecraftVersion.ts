@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 interface SimplifiedMetaVersion {
   recommended: boolean;
   type: 'release' | 'snapshot';

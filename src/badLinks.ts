@@ -1,5 +1,4 @@
 import { FiltersEngine, Request } from '@cliqz/adblocker';
-import fetch from 'node-fetch';
 
 let engine: FiltersEngine;
 

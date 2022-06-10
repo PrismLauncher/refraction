@@ -1,15 +1,16 @@
 import { getLatest } from './version';
 import { MessageEmbed } from 'discord.js';
+
 // log providers
 import { readMcLogs } from './logproviders/mclogs';
 import { read0x0 } from './logproviders/0x0';
 import { readPasteGG } from './logproviders/pastegg';
 import { readHastebin } from './logproviders/haste';
 
-type analyzer = (text: string) => Promise<Array<string> | null>;
-type logProvider = (text: string) => Promise<null | string>;
+type Analyzer = (text: string) => Promise<Array<string> | null>;
+type LogProvider = (text: string) => Promise<null | string>;
 
-const javaAnalyzer: analyzer = async (text) => {
+const javaAnalyzer: Analyzer = async (text) => {
   if (text.includes('This instance is not compatible with Java version')) {
     const xp =
       /Please switch to one of the following Java versions for this instance:[\r\n]+([^\r\n]+)/g;
@@ -30,7 +31,7 @@ const javaAnalyzer: analyzer = async (text) => {
   return null;
 };
 
-const versionAnalyzer: analyzer = async (text) => {
+const versionAnalyzer: Analyzer = async (text) => {
   const vers = text.match(/PolyMC version: [0-9].[0-9].[0-9]/g);
   if (vers && vers[0]) {
     const latest = await getLatest();
@@ -45,7 +46,7 @@ const versionAnalyzer: analyzer = async (text) => {
   return null;
 };
 
-const flatpakNvidiaAnalyzer: analyzer = async (text) => {
+const flatpakNvidiaAnalyzer: Analyzer = async (text) => {
   if (
     text.includes('org.lwjgl.LWJGLException: Could not choose GLX13 config')
   ) {
@@ -57,7 +58,7 @@ const flatpakNvidiaAnalyzer: analyzer = async (text) => {
   return null;
 };
 
-const forgeJavaAnalyzer: analyzer = async (text) => {
+const forgeJavaAnalyzer: Analyzer = async (text) => {
   if (
     text.includes(
       'java.lang.NoSuchMethodError: sun.security.util.ManifestEntryVerifier.<init>(Ljava/util/jar/Manifest;)V'
@@ -71,7 +72,7 @@ const forgeJavaAnalyzer: analyzer = async (text) => {
   return null;
 };
 
-const intelHDAnalyzer: analyzer = async (text) => {
+const intelHDAnalyzer: Analyzer = async (text) => {
   if (text.includes('org.lwjgl.LWJGLException: Pixel format not accelerated')) {
     return [
       'Intel HD Windows 10',
@@ -81,7 +82,7 @@ const intelHDAnalyzer: analyzer = async (text) => {
   return null;
 };
 
-const macOSNSWindowAnalyzer: analyzer = async (text) => {
+const macOSNSWindowAnalyzer: Analyzer = async (text) => {
   if (
     text.includes(
       "Terminating app due to uncaught exception 'NSInternalInconsistencyException'"
@@ -95,7 +96,7 @@ const macOSNSWindowAnalyzer: analyzer = async (text) => {
   return null;
 };
 
-const quiltFabricInternalsAnalyzer: analyzer = async (text) => {
+const quiltFabricInternalsAnalyzer: Analyzer = async (text) => {
   const base = 'Caused by: java.lang.ClassNotFoundException: ';
   if (
     text.includes(base + 'net.fabricmc.fabric.impl') ||
@@ -116,7 +117,7 @@ const quiltFabricInternalsAnalyzer: analyzer = async (text) => {
   return null;
 };
 
-const oomAnalyzer: analyzer = async (text) => {
+const oomAnalyzer: Analyzer = async (text) => {
   if (text.includes('java.lang.OutOfMemoryError: Java heap space')) {
     return [
       'Out of Memory',
@@ -126,7 +127,7 @@ const oomAnalyzer: analyzer = async (text) => {
   return null;
 };
 
-const shenadoahGCAnalyzer: analyzer = async (text) => {
+const shenadoahGCAnalyzer: Analyzer = async (text) => {
   if (text.includes("Unrecognized VM option 'UseShenandoahGC'")) {
     return [
       "Java 8 doesn't support ShenandoahGC",
@@ -136,7 +137,7 @@ const shenadoahGCAnalyzer: analyzer = async (text) => {
   return null;
 };
 
-const optifineAnalyzer: analyzer = async (text) => {
+const optifineAnalyzer: Analyzer = async (text) => {
   const matchesOpti = text.match(/\[✔️\] OptiFine_[\w,.]*/);
   const matchesOptiFabric = text.match(/\[✔️\] optifabric-[\w,.]*/);
   if (matchesOpti || matchesOptiFabric) {
@@ -148,7 +149,7 @@ const optifineAnalyzer: analyzer = async (text) => {
   return null;
 };
 
-const tempForge119IssueAnalyzer: analyzer = async (text) => {
+const tempForge119IssueAnalyzer: Analyzer = async (text) => {
   const matches = text.match(
     /Caused by: java.lang.RuntimeException: java.lang.reflect.InvocationTargetException\n.at MC-BOOTSTRAP\/cpw.mods.modlauncher@[0-9]\.[0-9]\.[0-9]\/cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch\(LaunchServiceHandlerDecorator.java:[0-9]*\)/
   );
@@ -161,7 +162,23 @@ const tempForge119IssueAnalyzer: analyzer = async (text) => {
   return null;
 };
 
-const analyzers: analyzer[] = [
+const tempM1Analyzer: Analyzer = async (text) => {
+  const lwjglFail = text.includes('[LWJGL] Failed to load a library');
+  const m1 =
+    (text.includes('natives-macos') || text.includes('natives-osx')) &&
+    (text.includes('aarch64') || text.includes('arm64'));
+
+  if (lwjglFail && m1) {
+    return [
+      'M1 issues',
+      "PolyMC doesn't support Apple M1 for sub-1.19 versions yet. Use ManyMC https://github.com/MinecraftMachina/ManyMC or PolyM1 https://github.com/ryanccn/PolyM1 if you still want to use PolyMC",
+    ];
+  }
+
+  return null;
+};
+
+const analyzers: Analyzer[] = [
   javaAnalyzer,
   versionAnalyzer,
   flatpakNvidiaAnalyzer,
@@ -173,9 +190,10 @@ const analyzers: analyzer[] = [
   shenadoahGCAnalyzer,
   optifineAnalyzer,
   tempForge119IssueAnalyzer,
+  tempM1Analyzer,
 ];
 
-const providers: logProvider[] = [
+const providers: LogProvider[] = [
   readMcLogs,
   read0x0,
   readPasteGG,
@@ -209,11 +227,13 @@ export async function parseLog(s: string): Promise<MessageEmbed | null> {
   const embed = new MessageEmbed()
     .setTitle('Log analysis')
     .setColor('DARK_GREEN');
+
   for (const i in analyzers) {
-    const analyzer = analyzers[i];
-    const out = await analyzer(log);
+    const Analyzer = analyzers[i];
+    const out = await Analyzer(log);
     if (out) embed.addField(out[0], out[1]);
   }
+
   if (embed.fields[0]) return embed;
   else {
     embed.addField('Analyze failed', 'No issues found automatically');
