@@ -22,6 +22,7 @@ import { join } from 'path';
 
 import { green, bold, blue, underline, yellow } from 'kleur/colors';
 import 'dotenv/config';
+import { getLatestMinecraft } from './utils/minecraftVersion';
 
 export interface Command {
   name: string;
@@ -76,6 +77,12 @@ client.once('ready', async () => {
       )
     )
   );
+
+  if (client.user) {
+    client.user.presence.set({
+      activities: [{ name: `Minecraft ${await getLatestMinecraft()}` }],
+    });
+  }
 
   client.on('messageCreate', async (e) => {
     if (!e.content) return;
