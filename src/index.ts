@@ -106,7 +106,7 @@ client.once('ready', async () => {
       return;
     }
 
-    if (e.cleanContent.includes('eta')) {
+    if (e.cleanContent.match(/(\b| )(eta|ETA)( |\?|!|\b)/)) {
       await e.reply(
         `${random([
           'Sometime',
