@@ -11,7 +11,6 @@ const init = async () => {
     fetch,
     [
       'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt',
-      'https://raw.githubusercontent.com/JonDoeBeep/Phishing.Database/master/phishing-domains/output/domains/ACTIVE/list.txt',
       'https://malware-filter.gitlab.io/malware-filter/phishing-filter.txt',
     ],
     {
