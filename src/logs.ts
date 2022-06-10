@@ -171,7 +171,7 @@ const tempM1Analyzer: Analyzer = async (text) => {
   if (lwjglFail && m1) {
     return [
       'M1 issues',
-      "PolyMC doesn't support Apple M1 for sub-1.19 versions yet. Use ManyMC https://github.com/MinecraftMachina/ManyMC or PolyM1 https://github.com/ryanccn/PolyM1 if you still want to use PolyMC",
+      "PolyMC doesn't support Apple M1 for sub-1.19 versions yet. Use ManyMC https://github.com/MinecraftMachina/ManyMC.",
     ];
   }
 
