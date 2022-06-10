@@ -1100,6 +1100,11 @@ json-stable-stringify-without-jsonify@^1.0.1:
   resolved "https://registry.yarnpkg.com/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz#9db7b59496ad3f3cfef30a75142d2d930ad72651"
   integrity sha1-nbe1lJatPzz+8wp1FC0tkwrXJlE=
 
+just-random@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/just-random/-/just-random-3.0.1.tgz#7bee212808686683a755d93842f1af86a02b3026"
+  integrity sha512-JOp2xkWZcPNEsDRJOWupw/qJhqUakcNi1gXCqRyix00jUJP37aJUaHuyjeQLC1Vg6ts+cNWWGifdHmP88A6uvA==
+
 kleur@^4.1.4:
   version "4.1.4"
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-4.1.4.tgz#8c202987d7e577766d039a8cd461934c01cda04d"

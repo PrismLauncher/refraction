@@ -63,11 +63,6 @@
     "text": "https://polymc.org/wiki/development/build-instructions/"
   },
   {
-    "name": "eta",
-    "text": "Sometime <:potat:964543999769706556>",
-    "aliases": ["wen", "when"]
-  },
-  {
     "name": "why",
     "text": "https://polymc.org/wiki/overview/faq/#why-did-our-community-choose-to-fork https://polymc.org/news/moving-on/",
     "aliases": ["whywaspolymcmade", "mmcdrama", "devlauncher"]

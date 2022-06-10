@@ -16,6 +16,7 @@ import {
   type SuccessfulParsedMessage,
 } from 'discord-command-parser';
 
+import random from 'just-random';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
@@ -96,6 +97,20 @@ client.once('ready', async () => {
     const messageIsOK = await filterMessage(e);
     if (!messageIsOK) {
       return;
+    }
+
+    if (e.cleanContent.includes('eta')) {
+      await e.reply(
+        `${random([
+          'Sometime',
+          'Some day',
+          'Not far',
+          'The future',
+          'Never',
+          'Perhaps tomorrow?',
+          'There are no ETAs',
+        ])} <:pofat:964546613194420294>`
+      );
     }
 
     const commanded = await parseMsg(e);
