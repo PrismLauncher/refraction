@@ -78,11 +78,10 @@ client.once('ready', async () => {
     )
   );
 
-  if (client.user) {
-    client.user.presence.set({
-      activities: [{ name: `Minecraft ${await getLatestMinecraft()}` }],
-    });
-  }
+  client.user?.presence.set({
+    activities: [{ name: `Minecraft ${await getLatestMinecraft()}` }],
+    status: 'online',
+  });
 
   client.on('messageCreate', async (e) => {
     if (!e.content) return;
