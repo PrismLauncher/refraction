@@ -14,7 +14,8 @@
     "text": "Please send logs: https://cdn.discordapp.com/attachments/981957331430539267/983680253367058452/1.png https://cdn.discordapp.com/attachments/981957331430539267/983680253715165234/2.png"
   },
   {
-    "name": "wen",
+    "name": "eta",
+    "aliases": ["wen", "when"],
     "text": "Sometime"
   },
   {
@@ -70,6 +71,20 @@
     "name": "why",
     "text": "https://polymc.org/wiki/overview/faq/#why-did-our-community-choose-to-fork https://polymc.org/news/moving-on/",
     "aliases": ["whywaspolymcmade", "mmcdrama", "devlauncher"]
+  },
+  {
+    "name": "rolypoly",
+    "text": "https://media.discordapp.net/attachments/985048903126769764/985051373886382100/rollin-time.gif?width=324&height=216",
+    "aliases": ["itsrollintime", "rollintime"]
+  },
+  {
+    "name": "whyjava8",
+    "embed": {
+      "title": "Why does PolyMC ask me to change java version?",
+      "description": "Minecraft versions before 1.17 required Java 8 and have issues with newer java, while newer versions require Java 17, so you need to change java version. Some people think Java 8 is very outdated, but it's actually an LTS, it's still getting updates. If one of your mods is weird and requires newer java, you can bypass this going to instance settings-Java and ticking 'Skip java compatibility checks', but be aware of potential issues, such as [random CMEs](https://bugs.mojang.com/browse/MC-149777).",
+      "color": "ORANGE"
+    },
+    "aliases": ["isjava8ancient", "whyispolyforcingme"]
   },
   {
     "name": "curseforge",
