@@ -22,7 +22,7 @@ import { join } from 'path';
 
 import { green, bold, blue, underline, yellow } from 'kleur/colors';
 import 'dotenv/config';
-import { getLatestMinecraft } from './utils/minecraftVersion';
+import { getLatestMinecraftVersion } from './utils/remoteVersions';
 
 export interface Command {
   name: string;
@@ -79,7 +79,7 @@ client.once('ready', async () => {
   );
 
   client.user?.presence.set({
-    activities: [{ name: `Minecraft ${await getLatestMinecraft()}` }],
+    activities: [{ name: `Minecraft ${await getLatestMinecraftVersion()}` }],
     status: 'online',
   });
 
@@ -105,25 +105,9 @@ client.once('ready', async () => {
       return;
     }
 
-    if (e.cleanContent.match(/(\b| )(eta|ETA)( |\?|!|\b)/)) {
+    if (e.cleanContent.match(BuildConfig.ETA_REGEX)) {
       await e.reply(
-        `${random([
-          'Sometime',
-          'Some day',
-          'Not far',
-          'The future',
-          'Never',
-          'Perhaps tomorrow?',
-          'There are no ETAs',
-          'No',
-          'Nah',
-          'Yes',
-          'Yas',
-          'Next month',
-          'Next year',
-          'Next week',
-          'In PolyMC 2.0.0',
-        ])} <:pofat:964546613194420294>`
+        `${random(BuildConfig.ETA_MESSAGES)} <:pofat:964546613194420294>`
       );
     }
 
@@ -149,6 +133,7 @@ async function parseMsg(e: Message) {
   );
 
   if (!cmd) {
+    // TODO: Do not read tags.json everytime there is a new message
     const tag = await getTags().then((r) =>
       r.find(
         (t) => t.name == parsed.command || t.aliases?.includes(parsed.command)
@@ -158,12 +143,11 @@ async function parseMsg(e: Message) {
     if (tag) {
       if (tag.text) {
         e.reply(tag.text);
-        return true;
       } else if (tag.embed) {
         const em = new MessageEmbed(tag.embed);
         e.reply({ embeds: [em] });
-        return true;
       }
+      return true;
     }
     return false;
   }
