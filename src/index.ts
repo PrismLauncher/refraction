@@ -105,25 +105,9 @@ client.once('ready', async () => {
       return;
     }
 
-    if (e.cleanContent.match(/(\b| )(eta|ETA)( |\?|!|\b)/)) {
+    if (e.cleanContent.match(BuildConfig.ETA_REGEX)) {
       await e.reply(
-        `${random([
-          'Sometime',
-          'Some day',
-          'Not far',
-          'The future',
-          'Never',
-          'Perhaps tomorrow?',
-          'There are no ETAs',
-          'No',
-          'Nah',
-          'Yes',
-          'Yas',
-          'Next month',
-          'Next year',
-          'Next week',
-          'In PolyMC 2.0.0',
-        ])} <:pofat:964546613194420294>`
+        `${random(BuildConfig.ETA_MESSAGES)} <:pofat:964546613194420294>`
       );
     }
 
