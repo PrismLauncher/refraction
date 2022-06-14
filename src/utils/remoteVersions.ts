@@ -1,0 +1,24 @@
+interface MetaPackage {
+  formatVersion: int;
+  name: string;
+  recommended: string[];
+  uid: string;
+}
+
+interface SimplifiedGHReleases {
+  tag_name: string;
+}
+
+// TODO: caching
+export async function getLatestMinecraftVersion(): Promise<string> {
+  const f = await fetch('https://meta.polymc.org/v1/net.minecraft/package.json');
+  const package = await f.json() as MetaPackage;
+  return package.recommended[0];
+}
+
+// TODO: caching
+export async function getLatestPolyMCVersion(): Promise<string> {
+  const f = await fetch('https://api.github.com/repos/PolyMC/PolyMC/releases');
+  const versions = await f.json() as SimplifiedGHReleases[];
+  return versions[0].tag_name;
+}

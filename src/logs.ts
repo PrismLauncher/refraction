@@ -1,4 +1,4 @@
-import { getLatest } from './version';
+import { getLatestPolyMCVersion } from './utils/remoteVersions';
 import { MessageEmbed } from 'discord.js';
 
 // log providers
@@ -34,7 +34,7 @@ const javaAnalyzer: Analyzer = async (text) => {
 const versionAnalyzer: Analyzer = async (text) => {
   const vers = text.match(/PolyMC version: [0-9].[0-9].[0-9]/g);
   if (vers && vers[0]) {
-    const latest = await getLatest();
+    const latest = await getLatestPolyMCVersion();
     const current = vers[0].replace('PolyMC version: ', '');
     if (latest != current) {
       return [
