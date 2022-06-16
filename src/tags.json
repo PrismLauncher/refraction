@@ -87,6 +87,20 @@
     "aliases": ["isjava8ancient", "whyispolyforcingme"]
   },
   {
+    "name": "update",
+    "embed": {
+      "title": "Does PolyMC auto-update?",
+      "description": "Updating functionality [is planned](https://github.com/PolyMC/PolyMC/issues/60) on Windows and macOS, but not yet implemented, even though the macOS updater [is almost completely done](https://github.com/PolyMC/PolyMC/pull/479). Windows updating will work in a similar way as macOS.",
+      "color": "BLUE"
+    },
+    "aliases": ["updating", "autoupdate"]
+  },
+  {
+    "name": "modupdater",
+    "text": "Mod updating functionality is almost completely done.\n You can track its development on [the PR](https://github.com/PolyMC/PolyMC/pull/588) and on #mod-updater.",
+    "aliases": ["mod-update", "modupdate"]
+  },
+  {
     "name": "curseforge",
     "embed": {
       "title": "What's wrong with CurseForge?",
