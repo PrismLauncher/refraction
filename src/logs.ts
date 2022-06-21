@@ -121,7 +121,7 @@ const quiltFabricInternalsAnalyzer: Analyzer = async (text) => {
 };
 
 const oomAnalyzer: Analyzer = async (text) => {
-  if (text.includes('java.lang.OutOfMemoryError: Java heap space')) {
+  if (text.includes('java.lang.OutOfMemoryError')) {
     return [
       'Out of Memory',
       'Allocating more RAM to your instance could help prevent this crash.',
@@ -226,7 +226,6 @@ export async function parseLog(s: string): Promise<MessageEmbed | null> {
     }
   }
   if (!log) return null;
-
   const embed = new MessageEmbed()
     .setTitle('Log analysis')
     .setColor('DARK_GREEN');
