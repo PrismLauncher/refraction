@@ -1,4 +1,4 @@
-const reg = /https:\/\/0x0.st\/[^ ]*/;
+const reg = /https:\/\/0x0.st\/\w*/;
 
 export async function read0x0(s: string): Promise<null | string> {
   const r = s.match(reg);

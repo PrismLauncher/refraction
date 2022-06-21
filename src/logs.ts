@@ -48,7 +48,10 @@ const versionAnalyzer: Analyzer = async (text) => {
 
 const flatpakNvidiaAnalyzer: Analyzer = async (text) => {
   if (
-    text.includes('org.lwjgl.LWJGLException: Could not choose GLX13 config')
+    text.includes('org.lwjgl.LWJGLException: Could not choose GLX13 config') ||
+    text.includes(
+      'GLFW error 65545: GLX: Failed to find a suitable GLXFBConfig'
+    )
   ) {
     return [
       'Outdated Nvidia Flatpak Driver',
