@@ -155,8 +155,8 @@ const tempForge119IssueAnalyzer: Analyzer = async (text) => {
   );
   if (matches) {
     return [
-      'Forge 1.19 issues',
-      'We are working on a fix for this issue. For now, using Forge on 1.19 in PolyMC is only possible on Linux, MacOS M1 and Windows 32-bit',
+      'Update your Forge 1.19',
+      'Update to the latest version of Forge 1.19, older ones have issues with the new split natives system, causing this crash.',
     ];
   }
   return null;
