@@ -130,6 +130,26 @@ const oomAnalyzer: Analyzer = async (text) => {
   return null;
 };
 
+const javaOptionsAnalyzer: Analyzer = async (text) => {
+  const r1 = /Unrecognized VM option '(\w*)'/;
+  const r2 = /Unrecognized option: \w*/;
+  const m1 = text.match(r1);
+  const m2 = text.match(r2);
+  if (m1) {
+    return [
+      'Wrong Java Arguments',
+      `Remove \`-XX:${m1[1]}\` from your Java arguments.`,
+    ];
+  }
+  if (m2) {
+    return [
+      'Wrong Java Arguments',
+      `Remove \`${m2[1]}\` from your Java arguments.`,
+    ];
+  }
+  return null;
+};
+
 const shenadoahGCAnalyzer: Analyzer = async (text) => {
   if (text.includes("Unrecognized VM option 'UseShenandoahGC'")) {
     return [
@@ -152,7 +172,7 @@ const optifineAnalyzer: Analyzer = async (text) => {
   return null;
 };
 
-const tempForge119IssueAnalyzer: Analyzer = async (text) => {
+const forge119IssueAnalyzer: Analyzer = async (text) => {
   const matches = text.match(
     /Caused by: java.lang.RuntimeException: java.lang.reflect.InvocationTargetException\n.at MC-BOOTSTRAP\/cpw.mods.modlauncher@[0-9]\.[0-9]\.[0-9]\/cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch\(LaunchServiceHandlerDecorator.java:[0-9]*\)/
   );
@@ -192,8 +212,9 @@ const analyzers: Analyzer[] = [
   oomAnalyzer,
   shenadoahGCAnalyzer,
   optifineAnalyzer,
-  tempForge119IssueAnalyzer,
+  forge119IssueAnalyzer,
   tempM1Analyzer,
+  javaOptionsAnalyzer,
 ];
 
 const providers: LogProvider[] = [
