@@ -33,6 +33,11 @@
     "aliases": ["j"]
   },
   {
+    "name": "legacyjavafixer",
+    "text": "https://dist.creeper.host/FTB2/maven/net/minecraftforge/lex/legacyjavafixer/1.0/legacyjavafixer-1.0.jar",
+    "aliases": ["legacyjava", "ljf"]
+  },
+  {
     "name": "paths",
     "aliases": ["dirs", "locate"],
     "embed": {
