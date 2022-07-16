@@ -36,7 +36,7 @@ const versionAnalyzer: Analyzer = async (text) => {
   if (vers && vers[0]) {
     const latest = await getLatestPolyMCVersion();
     const current = vers[0].replace('PolyMC version: ', '');
-    if (latest != current) {
+    if (current < latest) {
       return [
         'Outdated PolyMC',
         `Your installed version is ${current}, while the newest version is ${latest}.\nPlease update, for more info see https://polymc.org/download/`,
