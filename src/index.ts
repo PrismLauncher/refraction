@@ -1,10 +1,4 @@
-import {
-  Client,
-  Intents,
-  Message,
-  MessageEmbed,
-  type MessageEmbedOptions,
-} from 'discord.js';
+import { Client, Message, EmbedBuilder, type EmbedData } from 'discord.js';
 
 import * as BuildConfig from './constants';
 import { commands } from './commands';
@@ -20,7 +14,7 @@ import {
 import random from 'just-random';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { green, bold, blue, underline, yellow } from 'kleur/colors';
+import { green, bold, yellow } from 'kleur/colors';
 import 'dotenv/config';
 
 export interface Command {
@@ -38,7 +32,7 @@ interface Tag {
   name: string;
   aliases?: Array<string>;
   text?: string;
-  embed?: MessageEmbedOptions;
+  embed?: EmbedData;
 }
 
 export const getTags = async (): Promise<Tag[]> => {
@@ -49,13 +43,14 @@ export const getTags = async (): Promise<Tag[]> => {
 
 const client = new Client({
   intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.DIRECT_MESSAGES,
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_PRESENCES,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-    Intents.FLAGS.GUILD_BANS,
+    'Guilds',
+    'GuildMessages',
+    'MessageContent',
+    'DirectMessages',
+    'GuildMembers',
+    'GuildPresences',
+    'GuildMessageReactions',
+    'GuildBans',
   ],
 });
 
@@ -65,18 +60,6 @@ client.once('ready', async () => {
   if (process.env.NODE_ENV !== 'development')
     console.warn(yellow(bold('Running in production mode!')));
 
-  console.log(
-    'Invite link:',
-    blue(
-      underline(
-        client.generateInvite({
-          scopes: ['bot'],
-          permissions: ['ADMINISTRATOR'],
-        })
-      )
-    )
-  );
-
   client.user?.presence.set({
     activities: [{ name: `Minecraft ${await getLatestMinecraftVersion()}` }],
     status: 'online',
@@ -84,7 +67,7 @@ client.once('ready', async () => {
 
   client.on('messageCreate', async (e) => {
     if (!e.content) return;
-    if (!e.channel.isText()) return;
+    if (!e.channel.isTextBased()) return;
     if (e.author === client.user) return;
 
     if (
@@ -138,9 +121,9 @@ async function parseMsgForCommands(e: Message) {
   try {
     await cmd.exec(e, parsed);
   } catch (err: unknown) {
-    const em = new MessageEmbed()
+    const em = new EmbedBuilder()
       .setTitle('Error')
-      .setColor('RED')
+      .setColor('Red')
       // @ts-expect-error no why
       .setDescription(err['message'] as string);
 
@@ -161,12 +144,27 @@ async function parseMsgForTags(e: Message) {
   );
 
   if (tag) {
+    const requesterAvatarURL = e.author.avatar;
+    const tagRequester = {
+      text: `Requested by ${e.author.tag}`,
+      ...(requesterAvatarURL ? { icon_url: requesterAvatarURL } : null),
+    };
+
     if (tag.text) {
-      e.reply(tag.text);
+      e.reply({
+        embeds: [
+          new EmbedBuilder({
+            title: tag.name,
+            description: tag.text,
+            footer: tagRequester,
+          }),
+        ],
+      });
     } else if (tag.embed) {
-      const em = new MessageEmbed(tag.embed);
+      const em = new EmbedBuilder(tag.embed).setFooter(tagRequester);
       e.reply({ embeds: [em] });
     }
+
     return true;
   }
 }

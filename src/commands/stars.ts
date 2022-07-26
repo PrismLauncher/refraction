@@ -1,3 +1,4 @@
+import { COLORS } from '../constants';
 import type { Command } from '../index';
 
 export const cmd: Command = {
@@ -12,7 +13,7 @@ export const cmd: Command = {
       embeds: [
         {
           title: `⭐ ${count} total stars!`,
-          color: 'GOLD',
+          color: COLORS.yellow,
         },
       ],
     });

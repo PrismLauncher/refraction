@@ -1,6 +1,7 @@
-import { Message } from 'discord.js';
+import type { Message } from 'discord.js';
 import { isBad } from './badLinks';
 import urlRegex from 'url-regex';
+import { COLORS } from './constants';
 
 // true if message is ok, false if filtered
 export async function filterMessage(e: Message): Promise<boolean> {
@@ -19,7 +20,7 @@ export async function filterMessage(e: Message): Promise<boolean> {
               title: 'Hold on!',
               description:
                 'There seems to be a phishing / malware link in your message.',
-              color: 'RED',
+              color: COLORS.red,
             },
           ],
         });

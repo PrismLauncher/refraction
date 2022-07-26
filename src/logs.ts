@@ -1,11 +1,12 @@
 import { getLatestPolyMCVersion } from './utils/remoteVersions';
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 
 // log providers
 import { readMcLogs } from './logproviders/mclogs';
 import { read0x0 } from './logproviders/0x0';
 import { readPasteGG } from './logproviders/pastegg';
 import { readHastebin } from './logproviders/haste';
+import { COLORS } from './constants';
 
 type Analyzer = (text: string) => Promise<Array<string> | null>;
 type LogProvider = (text: string) => Promise<null | string>;
@@ -224,14 +225,14 @@ const providers: LogProvider[] = [
   readHastebin,
 ];
 
-export async function parseLog(s: string): Promise<MessageEmbed | null> {
+export async function parseLog(s: string): Promise<EmbedBuilder | null> {
   if (s.includes('https://pastebin.com/')) {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setTitle('pastebin.com detected')
       .setDescription(
         'Please use https://mclo.gs or another paste provider and send logs using the Log Upload feature in PolyMC. (See !log)'
       )
-      .setColor('DARK_RED');
+      .setColor(COLORS.red);
     return embed;
   }
 
@@ -247,19 +248,28 @@ export async function parseLog(s: string): Promise<MessageEmbed | null> {
     }
   }
   if (!log) return null;
-  const embed = new MessageEmbed()
-    .setTitle('Log analysis')
-    .setColor('DARK_GREEN');
+  const embed = new EmbedBuilder().setTitle('Log analysis');
 
+  let thereWasAnIssue = false;
   for (const i in analyzers) {
     const Analyzer = analyzers[i];
     const out = await Analyzer(log);
-    if (out) embed.addField(out[0], out[1]);
+    if (out) {
+      embed.addFields({ name: out[0], value: out[1] });
+      thereWasAnIssue = true;
+    }
   }
 
-  if (embed.fields[0]) return embed;
-  else {
-    embed.addField('Analyze failed', 'No issues found automatically');
+  if (thereWasAnIssue) {
+    embed.setColor(COLORS.red);
+    return embed;
+  } else {
+    embed.setColor(COLORS.green);
+    embed.addFields({
+      name: 'Analyze failed',
+      value: 'No issues found automatically',
+    });
+
     return embed;
   }
 }

@@ -1,14 +1,15 @@
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import { commands } from '.';
-import { Command } from '..';
+import type { Command } from '..';
+import { COLORS } from '../constants';
 
 export const cmd: Command = {
   name: 'help',
   desc: 'Shows this menu.',
   exec: async (e) => {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setTitle('Help Menu')
-      .setColor('DARK_GREEN');
+      .setColor(COLORS.green);
 
     const comman = commands;
     comman.sort((x, y) => {
@@ -27,7 +28,7 @@ export const cmd: Command = {
       if (cmd.examples && cmd.examples[0]) {
         resp.push(`**Examples**: \n${cmd.examples.join('\n> ')}`);
       }
-      embed.addField('!' + cmd.name, resp.join('\n'));
+      embed.addFields({ name: '!' + cmd.name, value: resp.join('\n') });
     }
 
     await e.reply({ embeds: [embed] });

@@ -1,4 +1,4 @@
-import type { Command } from '../index';
+import type { Command } from '..';
 
 export const cmd: Command = {
   name: 'ping',

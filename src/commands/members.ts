@@ -1,4 +1,5 @@
-import type { Command } from '../index';
+import type { Command } from '..';
+import { COLORS } from '../constants';
 
 export const cmd: Command = {
   name: 'members',
@@ -20,7 +21,7 @@ export const cmd: Command = {
                 m.presence?.status === 'dnd'
             ).length
           } online members`,
-          color: 'GOLD',
+          color: COLORS.blue,
         },
       ],
     });
