@@ -1,4 +1,12 @@
-import { Client, Message, EmbedBuilder, type EmbedData } from 'discord.js';
+import {
+  Client,
+  Message,
+  EmbedBuilder,
+  type EmbedData,
+  GatewayIntentBits,
+  Partials,
+  ChannelType,
+} from 'discord.js';
 
 import * as BuildConfig from './constants';
 import { commands } from './commands';
@@ -51,15 +59,16 @@ export const getTags = async (): Promise<Tag[]> => {
 
 const client = new Client({
   intents: [
-    'Guilds',
-    'GuildMessages',
-    'MessageContent',
-    'DirectMessages',
-    'GuildMembers',
-    'GuildPresences',
-    'GuildMessageReactions',
-    'GuildBans',
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildBans,
   ],
+  partials: [Partials.Channel],
 });
 
 client.once('ready', async () => {
@@ -80,7 +89,9 @@ client.once('ready', async () => {
 
     if (
       process.env.NODE_ENV === 'development' &&
-      e.channelId !== BuildConfig.DEBUG_CHANNEL_ID
+      e.channelId !== BuildConfig.DEBUG_CHANNEL_ID &&
+      e.channel.type === ChannelType.DM &&
+      !BuildConfig.DM_TESTERS.includes(e.author.id)
     ) {
       return;
     } else if (
@@ -152,7 +163,7 @@ async function parseMsgForTags(e: Message) {
   );
 
   if (tag) {
-    const requesterAvatarURL = e.author.avatar;
+    const requesterAvatarURL = e.author.avatarURL();
     const tagRequester = {
       text: `Requested by ${e.author.tag}`,
       ...(requesterAvatarURL ? { icon_url: requesterAvatarURL } : null),

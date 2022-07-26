@@ -230,7 +230,7 @@ export async function parseLog(s: string): Promise<EmbedBuilder | null> {
     const embed = new EmbedBuilder()
       .setTitle('pastebin.com detected')
       .setDescription(
-        'Please use https://mclo.gs or another paste provider and send logs using the Log Upload feature in PolyMC. (See !log)'
+        'Please use https://mclo.gs or another paste provider and send logs using the Log Upload feature in PolyMC. (See ?log)'
       )
       .setColor(COLORS.red);
     return embed;
