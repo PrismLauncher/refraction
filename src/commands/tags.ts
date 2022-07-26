@@ -12,6 +12,7 @@ export const cmd: Command = {
     for (const i in tags) {
       const tag = tags[i];
       let text = '';
+
       if (tag.aliases && tag.aliases[0]) {
         text += '**Aliases**: ' + tag.aliases.join(', ') + '\n';
       }
@@ -21,7 +22,8 @@ export const cmd: Command = {
       } else if (tag.embed) {
         text += '\n[embedded message]';
       }
-      em.addField(tag.name, text);
+
+      em.addField('?' + tag.name, text);
     }
 
     await e.reply({ embeds: [em] });

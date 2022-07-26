@@ -10,6 +10,7 @@ import * as BuildConfig from './constants';
 import { commands } from './commands';
 import { filterMessage } from './filters';
 import { parseLog } from './logs';
+import { getLatestMinecraftVersion } from './utils/remoteVersions';
 
 import {
   parse as discordParse,
@@ -19,10 +20,8 @@ import {
 import random from 'just-random';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-
 import { green, bold, blue, underline, yellow } from 'kleur/colors';
 import 'dotenv/config';
-import { getLatestMinecraftVersion } from './utils/remoteVersions';
 
 export interface Command {
   name: string;
@@ -111,8 +110,10 @@ client.once('ready', async () => {
       );
     }
 
-    const commanded = await parseMsg(e);
+    const commanded = await parseMsgForCommands(e);
     if (commanded) return;
+    const tagged = await parseMsgForTags(e);
+    if (tagged) return;
 
     const log = await parseLog(e.content);
     if (log != null) {
@@ -122,10 +123,8 @@ client.once('ready', async () => {
   });
 });
 
-async function parseMsg(e: Message) {
-  const parsed = discordParse(e, '!', {
-    allowBots: true,
-  });
+async function parseMsgForCommands(e: Message) {
+  const parsed = discordParse(e, '!', { allowBots: true });
 
   if (!parsed.success) return false;
   const cmd = commands.find(
@@ -133,22 +132,6 @@ async function parseMsg(e: Message) {
   );
 
   if (!cmd) {
-    // TODO: Do not read tags.json everytime there is a new message
-    const tag = await getTags().then((r) =>
-      r.find(
-        (t) => t.name == parsed.command || t.aliases?.includes(parsed.command)
-      )
-    );
-
-    if (tag) {
-      if (tag.text) {
-        e.reply(tag.text);
-      } else if (tag.embed) {
-        const em = new MessageEmbed(tag.embed);
-        e.reply({ embeds: [em] });
-      }
-      return true;
-    }
     return false;
   }
 
@@ -165,6 +148,27 @@ async function parseMsg(e: Message) {
   }
 
   return true;
+}
+
+async function parseMsgForTags(e: Message) {
+  const parsed = discordParse(e, '?', { allowBots: true });
+  if (!parsed.success) return false;
+
+  const tag = await getTags().then((r) =>
+    r.find(
+      (t) => t.name == parsed.command || t.aliases?.includes(parsed.command)
+    )
+  );
+
+  if (tag) {
+    if (tag.text) {
+      e.reply(tag.text);
+    } else if (tag.embed) {
+      const em = new MessageEmbed(tag.embed);
+      e.reply({ embeds: [em] });
+    }
+    return true;
+  }
 }
 
 client.login(process.env.DISCORD_TOKEN);
