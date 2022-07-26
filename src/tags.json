@@ -95,14 +95,18 @@
     "name": "update",
     "embed": {
       "title": "Does PolyMC auto-update?",
-      "description": "Updating functionality [is planned](https://github.com/PolyMC/PolyMC/issues/60) on Windows and macOS, but not yet implemented, even though the macOS updater [is almost completely done](https://github.com/PolyMC/PolyMC/pull/479). Windows updating will work in a similar way as macOS.",
+      "description": "PolyMC auto-updates for macOS using the Sparkle Framework.\n\nWindows auto-updating is WIP for now, you will need to download the installer and run it again. (You will not lose your instances.)\n\nFor Linux, just use your package manager!",
       "color": "BLUE"
     },
     "aliases": ["updating", "autoupdate"]
   },
   {
     "name": "modupdater",
-    "text": "Mod updating functionality is almost completely done.\n You can track its development on [the PR](https://github.com/PolyMC/PolyMC/pull/588) and on #mod-updater.",
+    "embed": {
+      "title": "Mod updater",
+      "description": "Mod updating has been introduced in PolyMC 1.4.0! Upgrade if you haven't and you'll be able to use it.",
+      "color": "GREEN"
+    },
     "aliases": ["mod-update", "modupdate"]
   },
   {
