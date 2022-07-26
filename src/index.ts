@@ -36,9 +36,17 @@ interface Tag {
 }
 
 export const getTags = async (): Promise<Tag[]> => {
-  return JSON.parse(
+  const raw = JSON.parse(
     await readFile(join(__dirname, 'tags.json'), { encoding: 'utf8' })
-  );
+  ) as Tag[];
+
+  return raw.map((tag) => {
+    if (tag.embed?.color) {
+      tag.embed.color = BuildConfig.COLORS[tag.embed.color];
+    }
+
+    return tag;
+  });
 };
 
 const client = new Client({
@@ -123,7 +131,7 @@ async function parseMsgForCommands(e: Message) {
   } catch (err: unknown) {
     const em = new EmbedBuilder()
       .setTitle('Error')
-      .setColor('Red')
+      .setColor(BuildConfig.COLORS.red)
       // @ts-expect-error no why
       .setDescription(err['message'] as string);
 

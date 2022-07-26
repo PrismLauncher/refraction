@@ -22,6 +22,7 @@
     "name": "optifine",
     "aliases": ["of", "optimize", "opticrap", "notfine"],
     "embed": {
+      "color": "green",
       "title": "OptiFine",
       "description": "OptiFine is known to cause problems when paired with other mods.\nPlease see [Installing OptiFine Alternatives](https://polymc.org/wiki/getting-started/install-of-alternatives/).\nIf you really want to use OptiFine, see [Installing OptiFine](https://polymc.org/wiki/getting-started/installing-optifine/)"
     }
@@ -42,7 +43,7 @@
     "embed": {
       "title": "Data directories",
       "description": "Where PolyMC stores your data (e.g. instances)",
-
+      "color": "blue",
       "fields": [
         {
           "name": "Portable (Windows / Linux)",
@@ -85,7 +86,8 @@
     "name": "whyjava8",
     "embed": {
       "title": "Why does PolyMC ask me to change java version?",
-      "description": "Minecraft versions before 1.17 required Java 8 and have issues with newer java, while newer versions require Java 17, so you need to change java version. Some people think Java 8 is very outdated, but it's actually an LTS, it's still getting updates. If one of your mods is weird and requires newer java, you can bypass this going to instance settings-Java and ticking 'Skip java compatibility checks', but be aware of potential issues, such as [random CMEs](https://bugs.mojang.com/browse/MC-149777)."
+      "description": "Minecraft versions before 1.17 required Java 8 and have issues with newer java, while newer versions require Java 17, so you need to change java version. Some people think Java 8 is very outdated, but it's actually an LTS, it's still getting updates. If one of your mods is weird and requires newer java, you can bypass this going to instance settings-Java and ticking 'Skip java compatibility checks', but be aware of potential issues, such as [random CMEs](https://bugs.mojang.com/browse/MC-149777).",
+      "color": "orange"
     },
     "aliases": ["isjava8ancient", "whyispolyforcingme"]
   },
@@ -93,7 +95,8 @@
     "name": "update",
     "embed": {
       "title": "Does PolyMC auto-update?",
-      "description": "PolyMC auto-updates for macOS using the Sparkle Framework.\n\nWindows auto-updating is WIP for now, you will need to download the installer and run it again. (You will not lose your instances.)\n\nFor Linux, just use your package manager!"
+      "description": "PolyMC auto-updates for macOS using the Sparkle Framework.\n\nWindows auto-updating is WIP for now, you will need to download the installer and run it again. (You will not lose your instances.)\n\nFor Linux, just use your package manager!",
+      "color": "blue"
     },
     "aliases": ["updating", "autoupdate"]
   },
@@ -101,7 +104,8 @@
     "name": "modupdater",
     "embed": {
       "title": "Mod updater",
-      "description": "Mod updating has been introduced in PolyMC 1.4.0! Upgrade if you haven't and you'll be able to use it."
+      "description": "Mod updating has been introduced in PolyMC 1.4.0! Upgrade if you haven't and you'll be able to use it.",
+      "color": "green"
     },
     "aliases": ["mod-update", "modupdate"]
   },
@@ -109,7 +113,8 @@
     "name": "curseforge",
     "embed": {
       "title": "What's wrong with CurseForge?",
-      "description": "CurseForge added a new option to block third party clients like PolyMC from accessing mod files, and they started to enforce this option lately. We can't allow you to download those mods directly from PolyMC, but PolyMC 1.3.1 and higher have a workaround to let modpacks work: letting you to download those opted out mods manually. We highly encourage asking authors that opted out to stop doing so."
+      "description": "CurseForge added a new option to block third party clients like PolyMC from accessing mod files, and they started to enforce this option lately. We can't allow you to download those mods directly from PolyMC, but PolyMC 1.3.1 and higher have a workaround to let modpacks work: letting you to download those opted out mods manually. We highly encourage asking authors that opted out to stop doing so.",
+      "color": "orange"
     },
     "aliases": ["cf", "curse", "cursed", "cursedfrog"]
   },
@@ -117,7 +122,8 @@
     "name": "piracy",
     "embed": {
       "title": "We don't tolerate piracy!",
-      "description": "PolyMC has always been legal, legitimate & appropriate. We don't and never will have features such as offline login without an official account."
+      "description": "PolyMC has always been legal, legitimate & appropriate. We don't and never will have features such as offline login without an official account.",
+      "color": "red"
     }
   }
 ]

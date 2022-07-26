@@ -21,9 +21,10 @@ export const ETA_MESSAGES = [
   'In PolyMC 2.0.0',
 ];
 
-export const COLORS = {
+export const COLORS: { [color: string]: number } = {
   red: 0xef4444,
   green: 0x22c55e,
   blue: 0x60a5fa,
   yellow: 0xfde047,
+  orange: 0xfb923c,
 } as const;
