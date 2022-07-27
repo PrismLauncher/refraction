@@ -146,7 +146,7 @@ async function parseMsgForCommands(e: Message) {
       // @ts-expect-error no why
       .setDescription(err['message'] as string);
 
-    e.reply({ embeds: [em] });
+    await e.reply({ embeds: [em] });
   }
 
   return true;
@@ -170,18 +170,10 @@ async function parseMsgForTags(e: Message) {
     };
 
     if (tag.text) {
-      e.reply({
-        embeds: [
-          new EmbedBuilder({
-            title: tag.name,
-            description: tag.text,
-            footer: tagRequester,
-          }),
-        ],
-      });
+      await e.reply(tag.text);
     } else if (tag.embed) {
       const em = new EmbedBuilder(tag.embed).setFooter(tagRequester);
-      e.reply({ embeds: [em] });
+      await e.reply({ embeds: [em] });
     }
 
     return true;
