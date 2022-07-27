@@ -163,7 +163,7 @@ async function parseMsgForTags(e: Message) {
   );
 
   if (tag) {
-    const requesterAvatarURL = e.author.avatarURL();
+    const requesterAvatarURL = e.author.displayAvatarURL({ size: 64 });
     const tagRequester = {
       text: `Requested by ${e.author.tag}`,
       ...(requesterAvatarURL ? { icon_url: requesterAvatarURL } : null),
