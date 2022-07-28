@@ -77,8 +77,15 @@ client.once('ready', async () => {
   if (process.env.NODE_ENV !== 'development')
     console.warn(yellow(bold('Running in production mode!')));
 
+  const mcVersion = await getLatestMinecraftVersion();
   client.user?.presence.set({
-    activities: [{ name: `Minecraft ${await getLatestMinecraftVersion()}` }],
+    activities: [
+      {
+        name: `Minecraft ${mcVersion}${
+          mcVersion === '1.19.1' ? ' w/ No Chat Reports' : ''
+        }`,
+      },
+    ],
     status: 'online',
   });
 
