@@ -35,6 +35,12 @@ import 'dotenv/config';
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
 
   await rest.put(Routes.applicationCommands('977174139297230888'), {
+    body: [],
+  });
+
+  console.log('Successfully deleted all application commands.');
+
+  await rest.put(Routes.applicationCommands('977174139297230888'), {
     body: commands,
   });
 

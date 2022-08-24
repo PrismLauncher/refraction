@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "NODE_ENV=development tsx watch src/index.ts",
     "start": "tsx src/index.ts",
+    "reupload": "tsx src/_reupload.ts",
     "lint": "tsc --noEmit && eslint **/*.ts"
   },
   "dependencies": {
