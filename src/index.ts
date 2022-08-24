@@ -1,61 +1,23 @@
 import {
   Client,
-  Message,
   EmbedBuilder,
-  type EmbedData,
   GatewayIntentBits,
   Partials,
   ChannelType,
+  OAuth2Scopes,
 } from 'discord.js';
 
 import * as BuildConfig from './constants';
-import { commands } from './commands';
-import { filterMessage } from './filters';
 import { parseLog } from './logs';
 import { getLatestMinecraftVersion } from './utils/remoteVersions';
 
-import {
-  parse as discordParse,
-  type SuccessfulParsedMessage,
-} from 'discord-command-parser';
+import { membersCommand } from './commands/members';
+import { starsCommand } from './commands/stars';
 
 import random from 'just-random';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
 import { green, bold, yellow } from 'kleur/colors';
 import 'dotenv/config';
-
-export interface Command {
-  name: string;
-  aliases?: string[];
-  desc?: string;
-  examples?: string[];
-  exec(
-    m: Message,
-    p: SuccessfulParsedMessage<Message<boolean>>
-  ): Promise<void> | void;
-}
-
-interface Tag {
-  name: string;
-  aliases?: Array<string>;
-  text?: string;
-  embed?: EmbedData;
-}
-
-export const getTags = async (): Promise<Tag[]> => {
-  const raw = JSON.parse(
-    await readFile(join(__dirname, 'tags.json'), { encoding: 'utf8' })
-  ) as Tag[];
-
-  return raw.map((tag) => {
-    if (tag.embed?.color) {
-      tag.embed.color = BuildConfig.COLORS[tag.embed.color];
-    }
-
-    return tag;
-  });
-};
+import { getTags } from './tagsTags';
 
 const client = new Client({
   intents: [
@@ -74,6 +36,29 @@ const client = new Client({
 client.once('ready', async () => {
   console.log(green('Discord bot ready!'));
 
+  console.log(
+    client.generateInvite({
+      scopes: [OAuth2Scopes.Bot],
+      permissions: [
+        'AddReactions',
+        'ViewChannel',
+        'BanMembers',
+        'KickMembers',
+        'CreatePublicThreads',
+        'CreatePrivateThreads',
+        'EmbedLinks',
+        'ManageChannels',
+        'ManageRoles',
+        'ModerateMembers',
+        'MentionEveryone',
+        'MuteMembers',
+        'SendMessages',
+        'SendMessagesInThreads',
+        'ReadMessageHistory',
+      ],
+    })
+  );
+
   if (process.env.NODE_ENV !== 'development')
     console.warn(yellow(bold('Running in production mode!')));
 
@@ -82,7 +67,9 @@ client.once('ready', async () => {
     activities: [
       {
         name: `Minecraft ${mcVersion}${
-          mcVersion === '1.19.1' ? ' w/ No Chat Reports' : ''
+          mcVersion === '1.19.1' || mcVersion === '1.19.2'
+            ? ' w/ No Chat Reports'
+            : ''
         }`,
       },
     ],
@@ -92,6 +79,7 @@ client.once('ready', async () => {
   client.on('messageCreate', async (e) => {
     if (!e.content) return;
     if (!e.channel.isTextBased()) return;
+
     if (e.author === client.user) return;
 
     if (
@@ -108,21 +96,11 @@ client.once('ready', async () => {
       return;
     }
 
-    const messageIsOK = await filterMessage(e);
-    if (!messageIsOK) {
-      return;
-    }
-
     if (e.cleanContent.match(BuildConfig.ETA_REGEX)) {
       await e.reply(
         `${random(BuildConfig.ETA_MESSAGES)} <:pofat:964546613194420294>`
       );
     }
-
-    const commanded = await parseMsgForCommands(e);
-    if (commanded) return;
-    const tagged = await parseMsgForTags(e);
-    if (tagged) return;
 
     const log = await parseLog(e.content);
     if (log != null) {
@@ -132,59 +110,57 @@ client.once('ready', async () => {
   });
 });
 
-async function parseMsgForCommands(e: Message) {
-  const parsed = discordParse(e, '!', { allowBots: true });
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
 
-  if (!parsed.success) return false;
-  const cmd = commands.find(
-    (c) => c.name == parsed.command || c.aliases?.includes(parsed.command)
-  );
-
-  if (!cmd) {
-    return false;
+  if (
+    process.env.NODE_ENV === 'development' &&
+    interaction.channelId !== BuildConfig.DEBUG_CHANNEL_ID
+  ) {
+    return;
+  }
+  if (
+    process.env.NODE_ENV !== 'development' &&
+    interaction.channelId === BuildConfig.DEBUG_CHANNEL_ID
+  ) {
+    return;
   }
 
-  try {
-    await cmd.exec(e, parsed);
-  } catch (err: unknown) {
-    const em = new EmbedBuilder()
-      .setTitle('Error')
-      .setColor(BuildConfig.COLORS.red)
-      // @ts-expect-error no why
-      .setDescription(err['message'] as string);
+  const { commandName } = interaction;
 
-    await e.reply({ embeds: [em] });
-  }
+  if (commandName === 'ping') {
+    await interaction.reply({
+      content: `Pong! \`${client.ws.ping}ms\``,
+      ephemeral: true,
+    });
+  } else if (commandName === 'members') {
+    await membersCommand(interaction);
+  } else if (commandName === 'stars') {
+    await starsCommand(interaction);
+  } else if (commandName === 'rolypoly') {
+    await interaction.reply(
+      'https://media.discordapp.net/attachments/985048903126769764/985051373886382100/rollin-time.gif?width=324&height=216'
+    );
+  } else if (commandName === 'tag') {
+    const tags = await getTags();
+    const tagName = interaction.options.getString('name', true);
+    const tag = tags.find(
+      (tag) => tag.name === tagName || tag.aliases?.includes(tagName)
+    );
 
-  return true;
-}
-
-async function parseMsgForTags(e: Message) {
-  const parsed = discordParse(e, '?', { allowBots: true });
-  if (!parsed.success) return false;
-
-  const tag = await getTags().then((r) =>
-    r.find(
-      (t) => t.name == parsed.command || t.aliases?.includes(parsed.command)
-    )
-  );
-
-  if (tag) {
-    const requesterAvatarURL = e.author.displayAvatarURL({ size: 64 });
-    const tagRequester = {
-      text: `Requested by ${e.author.tag}`,
-      ...(requesterAvatarURL ? { icon_url: requesterAvatarURL } : null),
-    };
-
-    if (tag.text) {
-      await e.reply(tag.text);
-    } else if (tag.embed) {
-      const em = new EmbedBuilder(tag.embed).setFooter(tagRequester);
-      await e.reply({ embeds: [em] });
+    if (!tag) {
+      await interaction.reply({
+        content: `Tag \`${tagName}\` does not exist.`,
+        ephemeral: true,
+      });
+      return;
     }
 
-    return true;
+    await interaction.reply({
+      content: tag.text ? `**${tag.name}**\n\n` + tag.text : tag.text,
+      embeds: tag.embed ? [new EmbedBuilder(tag.embed)] : [],
+    });
   }
-}
+});
 
 client.login(process.env.DISCORD_TOKEN);
