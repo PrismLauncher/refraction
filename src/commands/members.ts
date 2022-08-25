@@ -3,10 +3,12 @@ import type { CacheType, CommandInteraction } from 'discord.js';
 import { COLORS } from '../constants';
 
 export const membersCommand = async (i: CommandInteraction<CacheType>) => {
+  await i.deferReply();
+
   const memes = await i.guild?.members.fetch().then((r) => r.toJSON());
   if (!memes) return;
 
-  await i.reply({
+  await i.editReply({
     embeds: [
       {
         title: `${memes.length} total members!`,
