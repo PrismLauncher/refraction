@@ -158,7 +158,14 @@ client.on('interactionCreate', async (interaction) => {
 
     await interaction.reply({
       content: tag.text ? `**${tag.name}**\n\n` + tag.text : tag.text,
-      embeds: tag.embed ? [new EmbedBuilder(tag.embed)] : [],
+      embeds: tag.embed
+        ? [
+            new EmbedBuilder(tag.embed).setFooter({
+              text: `Requested by ${interaction.user.tag}`,
+              iconURL: interaction.user.avatarURL() ?? undefined,
+            }),
+          ]
+        : [],
     });
   }
 });
