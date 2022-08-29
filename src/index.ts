@@ -83,20 +83,6 @@ client.once('ready', async () => {
 
     if (e.author === client.user) return;
 
-    if (
-      process.env.NODE_ENV === 'development' &&
-      e.channelId !== BuildConfig.DEBUG_CHANNEL_ID &&
-      e.channel.type === ChannelType.DM &&
-      !BuildConfig.DM_TESTERS.includes(e.author.id)
-    ) {
-      return;
-    } else if (
-      process.env.NODE_ENV !== 'development' &&
-      e.channelId === BuildConfig.DEBUG_CHANNEL_ID
-    ) {
-      return;
-    }
-
     if (e.cleanContent.match(BuildConfig.ETA_REGEX)) {
       await e.reply(
         `${random(BuildConfig.ETA_MESSAGES)} <:pofat:964546613194420294>`
@@ -113,19 +99,6 @@ client.once('ready', async () => {
 
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
-
-  if (
-    process.env.NODE_ENV === 'development' &&
-    interaction.channelId !== BuildConfig.DEBUG_CHANNEL_ID
-  ) {
-    return;
-  }
-  if (
-    process.env.NODE_ENV !== 'development' &&
-    interaction.channelId === BuildConfig.DEBUG_CHANNEL_ID
-  ) {
-    return;
-  }
 
   const { commandName } = interaction;
 

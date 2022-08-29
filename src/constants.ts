@@ -1,9 +1,3 @@
-export const GUILD_ID = '923671181020766230';
-export const DEBUG_CHANNEL_ID = '977401259260788756';
-export const POLYCAT_CHANNEL_ID = '977797790749032448';
-
-export const DM_TESTERS = ['952235800110694471'];
-
 export const ETA_REGEX = /\beta\b/i;
 export const ETA_MESSAGES = [
   'Sometime',
