@@ -112,6 +112,7 @@ client.on('interactionCreate', async (interaction) => {
     );
   } else if (commandName === 'say') {
     if (!interaction.channel) return;
+
     await interaction.deferReply();
     await interaction.channel.send(interaction.options.getString('content')!);
     await interaction.editReply('I said what you said!');

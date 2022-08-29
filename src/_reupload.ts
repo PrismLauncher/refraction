@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, Routes } from 'discord.js';
+import { SlashCommandBuilder, Routes, PermissionFlagsBits } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import { getTags } from './tagsTags';
 
@@ -44,7 +44,8 @@ import 'dotenv/config';
           .setName('content')
           .setDescription('Just content?')
           .setRequired(true)
-      ),
+      )
+      .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
   ].map((command) => command.toJSON());
 
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
