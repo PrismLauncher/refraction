@@ -1,0 +1,99 @@
+type Side = 'required' | 'optional' | 'unsupported';
+
+export interface ModrinthProject {
+  slug: string;
+  title: string;
+  description: string;
+  categories: string[];
+  client_side: Side;
+  server_side: Side;
+  project_type: 'mod' | 'modpack';
+  downloads: number;
+  icon_url: string | null;
+  id: string;
+  team: string;
+}
+
+import {
+  type CacheType,
+  type CommandInteraction,
+  EmbedBuilder,
+} from 'discord.js';
+
+import { COLORS } from '../constants';
+
+export const modrinthCommand = async (i: CommandInteraction<CacheType>) => {
+  await i.deferReply();
+
+  const { value: id } = i.options.get('id') ?? { value: null };
+
+  if (!id || typeof id !== 'string') {
+    await i.editReply({
+      embeds: [
+        new EmbedBuilder()
+          .setTitle('Error!')
+          .setDescription('You need to provide a valid mod ID!')
+          .setColor(COLORS.red),
+      ],
+    });
+
+    return;
+  }
+
+  const data = (await fetch('https://api.modrinth.com/v2/project/' + id).then(
+    (a) => a.json()
+  )) as ModrinthProject | { error: string; description: string };
+
+  if ('error' in data) {
+    console.error(data);
+
+    await i.editReply({
+      embeds: [
+        new EmbedBuilder()
+          .setTitle('Error!')
+          .setDescription(`\`${data.error}\` ${data.description}`)
+          .setColor(COLORS.red),
+      ],
+    });
+
+    return;
+  }
+
+  await i.editReply({
+    embeds: [
+      new EmbedBuilder()
+        .setTitle(data.title)
+        .setDescription(data.description)
+        .setThumbnail(data.icon_url ?? '')
+        .setURL(`https://modrinth.com/project/${data.slug}`)
+        .setFields([
+          {
+            name: 'Categories',
+            value: data.categories.join(', '),
+            inline: true,
+          },
+          {
+            name: 'Project type',
+            value: data.project_type,
+            inline: true,
+          },
+          {
+            name: 'Downloads',
+            value: data.downloads.toString(),
+            inline: true,
+          },
+          {
+            name: 'Client',
+            value: data.client_side,
+            inline: true,
+          },
+          {
+            name: 'Server',
+            value: data.server_side,
+            inline: true,
+          },
+        ])
+        .setColor(COLORS.green),
+    ],
+  });
+};

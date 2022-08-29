@@ -30,6 +30,12 @@ import 'dotenv/config';
           .setRequired(true)
           .addChoices(...tags.map((b) => ({ name: b.name, value: b.name })))
       ),
+    new SlashCommandBuilder()
+      .setName('modrinth')
+      .setDescription('Get info on a Modrinth project')
+      .addStringOption((option) =>
+        option.setName('id').setDescription('The ID or slug').setRequired(true)
+      ),
   ].map((command) => command.toJSON());
 
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);

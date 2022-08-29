@@ -18,6 +18,7 @@ export const getTags = async (): Promise<Tag[]> => {
 
   return raw.map((tag) => {
     if (tag.embed?.color) {
+      // @ts-expect-error f
       tag.embed.color = COLORS[tag.embed.color];
     }
 
