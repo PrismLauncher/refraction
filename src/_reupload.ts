@@ -36,15 +36,18 @@ import 'dotenv/config';
       .addStringOption((option) =>
         option.setName('id').setDescription('The ID or slug').setRequired(true)
       ),
+    new SlashCommandBuilder()
+      .setName('say')
+      .setDescription('Say someothing through the bot')
+      .addStringOption((option) =>
+        option
+          .setName('content')
+          .setDescription('Just content?')
+          .setRequired(true)
+      ),
   ].map((command) => command.toJSON());
 
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
-
-  await rest.put(Routes.applicationCommands(process.env.DISCORD_APP!), {
-    body: [],
-  });
-
-  console.log('Successfully deleted all application commands.');
 
   await rest.put(Routes.applicationCommands(process.env.DISCORD_APP!), {
     body: commands,

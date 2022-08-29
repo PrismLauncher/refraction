@@ -15,14 +15,16 @@ export interface ModrinthProject {
 }
 
 import {
-  type CacheType,
-  type CommandInteraction,
   EmbedBuilder,
+  type CacheType,
+  type ChatInputCommandInteraction,
 } from 'discord.js';
 
 import { COLORS } from '../constants';
 
-export const modrinthCommand = async (i: CommandInteraction<CacheType>) => {
+export const modrinthCommand = async (
+  i: ChatInputCommandInteraction<CacheType>
+) => {
   await i.deferReply();
 
   const { value: id } = i.options.get('id') ?? { value: null };

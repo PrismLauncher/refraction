@@ -1,7 +1,9 @@
-import type { CacheType, CommandInteraction } from 'discord.js';
+import type { CacheType, ChatInputCommandInteraction } from 'discord.js';
 import { COLORS } from '../constants';
 
-export const starsCommand = async (i: CommandInteraction<CacheType>) => {
+export const starsCommand = async (
+  i: ChatInputCommandInteraction<CacheType>
+) => {
   await i.deferReply();
 
   const count = await fetch('https://api.github.com/repos/PolyMC/PolyMC')

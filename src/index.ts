@@ -1,11 +1,4 @@
-import {
-  Client,
-  EmbedBuilder,
-  GatewayIntentBits,
-  Partials,
-  ChannelType,
-  OAuth2Scopes,
-} from 'discord.js';
+import { Client, GatewayIntentBits, Partials, OAuth2Scopes } from 'discord.js';
 
 import * as BuildConfig from './constants';
 import { parseLog } from './logs';
@@ -13,12 +6,12 @@ import { getLatestMinecraftVersion } from './utils/remoteVersions';
 
 import { membersCommand } from './commands/members';
 import { starsCommand } from './commands/stars';
+import { modrinthCommand } from './commands/modrinth';
+import { tagsCommand } from './commands/tags';
 
 import random from 'just-random';
 import { green, bold, yellow } from 'kleur/colors';
 import 'dotenv/config';
-import { getTags } from './tagsTags';
-import { modrinthCommand } from './commands/modrinth';
 
 const client = new Client({
   intents: [
@@ -117,32 +110,13 @@ client.on('interactionCreate', async (interaction) => {
     await interaction.reply(
       'https://media.discordapp.net/attachments/985048903126769764/985051373886382100/rollin-time.gif?width=324&height=216'
     );
+  } else if (commandName === 'say') {
+    if (!interaction.channel) return;
+    await interaction.deferReply();
+    await interaction.channel.send(interaction.options.getString('content')!);
+    await interaction.editReply('I said what you said!');
   } else if (commandName === 'tag') {
-    const tags = await getTags();
-    const tagName = interaction.options.getString('name', true);
-    const tag = tags.find(
-      (tag) => tag.name === tagName || tag.aliases?.includes(tagName)
-    );
-
-    if (!tag) {
-      await interaction.reply({
-        content: `Tag \`${tagName}\` does not exist.`,
-        ephemeral: true,
-      });
-      return;
-    }
-
-    await interaction.reply({
-      content: tag.text ? `**${tag.name}**\n\n` + tag.text : tag.text,
-      embeds: tag.embed
-        ? [
-            new EmbedBuilder(tag.embed).setFooter({
-              text: `Requested by ${interaction.user.tag}`,
-              iconURL: interaction.user.avatarURL() ?? undefined,
-            }),
-          ]
-        : [],
-    });
+    tagsCommand(interaction);
   }
 });
 

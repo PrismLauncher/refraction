@@ -1,8 +1,10 @@
-import type { CacheType, CommandInteraction } from 'discord.js';
+import type { CacheType, ChatInputCommandInteraction } from 'discord.js';
 
 import { COLORS } from '../constants';
 
-export const membersCommand = async (i: CommandInteraction<CacheType>) => {
+export const membersCommand = async (
+  i: ChatInputCommandInteraction<CacheType>
+) => {
   await i.deferReply();
 
   const memes = await i.guild?.members.fetch().then((r) => r.toJSON());
