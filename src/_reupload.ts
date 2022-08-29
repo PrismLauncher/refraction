@@ -2,9 +2,7 @@ import { SlashCommandBuilder, Routes, PermissionFlagsBits } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import { getTags } from './tagsTags';
 
-import 'dotenv/config';
-
-(async () => {
+export const reuploadCommands = async () => {
   const tags = await getTags();
 
   const commands = [
@@ -55,7 +53,4 @@ import 'dotenv/config';
   });
 
   console.log('Successfully registered application commands.');
-})().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+};

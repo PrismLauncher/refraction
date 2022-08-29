@@ -12,6 +12,7 @@ import { tagsCommand } from './commands/tags';
 import random from 'just-random';
 import { green, bold, yellow } from 'kleur/colors';
 import 'dotenv/config';
+import { reuploadCommands } from './_reupload';
 
 const client = new Client({
   intents: [
@@ -121,4 +122,11 @@ client.on('interactionCreate', async (interaction) => {
   }
 });
 
-client.login(process.env.DISCORD_TOKEN);
+reuploadCommands()
+  .then(() => {
+    client.login(process.env.DISCORD_TOKEN);
+  })
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
