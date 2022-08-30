@@ -1,4 +1,5 @@
 import { Client, GatewayIntentBits, Partials, OAuth2Scopes } from 'discord.js';
+import { reuploadCommands } from './_reupload';
 
 import * as BuildConfig from './constants';
 import { parseLog } from './logs';
@@ -12,7 +13,6 @@ import { tagsCommand } from './commands/tags';
 import random from 'just-random';
 import { green, bold, yellow } from 'kleur/colors';
 import 'dotenv/config';
-import { reuploadCommands } from './_reupload';
 
 const client = new Client({
   intents: [
@@ -114,7 +114,7 @@ client.on('interactionCreate', async (interaction) => {
   } else if (commandName === 'say') {
     if (!interaction.channel) return;
 
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: true });
     await interaction.channel.send(interaction.options.getString('content')!);
     await interaction.editReply('I said what you said!');
   } else if (commandName === 'tag') {
