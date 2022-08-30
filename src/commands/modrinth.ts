@@ -66,7 +66,7 @@ export const modrinthCommand = async (
       new EmbedBuilder()
         .setTitle(data.title)
         .setDescription(data.description)
-        .setThumbnail(data.icon_url ?? '')
+        .setThumbnail(data.icon_url)
         .setURL(`https://modrinth.com/project/${data.slug}`)
         .setFields([
           {
