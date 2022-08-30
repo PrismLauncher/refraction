@@ -9,6 +9,7 @@ import { membersCommand } from './commands/members';
 import { starsCommand } from './commands/stars';
 import { modrinthCommand } from './commands/modrinth';
 import { tagsCommand } from './commands/tags';
+import { jokeCommand } from './commands/joke';
 
 import random from 'just-random';
 import { green, bold, yellow } from 'kleur/colors';
@@ -118,7 +119,9 @@ client.on('interactionCreate', async (interaction) => {
     await interaction.channel.send(interaction.options.getString('content')!);
     await interaction.editReply('I said what you said!');
   } else if (commandName === 'tag') {
-    tagsCommand(interaction);
+    await tagsCommand(interaction);
+  } else if (commandName === 'joke') {
+    await jokeCommand(interaction);
   }
 });
 

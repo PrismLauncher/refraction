@@ -44,6 +44,7 @@ export const reuploadCommands = async () => {
           .setRequired(true)
       )
       .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+    new SlashCommandBuilder().setName('joke').setDescription("it's a joke"),
   ].map((command) => command.toJSON());
 
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
