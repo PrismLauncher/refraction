@@ -28,6 +28,15 @@
     }
   },
   {
+    "name": "binary-search",
+    "aliases": ["thanosmethod"],
+    "embed": {
+      "color": "blue",
+      "title": "Binary Search - method to find mod problems",
+      "description": "The binary search is a way of finding a faulty thing among a lot of other things, without having to remove the things one-by-one. This is useful for finding a broken mod among hundreds of mods, without having to spend time testing the mods one-by-one.\nThe procedure is simple:\n1. Remove half of the existing things, and put them aside.\n2. Run the program / game.\n3. Does the issue still exist?\nIf YES: Repeat from step 1 with the current things.\nIF NO: Swap out the current things with the ones set aside, and repeat from step 1.\n4. Repeat this process until the problematic thing/s have been found.\n\n      Credit to the Quilt Community discord and the Forge Discord for these instructions."
+    }
+  },
+  {
     "name": "java",
     "text": "https://polymc.org/wiki/getting-started/installing-java/",
     "aliases": ["j"]
