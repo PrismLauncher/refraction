@@ -1,4 +1,10 @@
-import { Client, GatewayIntentBits, Partials, OAuth2Scopes } from 'discord.js';
+import {
+  Client,
+  GatewayIntentBits,
+  Partials,
+  OAuth2Scopes,
+  InteractionType,
+} from 'discord.js';
 import { reuploadCommands } from './_reupload';
 
 import * as BuildConfig from './constants';
@@ -122,6 +128,26 @@ client.on('interactionCreate', async (interaction) => {
     await tagsCommand(interaction);
   } else if (commandName === 'joke') {
     await jokeCommand(interaction);
+  }
+});
+
+client.on('messageReactionAdd', async (reaction, user) => {
+  if (reaction.partial) {
+    try {
+      await reaction.fetch();
+    } catch (error) {
+      console.error('Something went wrong when fetching the message:', error);
+      return;
+    }
+  }
+
+  if (
+    reaction.message.interaction &&
+    reaction.message.interaction?.type === InteractionType.ApplicationCommand &&
+    reaction.message.interaction?.user === user &&
+    reaction.emoji.name === '❌'
+  ) {
+    await reaction.message.delete();
   }
 });
 

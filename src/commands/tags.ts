@@ -10,6 +10,8 @@ export const tagsCommand = async (
 ) => {
   const tags = await getTags();
   const tagName = i.options.getString('name', true);
+  const mention = i.options.getUser('user', false);
+
   const tag = tags.find(
     (tag) => tag.name === tagName || tag.aliases?.includes(tagName)
   );
@@ -23,7 +25,9 @@ export const tagsCommand = async (
   }
 
   await i.reply({
-    content: tag.text ? `**${tag.name}**\n\n` + tag.text : tag.text,
+    content:
+      (mention ? `<@${mention.id}> ` : '') +
+      (tag.text ? `**${tag.name}**\n\n` + tag.text : ''),
     embeds: tag.embed
       ? [
           new EmbedBuilder(tag.embed).setFooter({

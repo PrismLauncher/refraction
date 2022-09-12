@@ -27,6 +27,12 @@ export const reuploadCommands = async () => {
           .setDescription('The tag name')
           .setRequired(true)
           .addChoices(...tags.map((b) => ({ name: b.name, value: b.name })))
+      )
+      .addUserOption((option) =>
+        option
+          .setName('user')
+          .setDescription('The user to mention')
+          .setRequired(false)
       ),
     new SlashCommandBuilder()
       .setName('modrinth')
