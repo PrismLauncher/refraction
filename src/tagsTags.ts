@@ -18,7 +18,7 @@ export const getTags = async (): Promise<Tag[]> => {
 
   return raw.map((tag) => {
     if (tag.embed?.color) {
-      // @ts-expect-error f
+      // @ts-expect-error this doesn't work for TypeScript but it does for me
       tag.embed.color = COLORS[tag.embed.color];
     }
 

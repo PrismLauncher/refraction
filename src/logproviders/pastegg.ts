@@ -4,7 +4,7 @@ export async function readPasteGG(s: string): Promise<null | string> {
   const r = s.match(reg);
   if (r == null || !r[0]) return null;
   const link = r[0];
-  const id = link.replace(/https\:\/\/paste.gg\/p\/[\w]*\//, '');
+  const id = link.replace(/https:\/\/paste.gg\/p\/[\w]*\//, '');
   if (!id) return null;
   let log: string;
   try {
