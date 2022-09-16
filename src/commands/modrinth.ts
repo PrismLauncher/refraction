@@ -42,9 +42,23 @@ export const modrinthCommand = async (
     return;
   }
 
-  const data = (await fetch('https://api.modrinth.com/v2/project/' + id).then(
-    (a) => a.json()
-  )) as ModrinthProject | { error: string; description: string };
+  const res = await fetch('https://api.modrinth.com/v2/project/' + id);
+  const data = (await res.json()) as
+    | ModrinthProject
+    | { error: string; description: string };
+
+  if (!res.ok) {
+    await i.editReply({
+      embeds: [
+        new EmbedBuilder()
+          .setTitle('Error!')
+          .setDescription('Not found!')
+          .setColor(COLORS.red),
+      ],
+    });
+
+    return;
+  }
 
   if ('error' in data) {
     console.error(data);
