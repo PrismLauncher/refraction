@@ -4,6 +4,9 @@ import {
   Partials,
   OAuth2Scopes,
   InteractionType,
+  SelectMenuBuilder,
+  ActionRowBuilder,
+  GuildMemberRoleManager,
 } from 'discord.js';
 import { reuploadCommands } from './_reupload';
 
@@ -20,6 +23,7 @@ import { jokeCommand } from './commands/joke';
 import random from 'just-random';
 import { green, bold, yellow } from 'kleur/colors';
 import 'dotenv/config';
+import { roleMenuCommand } from './commands/rolemenu';
 
 const client = new Client({
   intents: [
@@ -34,6 +38,14 @@ const client = new Client({
   ],
   partials: [Partials.Channel],
 });
+
+const allowedRoles = [
+  'Alert',
+  'Events',
+  'Progress',
+  'Lenny is very special and thinks the UK needs a role',
+  'Roly Poly Cult',
+];
 
 client.once('ready', async () => {
   console.log(green('Discord bot ready!'));
@@ -91,35 +103,101 @@ client.once('ready', async () => {
 });
 
 client.on('interactionCreate', async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
+  if (interaction.isChatInputCommand()) {
+    const { commandName } = interaction;
 
-  const { commandName } = interaction;
+    if (commandName === 'ping') {
+      await interaction.reply({
+        content: `Pong! \`${client.ws.ping}ms\``,
+        ephemeral: true,
+      });
+    } else if (commandName === 'members') {
+      await membersCommand(interaction);
+    } else if (commandName === 'stars') {
+      await starsCommand(interaction);
+    } else if (commandName === 'modrinth') {
+      await modrinthCommand(interaction);
+    } else if (commandName === 'rolypoly') {
+      await interaction.reply(
+        'https://media.discordapp.net/attachments/985048903126769764/985051373886382100/rollin-time.gif?width=324&height=216'
+      );
+    } else if (commandName === 'say') {
+      if (!interaction.channel) return;
 
-  if (commandName === 'ping') {
-    await interaction.reply({
-      content: `Pong! \`${client.ws.ping}ms\``,
-      ephemeral: true,
-    });
-  } else if (commandName === 'members') {
-    await membersCommand(interaction);
-  } else if (commandName === 'stars') {
-    await starsCommand(interaction);
-  } else if (commandName === 'modrinth') {
-    await modrinthCommand(interaction);
-  } else if (commandName === 'rolypoly') {
-    await interaction.reply(
-      'https://media.discordapp.net/attachments/985048903126769764/985051373886382100/rollin-time.gif?width=324&height=216'
-    );
-  } else if (commandName === 'say') {
-    if (!interaction.channel) return;
+      await interaction.deferReply({ ephemeral: true });
+      await interaction.channel.send(interaction.options.getString('content')!);
+      await interaction.editReply('I said what you said!');
+    } else if (commandName === 'tag') {
+      await tagsCommand(interaction);
+    } else if (commandName === 'joke') {
+      await jokeCommand(interaction);
+    } else if (commandName === 'rolemenu') {
+      await roleMenuCommand(interaction);
+    }
+  } else if (interaction.isButton()) {
+    if (interaction.customId === 'showRoleMenu') {
+      if (!interaction.guild || !interaction.member) return;
 
-    await interaction.deferReply({ ephemeral: true });
-    await interaction.channel.send(interaction.options.getString('content')!);
-    await interaction.editReply('I said what you said!');
-  } else if (commandName === 'tag') {
-    await tagsCommand(interaction);
-  } else if (commandName === 'joke') {
-    await jokeCommand(interaction);
+      const roles = await interaction.guild.roles
+        .fetch()
+        .then((a) => a.filter((b) => allowedRoles.includes(b.name)));
+
+      const row = new ActionRowBuilder<SelectMenuBuilder>().addComponents(
+        new SelectMenuBuilder()
+          .setCustomId('roleMenuSelect')
+          .setPlaceholder('Nothing selected')
+          .addOptions(
+            roles.map((role) => ({
+              label: role.name,
+              value: role.id,
+              default: (
+                interaction.member!.roles as GuildMemberRoleManager
+              ).cache.has(role.id),
+            }))
+          )
+          .setMaxValues(roles.toJSON().length)
+          .setMinValues(0)
+      );
+
+      await interaction.reply({
+        content: 'Select your roles here.',
+        components: [row],
+        ephemeral: true,
+      });
+    }
+  } else if (interaction.isSelectMenu()) {
+    if (interaction.customId === 'roleMenuSelect') {
+      if (!interaction.guild || !interaction.member) return;
+
+      await interaction.deferReply({ ephemeral: true });
+
+      const selectedRoles = interaction.values;
+
+      const roleManager = interaction.member.roles as GuildMemberRoleManager;
+
+      for (const role of allowedRoles) {
+        const roleID = interaction.guild.roles.cache
+          .find((a) => a.name === role)
+          ?.id.toString();
+
+        if (!roleID) continue;
+
+        if (roleManager.cache.has(roleID) && !selectedRoles.includes(roleID)) {
+          await roleManager.remove(roleID);
+        }
+        if (!roleManager.cache.has(roleID) && selectedRoles.includes(roleID)) {
+          await roleManager.add(roleID);
+        }
+      }
+
+      await interaction.editReply({
+        content: 'Roles updated.',
+      });
+
+      setTimeout(() => {
+        interaction.deleteReply();
+      }, 3000);
+    }
   }
 });
 
