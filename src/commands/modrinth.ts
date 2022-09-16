@@ -54,6 +54,10 @@ export const modrinthCommand = async (
       ],
     });
 
+    setTimeout(() => {
+      i.deleteReply();
+    }, 3000);
+
     return;
   }
 
@@ -72,6 +76,10 @@ export const modrinthCommand = async (
           .setColor(COLORS.red),
       ],
     });
+
+    setTimeout(() => {
+      i.deleteReply();
+    }, 3000);
 
     return;
   }
