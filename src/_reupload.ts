@@ -49,7 +49,8 @@ export const reuploadCommands = async () => {
           .setDescription('Just content?')
           .setRequired(true)
       )
-      .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+      .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
+      .setDMPermission(false),
     new SlashCommandBuilder().setName('joke').setDescription("it's a joke"),
   ].map((command) => command.toJSON());
 

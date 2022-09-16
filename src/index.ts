@@ -66,15 +66,7 @@ client.once('ready', async () => {
 
   const mcVersion = await getLatestMinecraftVersion();
   client.user?.presence.set({
-    activities: [
-      {
-        name: `Minecraft ${mcVersion}${
-          mcVersion === '1.19.1' || mcVersion === '1.19.2'
-            ? ' w/ No Chat Reports'
-            : ''
-        }`,
-      },
-    ],
+    activities: [{ name: `Minecraft ${mcVersion}` }],
     status: 'online',
   });
 
