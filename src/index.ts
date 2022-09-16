@@ -39,14 +39,6 @@ const client = new Client({
   partials: [Partials.Channel],
 });
 
-const allowedRoles = [
-  'Alert',
-  'Events',
-  'Progress',
-  'Lenny is very special and thinks the UK needs a role',
-  'Roly Poly Cult',
-];
-
 client.once('ready', async () => {
   console.log(green('Discord bot ready!'));
 
@@ -140,7 +132,9 @@ client.on('interactionCreate', async (interaction) => {
 
       const roles = await interaction.guild.roles
         .fetch()
-        .then((a) => a.filter((b) => allowedRoles.includes(b.name)));
+        .then((a) =>
+          a.filter((b) => BuildConfig.ALLOWED_ROLES.includes(b.name))
+        );
 
       const row = new ActionRowBuilder<SelectMenuBuilder>().addComponents(
         new SelectMenuBuilder()
@@ -175,7 +169,7 @@ client.on('interactionCreate', async (interaction) => {
 
       const roleManager = interaction.member.roles as GuildMemberRoleManager;
 
-      for (const role of allowedRoles) {
+      for (const role of BuildConfig.ALLOWED_ROLES) {
         const roleID = interaction.guild.roles.cache
           .find((a) => a.name === role)
           ?.id.toString();

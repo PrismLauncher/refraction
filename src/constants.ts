@@ -24,3 +24,11 @@ export const COLORS = {
   yellow: 0xfde047,
   orange: 0xfb923c,
 } as const;
+
+export const ALLOWED_ROLES = [
+  'Alert',
+  'Events',
+  'Progress',
+  'Lenny is very special and thinks the UK needs a role',
+  'Roly Poly Cult',
+];
