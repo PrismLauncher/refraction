@@ -43,9 +43,6 @@ export const modrinthCommand = async (
   }
 
   const res = await fetch('https://api.modrinth.com/v2/project/' + id);
-  const data = (await res.json()) as
-    | ModrinthProject
-    | { error: string; description: string };
 
   if (!res.ok) {
     await i.editReply({
@@ -59,6 +56,10 @@ export const modrinthCommand = async (
 
     return;
   }
+
+  const data = (await res.json()) as
+    | ModrinthProject
+    | { error: string; description: string };
 
   if ('error' in data) {
     console.error(data);
