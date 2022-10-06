@@ -10,8 +10,8 @@
   },
   {
     "name": "log",
-    "aliases": ["sendlog", "logs"],
-    "text": "Please send logs: https://cdn.discordapp.com/attachments/981957331430539267/983680253367058452/1.png https://cdn.discordapp.com/attachments/981957331430539267/983680253715165234/2.png"
+    "aliases": ["sendlog", "logs", "🪵"],
+    "text": "Please send logs: https://media.discordapp.net/attachments/923671549758820434/1027408644289077268/unknown.png"
   },
   {
     "name": "eta",
