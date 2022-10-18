@@ -1,3 +1,3 @@
-# Roly Poly
+# PrismLauncher bot
 
-PolyMC Bot for [Discord](https://discord.gg/ZeN2sncGEn).
+PrisimLauncher Bot for [Discord](https://discord.gg/prismlauncher).

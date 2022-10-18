@@ -16,9 +16,6 @@ export const reuploadCommands = async () => {
       .setName('members')
       .setDescription('Returns the number of members in the server'),
     new SlashCommandBuilder()
-      .setName('rolypoly')
-      .setDescription('Rooooooly Pooooooly'),
-    new SlashCommandBuilder()
       .setName('tag')
       .setDescription('Send a tag')
       .addStringOption((option) =>
