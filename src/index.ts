@@ -82,6 +82,7 @@ client.once('ready', async () => {
 
     if (e.cleanContent.match(BuildConfig.ETA_REGEX)) {
       await e.reply(
+        /* CHANGEME */
         `${random(BuildConfig.ETA_MESSAGES)} <:pofat:964546613194420294>`
       );
     }
@@ -111,6 +112,7 @@ client.on('interactionCreate', async (interaction) => {
       await modrinthCommand(interaction);
     } else if (commandName === 'rolypoly') {
       await interaction.reply(
+        /* CHANGEME */
         'https://media.discordapp.net/attachments/985048903126769764/985051373886382100/rollin-time.gif?width=324&height=216'
       );
     } else if (commandName === 'say') {
