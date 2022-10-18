@@ -12,7 +12,7 @@ interface SimplifiedGHReleases {
 // TODO: caching
 export async function getLatestMinecraftVersion(): Promise<string> {
   const f = await fetch(
-    'https://meta.polymc.org/v1/net.minecraft/package.json'
+    'https://meta.PrismLauncher.org/v1/net.minecraft/package.json'
   );
 
   const minecraft = (await f.json()) as MetaPackage;
@@ -20,8 +20,8 @@ export async function getLatestMinecraftVersion(): Promise<string> {
 }
 
 // TODO: caching
-export async function getLatestPolyMCVersion(): Promise<string> {
-  const f = await fetch('https://api.github.com/repos/PolyMC/PolyMC/releases');
+export async function getLatestPrismLauncherVersion(): Promise<string> {
+  const f = await fetch('https://api.github.com/repos/PrismLauncher/PrismLauncher/releases');
   const versions = (await f.json()) as SimplifiedGHReleases[];
 
   return versions[0].tag_name;

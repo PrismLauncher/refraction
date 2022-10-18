@@ -1,4 +1,4 @@
-import { getLatestPolyMCVersion } from './utils/remoteVersions';
+import { getLatestPrismLauncherVersion } from './utils/remoteVersions';
 import { EmbedBuilder } from 'discord.js';
 
 // log providers
@@ -33,14 +33,14 @@ const javaAnalyzer: Analyzer = async (text) => {
 };
 
 const versionAnalyzer: Analyzer = async (text) => {
-  const vers = text.match(/PolyMC version: [0-9].[0-9].[0-9]/g);
+  const vers = text.match(/PrismLauncher version: [0-9].[0-9].[0-9]/g);
   if (vers && vers[0]) {
-    const latest = await getLatestPolyMCVersion();
-    const current = vers[0].replace('PolyMC version: ', '');
+    const latest = await getLatestPrismLauncherVersion();
+    const current = vers[0].replace('PrismLauncher version: ', '');
     if (current < latest) {
       return [
-        'Outdated PolyMC',
-        `Your installed version is ${current}, while the newest version is ${latest}.\nPlease update, for more info see https://polymc.org/download/`,
+        'Outdated PrismLauncher',
+        `Your installed version is ${current}, while the newest version is ${latest}.\nPlease update, for more info see https://PrismLauncher.org/download/`,
       ];
     }
   }
@@ -80,7 +80,7 @@ const intelHDAnalyzer: Analyzer = async (text) => {
   if (text.includes('org.lwjgl.LWJGLException: Pixel format not accelerated')) {
     return [
       'Intel HD Windows 10',
-      "Your drivers don't support windows 10 officially\nSee https://polymc.org/wiki/getting-started/installing-java/#a-note-about-intel-hd-20003000-on-windows-10 for more info",
+      "Your drivers don't support windows 10 officially\nSee https://PrismLauncher.org/wiki/getting-started/installing-java/#a-note-about-intel-hd-20003000-on-windows-10 for more info",
     ];
   }
   return null;
@@ -94,7 +94,7 @@ const macOSNSWindowAnalyzer: Analyzer = async (text) => {
   ) {
     return [
       'MacOS NSInternalInconsistencyException',
-      'You need to downgrade your Java 8 version. See https://polymc.org/wiki/getting-started/installing-java/#older-minecraft-on-macos',
+      'You need to downgrade your Java 8 version. See https://PrismLauncher.org/wiki/getting-started/installing-java/#older-minecraft-on-macos',
     ];
   }
   return null;
@@ -195,7 +195,7 @@ const tempM1Analyzer: Analyzer = async (text) => {
   if (lwjglFail && m1) {
     return [
       'M1 issues',
-      "PolyMC doesn't support Apple M1 for sub-1.19 versions yet. Use ManyMC https://github.com/MinecraftMachina/ManyMC.",
+      "PrismLauncher doesn't support Apple M1 for sub-1.19 versions yet. Use ManyMC https://github.com/MinecraftMachina/ManyMC.",
     ];
   }
 
@@ -230,7 +230,7 @@ export async function parseLog(s: string): Promise<EmbedBuilder | null> {
     const embed = new EmbedBuilder()
       .setTitle('pastebin.com detected')
       .setDescription(
-        'Please use https://mclo.gs or another paste provider and send logs using the Log Upload feature in PolyMC. (See \`/tag log\`)'
+        'Please use https://mclo.gs or another paste provider and send logs using the Log Upload feature in PrismLauncher. (See \`/tag log\`)'
       )
       .setColor(COLORS.red);
     return embed;

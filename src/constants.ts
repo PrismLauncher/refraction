@@ -14,7 +14,7 @@ export const ETA_MESSAGES = [
   'Next month',
   'Next year',
   'Next week',
-  'In PolyMC 2.0.0',
+  'In PrismLauncher 2.0.0',
 ];
 
 export const COLORS = {
