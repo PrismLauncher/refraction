@@ -94,7 +94,7 @@ const macOSNSWindowAnalyzer: Analyzer = async (text) => {
   ) {
     return [
       'MacOS NSInternalInconsistencyException',
-      'You need to downgrade your Java 8 version. See https://prismlauncher.org//wiki/getting-started/installing-java/#older-minecraft-on-macos',
+      'You need to downgrade your Java 8 version. See https://prismlauncher.org/wiki/getting-started/installing-java/#older-minecraft-on-macos',
     ];
   }
   return null;
