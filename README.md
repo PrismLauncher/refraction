@@ -1,3 +1,3 @@
 # PrismLauncher bot
 
-PrisimLauncher Bot for [Discord](https://discord.gg/prismlauncher).
+PrismLauncher Bot for [Discord](https://discord.gg/prismlauncher).
