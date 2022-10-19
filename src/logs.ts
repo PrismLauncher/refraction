@@ -80,7 +80,7 @@ const intelHDAnalyzer: Analyzer = async (text) => {
   if (text.includes('org.lwjgl.LWJGLException: Pixel format not accelerated')) {
     return [
       'Intel HD Windows 10',
-      "Your drivers don't support windows 10 officially\nSee https://prismlauncher.org//wiki/getting-started/installing-java/#a-note-about-intel-hd-20003000-on-windows-10 for more info",
+      "Your drivers don't support windows 10 officially\nSee https://prismlauncher.org/wiki/getting-started/installing-java/#a-note-about-intel-hd-20003000-on-windows-10 for more info",
     ];
   }
   return null;
