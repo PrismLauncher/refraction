@@ -110,11 +110,6 @@ client.on('interactionCreate', async (interaction) => {
       await starsCommand(interaction);
     } else if (commandName === 'modrinth') {
       await modrinthCommand(interaction);
-    } else if (commandName === 'rolypoly') {
-      await interaction.reply(
-        /* CHANGEME */
-        'https://media.discordapp.net/attachments/985048903126769764/985051373886382100/rollin-time.gif?width=324&height=216'
-      );
     } else if (commandName === 'say') {
       if (!interaction.channel) return;
 

@@ -7,7 +7,7 @@ export const starsCommand = async (
   await i.deferReply();
 
   /* CHANGEME */
-  const count = await fetch('https://api.github.com/repos/PolyMC/PolyMC')
+  const count = await fetch('https://api.github.com/repos/PrismLauncher/PrismLauncher')
     .then((r) => r.json() as Promise<{ stargazers_count: number }>)
     .then((j) => j.stargazers_count);
 
