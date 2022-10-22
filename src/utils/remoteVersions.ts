@@ -12,7 +12,6 @@ interface SimplifiedGHReleases {
 // TODO: caching
 export async function getLatestMinecraftVersion(): Promise<string> {
   const f = await fetch(
-    /* CHANGEME */
     'https://meta.prismlauncher.org/v1/net.minecraft/package.json'
   );
 
@@ -22,7 +21,6 @@ export async function getLatestMinecraftVersion(): Promise<string> {
 
 // TODO: caching
 export async function getLatestPrismLauncherVersion(): Promise<string> {
-  /* CHANGEME */
   const f = await fetch(
     'https://api.github.com/repos/PrismLauncher/PrismLauncher/releases'
   );

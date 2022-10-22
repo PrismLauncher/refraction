@@ -82,8 +82,7 @@ client.once('ready', async () => {
 
     if (e.cleanContent.match(BuildConfig.ETA_REGEX)) {
       await e.reply(
-        /* CHANGEME */
-        `${random(BuildConfig.ETA_MESSAGES)} <:pofat:964546613194420294>`
+        `${random(BuildConfig.ETA_MESSAGES)} <:pofat:1031701005559144458>`
       );
     }
 
