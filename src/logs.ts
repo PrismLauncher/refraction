@@ -230,7 +230,11 @@ export async function parseLog(s: string): Promise<EmbedBuilder | null> {
     const embed = new EmbedBuilder()
       .setTitle('pastebin.com detected')
       .setDescription(
+<<<<<<< HEAD
+        'Please use https://mclo.gs or another paste provider and send logs using the Log Upload feature in Prism Launcher. (See \`/tag log\`)'
+=======
         'Please use https://mclo.gs or another paste provider and send logs using the Log Upload feature in Prism Launcher. (See `/tag log`)'
+>>>>>>> 13effc58fed8205314a62e85fc1d76633e9e6824
       )
       .setColor(COLORS.red);
     return embed;

@@ -1,3 +1,3 @@
-# PrismLauncher bot
+# Refraction bot
 
-PrismLauncher Bot for [Discord](https://discord.gg/prismlauncher).
+Refraction Bot for [Discord](https://discord.gg/prismlauncher).

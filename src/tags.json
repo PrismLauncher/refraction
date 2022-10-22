@@ -84,6 +84,9 @@
   {
     "name": "why",
     "text": "https://prismlauncher.org/wiki/overview/faq/#why-did-our-community-choose-to-fork https://prismlauncher.org/news/moving-on/",
+<<<<<<< HEAD
+    "aliases": ["whywasprismlaunchermade", "whywasprismmade", "whywaspolymcmade", "mmcdrama", "devlauncher"]
+=======
     "aliases": [
       "whywasprismlaunchermade",
       "whywasprismmade",
@@ -91,6 +94,7 @@
       "mmcdrama",
       "devlauncher"
     ]
+>>>>>>> 13effc58fed8205314a62e85fc1d76633e9e6824
   },
   {
     "name": "whyjava8",
