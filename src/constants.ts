@@ -23,7 +23,7 @@ export const COLORS = {
   blue: 0x60a5fa,
   yellow: 0xfde047,
   orange: 0xfb923c,
-} as const;
+} as { [key: string]: number };
 
 /* CHANGEME */
 export const ALLOWED_ROLES = ['Alert', 'Events', 'Progress'];

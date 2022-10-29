@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, Routes, PermissionFlagsBits } from 'discord.js';
 import { REST } from '@discordjs/rest';
-import { getTags } from './tagsTags';
+import { getTags } from './tags';
 
 export const reuploadCommands = async () => {
   const tags = await getTags();
@@ -39,18 +39,13 @@ export const reuploadCommands = async () => {
       ),
     new SlashCommandBuilder()
       .setName('say')
-      .setDescription('Say someothing through the bot')
+      .setDescription('Say something through the bot')
       .addStringOption((option) =>
         option
           .setName('content')
           .setDescription('Just content?')
           .setRequired(true)
       )
-      .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
-      .setDMPermission(false),
-    new SlashCommandBuilder()
-      .setName('rolemenu')
-      .setDescription('Make a role menu')
       .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
       .setDMPermission(false),
     new SlashCommandBuilder().setName('joke').setDescription("it's a joke"),

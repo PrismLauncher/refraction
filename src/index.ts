@@ -4,9 +4,6 @@ import {
   Partials,
   OAuth2Scopes,
   InteractionType,
-  SelectMenuBuilder,
-  ActionRowBuilder,
-  GuildMemberRoleManager,
 } from 'discord.js';
 import { reuploadCommands } from './_reupload';
 
@@ -23,7 +20,6 @@ import { jokeCommand } from './commands/joke';
 import random from 'just-random';
 import { green, bold, yellow } from 'kleur/colors';
 import 'dotenv/config';
-import { roleMenuCommand } from './commands/rolemenu';
 
 const client = new Client({
   intents: [
@@ -119,74 +115,6 @@ client.on('interactionCreate', async (interaction) => {
       await tagsCommand(interaction);
     } else if (commandName === 'joke') {
       await jokeCommand(interaction);
-    } else if (commandName === 'rolemenu') {
-      await roleMenuCommand(interaction);
-    }
-  } else if (interaction.isButton()) {
-    if (interaction.customId === 'showRoleMenu') {
-      if (!interaction.guild || !interaction.member) return;
-
-      const roles = await interaction.guild.roles
-        .fetch()
-        .then((a) =>
-          a.filter((b) => BuildConfig.ALLOWED_ROLES.includes(b.name))
-        );
-
-      const row = new ActionRowBuilder<SelectMenuBuilder>().addComponents(
-        new SelectMenuBuilder()
-          .setCustomId('roleMenuSelect')
-          .setPlaceholder('Nothing selected')
-          .addOptions(
-            roles.map((role) => ({
-              label: role.name,
-              value: role.id,
-              default: (
-                interaction.member!.roles as GuildMemberRoleManager
-              ).cache.has(role.id),
-            }))
-          )
-          .setMaxValues(roles.toJSON().length)
-          .setMinValues(0)
-      );
-
-      await interaction.reply({
-        content: 'Select your roles here.',
-        components: [row],
-        ephemeral: true,
-      });
-    }
-  } else if (interaction.isSelectMenu()) {
-    if (interaction.customId === 'roleMenuSelect') {
-      if (!interaction.guild || !interaction.member) return;
-
-      await interaction.deferReply({ ephemeral: true });
-
-      const selectedRoles = interaction.values;
-
-      const roleManager = interaction.member.roles as GuildMemberRoleManager;
-
-      for (const role of BuildConfig.ALLOWED_ROLES) {
-        const roleID = interaction.guild.roles.cache
-          .find((a) => a.name === role)
-          ?.id.toString();
-
-        if (!roleID) continue;
-
-        if (roleManager.cache.has(roleID) && !selectedRoles.includes(roleID)) {
-          await roleManager.remove(roleID);
-        }
-        if (!roleManager.cache.has(roleID) && selectedRoles.includes(roleID)) {
-          await roleManager.add(roleID);
-        }
-      }
-
-      await interaction.editReply({
-        content: 'Roles updated.',
-      });
-
-      setTimeout(() => {
-        interaction.deleteReply();
-      }, 3000);
     }
   }
 });

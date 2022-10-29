@@ -25,6 +25,7 @@
     "dotenv": "^16.0.3",
     "esbuild": "^0.15.11",
     "eslint": "^8.25.0",
+    "gray-matter": "^4.0.3",
     "prettier": "^2.7.1",
     "typescript": "^4.8.4"
   }
