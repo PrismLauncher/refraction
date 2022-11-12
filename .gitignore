@@ -7,3 +7,5 @@ dist
 .env.local
 
 eslint_report.json
+
+.DS_Store

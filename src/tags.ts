@@ -28,7 +28,7 @@ export const getTags = async (): Promise<Tag[]> => {
         name: _file.replace('.md', ''),
         embed: {
           ...data.embed,
-          description: content,
+          description: content.trim(),
           color: COLORS[data.embed.color],
         },
       });
@@ -36,7 +36,7 @@ export const getTags = async (): Promise<Tag[]> => {
       tags.push({
         ...data,
         name: _file.replace('.md', ''),
-        text: content,
+        text: content.trim(),
       });
     }
   }

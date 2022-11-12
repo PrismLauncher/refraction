@@ -18,7 +18,7 @@ import { tagsCommand } from './commands/tags';
 import { jokeCommand } from './commands/joke';
 
 import random from 'just-random';
-import { green, bold, yellow } from 'kleur/colors';
+import { green, bold, yellow, cyan } from 'kleur/colors';
 import 'dotenv/config';
 
 const client = new Client({
@@ -39,26 +39,28 @@ client.once('ready', async () => {
   console.log(green('Discord bot ready!'));
 
   console.log(
-    client.generateInvite({
-      scopes: [OAuth2Scopes.Bot],
-      permissions: [
-        'AddReactions',
-        'ViewChannel',
-        'BanMembers',
-        'KickMembers',
-        'CreatePublicThreads',
-        'CreatePrivateThreads',
-        'EmbedLinks',
-        'ManageChannels',
-        'ManageRoles',
-        'ModerateMembers',
-        'MentionEveryone',
-        'MuteMembers',
-        'SendMessages',
-        'SendMessagesInThreads',
-        'ReadMessageHistory',
-      ],
-    })
+    cyan(
+      client.generateInvite({
+        scopes: [OAuth2Scopes.Bot],
+        permissions: [
+          'AddReactions',
+          'ViewChannel',
+          'BanMembers',
+          'KickMembers',
+          'CreatePublicThreads',
+          'CreatePrivateThreads',
+          'EmbedLinks',
+          'ManageChannels',
+          'ManageRoles',
+          'ModerateMembers',
+          'MentionEveryone',
+          'MuteMembers',
+          'SendMessages',
+          'SendMessagesInThreads',
+          'ReadMessageHistory',
+        ],
+      })
+    )
   );
 
   if (process.env.NODE_ENV !== 'development')
@@ -71,6 +73,9 @@ client.once('ready', async () => {
   });
 
   client.on('messageCreate', async (e) => {
+    if (e.channel.partial) await e.channel.fetch();
+    if (e.author.partial) await e.author.fetch();
+
     if (!e.content) return;
     if (!e.channel.isTextBased()) return;
 
