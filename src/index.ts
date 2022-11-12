@@ -20,6 +20,7 @@ import { jokeCommand } from './commands/joke';
 import random from 'just-random';
 import { green, bold, yellow } from 'kleur/colors';
 import 'dotenv/config';
+import { collectStats } from './stats';
 
 const client = new Client({
   intents: [
@@ -69,25 +70,27 @@ client.once('ready', async () => {
     activities: [{ name: `Minecraft ${mcVersion}` }],
     status: 'online',
   });
+});
 
-  client.on('messageCreate', async (e) => {
-    if (!e.content) return;
-    if (!e.channel.isTextBased()) return;
+client.on('messageCreate', async (e) => {
+  if (!e.content) return;
+  if (!e.channel.isTextBased()) return;
 
-    if (e.author === client.user) return;
+  if (e.author === client.user) return;
 
-    if (e.cleanContent.match(BuildConfig.ETA_REGEX)) {
-      await e.reply(
-        `${random(BuildConfig.ETA_MESSAGES)} <:pofat:1031701005559144458>`
-      );
-    }
+  if (e.cleanContent.match(BuildConfig.ETA_REGEX)) {
+    await e.reply(
+      `${random(BuildConfig.ETA_MESSAGES)} <:pofat:1031701005559144458>`
+    );
+  }
 
-    const log = await parseLog(e.content);
-    if (log != null) {
-      e.reply({ embeds: [log] });
-      return;
-    }
-  });
+  const log = await parseLog(e.content);
+  if (log != null) {
+    e.reply({ embeds: [log] });
+    return;
+  }
+
+  await collectStats(e);
 });
 
 client.on('interactionCreate', async (interaction) => {
