@@ -173,35 +173,6 @@ const optifineAnalyzer: Analyzer = async (text) => {
   return null;
 };
 
-const forge119IssueAnalyzer: Analyzer = async (text) => {
-  const matches = text.match(
-    /Caused by: java.lang.RuntimeException: java.lang.reflect.InvocationTargetException\n.at MC-BOOTSTRAP\/cpw.mods.modlauncher@[0-9]\.[0-9]\.[0-9]\/cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch\(LaunchServiceHandlerDecorator.java:[0-9]*\)/
-  );
-  if (matches) {
-    return [
-      'Update your Forge 1.19',
-      'Update to the latest version of Forge 1.19, older ones have issues with the new split natives system, causing this crash.',
-    ];
-  }
-  return null;
-};
-
-const tempM1Analyzer: Analyzer = async (text) => {
-  const lwjglFail = text.includes('[LWJGL] Failed to load a library');
-  const m1 =
-    (text.includes('natives-macos') || text.includes('natives-osx')) &&
-    (text.includes('aarch64') || text.includes('arm64'));
-
-  if (lwjglFail && m1) {
-    return [
-      'M1 issues',
-      "Prism Launcher doesn't support Apple M1 for sub-1.19 versions yet. Use ManyMC https://github.com/MinecraftMachina/ManyMC.",
-    ];
-  }
-
-  return null;
-};
-
 const analyzers: Analyzer[] = [
   javaAnalyzer,
   versionAnalyzer,
@@ -213,8 +184,6 @@ const analyzers: Analyzer[] = [
   oomAnalyzer,
   shenadoahGCAnalyzer,
   optifineAnalyzer,
-  forge119IssueAnalyzer,
-  tempM1Analyzer,
   javaOptionsAnalyzer,
 ];
 
