@@ -195,7 +195,7 @@ const providers: LogProvider[] = [
 ];
 
 export async function parseLog(s: string): Promise<EmbedBuilder | null> {
-  if (s.includes('https://pastebin.com/')) {
+  if (/(https?:\/\/)?pastebin\.com\/(raw\/)?[^/\s]{8}/g.test(s)) {
     const embed = new EmbedBuilder()
       .setTitle('pastebin.com detected')
       .setDescription(
