@@ -23,7 +23,7 @@
     "@typescript-eslint/eslint-plugin": "5.48.0",
     "@typescript-eslint/parser": "5.48.0",
     "dotenv": "16.0.3",
-    "esbuild": "0.16.13",
+    "esbuild": "0.16.14",
     "eslint": "8.31.0",
     "gray-matter": "4.0.3",
     "prettier": "2.8.1",
