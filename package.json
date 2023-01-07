@@ -26,7 +26,7 @@
     "esbuild": "0.16.15",
     "eslint": "8.31.0",
     "gray-matter": "4.0.3",
-    "prettier": "2.8.1",
+    "prettier": "2.8.2",
     "typescript": "4.9.4"
   }
 }
