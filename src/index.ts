@@ -16,7 +16,8 @@ import { starsCommand } from './commands/stars';
 import { modrinthCommand } from './commands/modrinth';
 import { tagsCommand } from './commands/tags';
 import { jokeCommand } from './commands/joke';
-import { roryCommand } from "./commands/rory";
+import { roryCommand } from './commands/rory';
+import { teawieCommand } from './commands/teawie';
 
 import random from 'just-random';
 import { green, bold, yellow, cyan } from 'kleur/colors';
@@ -121,8 +122,10 @@ client.on('interactionCreate', async (interaction) => {
       await tagsCommand(interaction);
     } else if (commandName === 'joke') {
       await jokeCommand(interaction);
-    } else if (commandName === "rory") {
+    } else if (commandName === 'rory') {
       await roryCommand(interaction);
+    } else if (commandName == 'teawie') {
+      await teawieCommand(interaction);
     }
   }
 });
