@@ -10,6 +10,7 @@ import { reuploadCommands } from './_reupload';
 import * as BuildConfig from './constants';
 import { parseLog } from './logs';
 import { getLatestMinecraftVersion } from './utils/remoteVersions';
+import { expandDiscordLink } from "./utils/resolveMessage";
 
 import { membersCommand } from './commands/members';
 import { starsCommand } from './commands/stars';
@@ -87,12 +88,12 @@ client.once('ready', async () => {
         `${random(BuildConfig.ETA_MESSAGES)} <:pofat:1031701005559144458>`
       );
     }
-
     const log = await parseLog(e.content);
     if (log != null) {
       e.reply({ embeds: [log] });
       return;
     }
+    await expandDiscordLink(e);
   });
 });
 
