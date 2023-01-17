@@ -72,7 +72,7 @@ export async function expandDiscordLink(message: Message): Promise<void> {
           .setStyle(ButtonStyle.Link)
           .setURL(messageToShow.url)
       );
-      message.channel.send({ embeds: [builder], components: [row] });
+      await message.channel.send({ embeds: [builder], components: [row] });
     } catch (e) {
       console.error(e);
       continue;
