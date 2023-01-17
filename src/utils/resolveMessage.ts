@@ -1,4 +1,4 @@
-import { Colors, EmbedBuilder, Message, ThreadChannel } from "discord.js";
+import { Colors, EmbedBuilder, type Message, ThreadChannel } from "discord.js";
 
 function findFirstImage(message: Message): string | undefined {
   const result = message.attachments.find((attach) => {
