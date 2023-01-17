@@ -1,4 +1,12 @@
-import { Colors, EmbedBuilder, type Message, ThreadChannel } from "discord.js";
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  Colors,
+  EmbedBuilder,
+  type Message,
+  ThreadChannel,
+} from "discord.js";
 
 function findFirstImage(message: Message): string | undefined {
   const result = message.attachments.find((attach) => {
@@ -58,11 +66,13 @@ export async function expandDiscordLink(message: Message): Promise<void> {
           builder.setImage(firstImage);
         }
       }
-      builder.addFields({
-        name: "Source",
-        value: `[Jump to original message](${messageToShow.url})`,
-      });
-      message.channel.send({ embeds: [builder] });
+      const row = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setLabel("Jump to original message")
+          .setStyle(ButtonStyle.Link)
+          .setURL(messageToShow.url)
+      );
+      message.channel.send({ embeds: [builder], components: [row] });
     } catch (e) {
       console.error(e);
       continue;
