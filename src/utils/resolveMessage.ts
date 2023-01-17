@@ -53,8 +53,10 @@ export async function expandDiscordLink(message: Message): Promise<void> {
           name: `${messageToShow.author.username}#${messageToShow.author.discriminator}`,
           iconURL: messageToShow.author.displayAvatarURL(),
         })
-        .setDescription(messageToShow.content)
         .setColor(Colors.Aqua);
+      if (messageToShow.content) {
+        builder.setDescription(messageToShow.content);
+      }
       if (messageToShow.attachments.size > 0) {
         let attachmentsString = "";
         messageToShow.attachments.forEach((value) => {
