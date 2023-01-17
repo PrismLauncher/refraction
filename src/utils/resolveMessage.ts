@@ -6,11 +6,11 @@ import {
   EmbedBuilder,
   type Message,
   ThreadChannel,
-} from 'discord.js';
+} from "discord.js";
 
 function findFirstImage(message: Message): string | undefined {
   const result = message.attachments.find((attach) => {
-    return attach.contentType?.startsWith('image/');
+    return attach.contentType?.startsWith("image/");
   });
   if (result == undefined) {
     return undefined;
@@ -64,12 +64,12 @@ export async function expandDiscordLink(message: Message): Promise<void> {
         builder.setDescription(messageToShow.content);
       }
       if (messageToShow.attachments.size > 0) {
-        let attachmentsString = '';
+        let attachmentsString = "";
         messageToShow.attachments.forEach((value) => {
           attachmentsString += `[${value.name}](${value.url}) `;
         });
 
-        builder.addFields({ name: 'Attachments', value: attachmentsString });
+        builder.addFields({ name: "Attachments", value: attachmentsString });
 
         const firstImage = findFirstImage(messageToShow);
         if (firstImage != undefined) {
@@ -79,7 +79,7 @@ export async function expandDiscordLink(message: Message): Promise<void> {
 
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
-          .setLabel('Jump to original message')
+          .setLabel("Jump to original message")
           .setStyle(ButtonStyle.Link)
           .setURL(messageToShow.url)
       );
