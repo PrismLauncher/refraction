@@ -59,7 +59,9 @@ export async function expandDiscordLink(message: Message): Promise<void> {
           name: `${messageToShow.author.username}#${messageToShow.author.discriminator}`,
           iconURL: messageToShow.author.displayAvatarURL(),
         })
-        .setColor(Colors.Aqua);
+        .setColor(Colors.Aqua)
+        .setTimestamp(messageToShow.createdTimestamp)
+        .setFooter({ text: `#${messageToShow.channel.name}`})
       if (messageToShow.content) {
         builder.setDescription(messageToShow.content);
       }
