@@ -26,6 +26,7 @@ export async function expandDiscordLink(message: Message): Promise<void> {
 
   while (!(execResult == null || execResult.groups == undefined)) {
     if (execResult.groups.server_id != message.guildId) {
+      execResult = re.exec(message.content);
       continue; // do not let the bot leak messages from one server to another
     }
 
