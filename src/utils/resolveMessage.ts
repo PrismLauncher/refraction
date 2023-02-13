@@ -35,6 +35,7 @@ export async function expandDiscordLink(message: Message): Promise<void> {
     );
 
     if (channel == undefined || channel == null || !channel.isTextBased()) {
+      execResult = re.exec(message.content);
       continue;
     }
 
@@ -42,10 +43,12 @@ export async function expandDiscordLink(message: Message): Promise<void> {
       if (
         !channel.parent?.members?.some((user) => user.id == message.author.id)
       ) {
+        execResult = re.exec(message.content);
         continue; // do not reveal a message to a user who can't see it
       }
     } else {
       if (!channel.members?.some((user) => user.id == message.author.id)) {
+        execResult = re.exec(message.content);
         continue; // do not reveal a message to a user who can't see it
       }
     }
@@ -90,6 +93,7 @@ export async function expandDiscordLink(message: Message): Promise<void> {
       await message.channel.send({ embeds: [builder], components: [row] });
     } catch (e) {
       console.error(e);
+      execResult = re.exec(message.content);
       continue;
     }
 
