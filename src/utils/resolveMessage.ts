@@ -79,7 +79,7 @@ export async function expandDiscordLink(message: Message): Promise<void> {
           .setURL(messageToShow.url)
       );
 
-      await message.channel.send({ embeds: [builder], components: [row] });
+      await message.reply({ embeds: [builder], components: [row], allowedMentions: {repliedUser: false}});
     } catch (e) {
       console.error(e);
     }
