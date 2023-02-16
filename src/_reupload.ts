@@ -49,9 +49,15 @@ export const reuploadCommands = async () => {
       .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
       .setDMPermission(false),
     new SlashCommandBuilder().setName('joke').setDescription("it's a joke"),
-    new SlashCommandBuilder().setName('rory').setDescription("Gets a Rory photo!")
+    new SlashCommandBuilder()
+      .setName('rory')
+      .setDescription('Gets a Rory photo!')
       .addStringOption((option) =>
-        option.setName("id").setDescription("specify a Rory ID").setRequired(false)),
+        option
+          .setName('id')
+          .setDescription('specify a Rory ID')
+          .setRequired(false)
+      ),
   ].map((command) => command.toJSON());
 
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);

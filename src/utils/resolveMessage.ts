@@ -28,21 +28,19 @@ export async function expandDiscordLink(message: Message): Promise<void> {
   let n = 0;
 
   for (const r of results) {
-    if (n >= 3)
-      break; // only process three previews
+    if (n >= 3) break; // only process three previews
 
     if (r.groups == undefined || r.groups.server_id != message.guildId)
       continue; // do not let the bot leak messages from one server to another
 
-    const channel = await message.guild?.channels.fetch(
-      r.groups.channel_id
-    );
+    const channel = await message.guild?.channels.fetch(r.groups.channel_id);
 
-    if (!channel || !channel.isTextBased())
-      continue;
+    if (!channel || !channel.isTextBased()) continue;
 
     if (channel instanceof ThreadChannel) {
-      if (!channel.parent?.members?.some((user) => user.id == message.author.id))
+      if (
+        !channel.parent?.members?.some((user) => user.id == message.author.id)
+      )
         continue; // do not reveal a message to a user who can't see it
     } else {
       if (!channel.members?.some((user) => user.id == message.author.id))
@@ -59,7 +57,7 @@ export async function expandDiscordLink(message: Message): Promise<void> {
         })
         .setColor(Colors.Aqua)
         .setTimestamp(messageToShow.createdTimestamp)
-        .setFooter({ text: `#${messageToShow.channel.name}`})
+        .setFooter({ text: `#${messageToShow.channel.name}` });
       if (messageToShow.content) {
         builder.setDescription(messageToShow.content);
       }
@@ -84,7 +82,11 @@ export async function expandDiscordLink(message: Message): Promise<void> {
           .setURL(messageToShow.url)
       );
 
-      await message.reply({ embeds: [builder], components: [row], allowedMentions: {repliedUser: false}});
+      await message.reply({
+        embeds: [builder],
+        components: [row],
+        allowedMentions: { repliedUser: false },
+      });
       n++;
     } catch (e) {
       console.error(e);

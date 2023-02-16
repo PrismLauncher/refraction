@@ -28,11 +28,13 @@ const javaAnalyzer: Analyzer = async (text) => {
       'Wrong Java Version',
       `Please switch to the following: \`${ver}\`\nFor more information, type \`/tag java\``,
     ];
-  } else if (text.includes('Java major version is incompatible. Things might break.')) {
+  } else if (
+    text.includes('Java major version is incompatible. Things might break.')
+  ) {
     return [
       'Java compatibility check skipped',
-      'The Java major version may not work with your Minecraft instance. Please switch to a compatible version'
-    ]
+      'The Java major version may not work with your Minecraft instance. Please switch to a compatible version',
+    ];
   }
   return null;
 };
