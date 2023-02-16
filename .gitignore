@@ -5,6 +5,7 @@ dist
 
 .env
 .env.local
+.direnv
 
 eslint_report.json
 
