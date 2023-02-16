@@ -31,7 +31,7 @@ export async function expandDiscordLink(message: Message): Promise<void> {
     if (n >= 3)
       break; // only process three previews
 
-    if (r.groups == undefined && r.groups.server_id != message.guildId)
+    if (r.groups == undefined || r.groups.server_id != message.guildId)
       continue; // do not let the bot leak messages from one server to another
 
     const channel = await message.guild?.channels.fetch(
