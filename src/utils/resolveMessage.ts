@@ -25,7 +25,12 @@ export async function expandDiscordLink(message: Message): Promise<void> {
 
   const results = message.content.matchAll(re);
 
+  let n = 0;
+
   for (const r of results) {
+    if (n >= 3)
+      break; // only process three previews
+
     if (r.groups == undefined && r.groups.server_id != message.guildId)
       continue; // do not let the bot leak messages from one server to another
 
@@ -80,6 +85,7 @@ export async function expandDiscordLink(message: Message): Promise<void> {
       );
 
       await message.reply({ embeds: [builder], components: [row], allowedMentions: {repliedUser: false}});
+      n++;
     } catch (e) {
       console.error(e);
     }
