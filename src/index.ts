@@ -10,13 +10,14 @@ import { reuploadCommands } from './_reupload';
 import * as BuildConfig from './constants';
 import { parseLog } from './logs';
 import { getLatestMinecraftVersion } from './utils/remoteVersions';
+import { expandDiscordLink } from './utils/resolveMessage';
 
 import { membersCommand } from './commands/members';
 import { starsCommand } from './commands/stars';
 import { modrinthCommand } from './commands/modrinth';
 import { tagsCommand } from './commands/tags';
 import { jokeCommand } from './commands/joke';
-import { roryCommand } from "./commands/rory";
+import { roryCommand } from './commands/rory';
 
 import random from 'just-random';
 import { green, bold, yellow, cyan } from 'kleur/colors';
@@ -87,12 +88,12 @@ client.once('ready', async () => {
         `${random(BuildConfig.ETA_MESSAGES)} <:pofat:1031701005559144458>`
       );
     }
-
     const log = await parseLog(e.content);
     if (log != null) {
       e.reply({ embeds: [log] });
       return;
     }
+    await expandDiscordLink(e);
   });
 });
 
@@ -121,7 +122,7 @@ client.on('interactionCreate', async (interaction) => {
       await tagsCommand(interaction);
     } else if (commandName === 'joke') {
       await jokeCommand(interaction);
-    } else if (commandName === "rory") {
+    } else if (commandName === 'rory') {
       await roryCommand(interaction);
     }
   }
