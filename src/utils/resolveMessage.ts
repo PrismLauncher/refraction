@@ -22,41 +22,30 @@ function findFirstImage(message: Message): string | undefined {
 export async function expandDiscordLink(message: Message): Promise<void> {
   const re =
     /(https?:\/\/)?(?:canary\.|ptb\.)?discord(?:app)?\.com\/channels\/(?<server_id>\d+)\/(?<channel_id>\d+)\/(?<message_id>\d+)/g;
-  let execResult = re.exec(message.content);
 
-  while (!(execResult == null || execResult.groups == undefined)) {
-    if (execResult.groups.server_id != message.guildId) {
-      execResult = re.exec(message.content);
+  const results = message.content.matchAll(re);
+
+  for (const r of results) {
+    if (r.groups == undefined && r.groups.server_id != message.guildId)
       continue; // do not let the bot leak messages from one server to another
-    }
 
     const channel = await message.guild?.channels.fetch(
-      execResult.groups.channel_id
+      r.groups.channel_id
     );
 
-    if (channel == undefined || channel == null || !channel.isTextBased()) {
-      execResult = re.exec(message.content);
+    if (!channel || !channel.isTextBased())
       continue;
-    }
 
     if (channel instanceof ThreadChannel) {
-      if (
-        !channel.parent?.members?.some((user) => user.id == message.author.id)
-      ) {
-        execResult = re.exec(message.content);
+      if (!channel.parent?.members?.some((user) => user.id == message.author.id))
         continue; // do not reveal a message to a user who can't see it
-      }
     } else {
-      if (!channel.members?.some((user) => user.id == message.author.id)) {
-        execResult = re.exec(message.content);
+      if (!channel.members?.some((user) => user.id == message.author.id))
         continue; // do not reveal a message to a user who can't see it
-      }
     }
 
     try {
-      const messageToShow = await channel.messages.fetch(
-        execResult.groups.message_id
-      );
+      const messageToShow = await channel.messages.fetch(r.groups.message_id);
 
       const builder = new EmbedBuilder()
         .setAuthor({
@@ -93,10 +82,6 @@ export async function expandDiscordLink(message: Message): Promise<void> {
       await message.channel.send({ embeds: [builder], components: [row] });
     } catch (e) {
       console.error(e);
-      execResult = re.exec(message.content);
-      continue;
     }
-
-    execResult = re.exec(message.content);
   }
 }
