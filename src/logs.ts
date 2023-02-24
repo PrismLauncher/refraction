@@ -14,7 +14,7 @@ type LogProvider = (text: string) => Promise<null | string>;
 const javaAnalyzer: Analyzer = async (text) => {
   if (text.includes('This instance is not compatible with Java version')) {
     const xp =
-      /Please switch to one of the following Java versions for this instance:[\r\n]+([^\r\n]+)/g;
+      /Please switch to one of the following Java versions for this instance:[\r\n]+(Java version \d+)/g;
 
     let ver: string;
     const m = text.match(xp);
