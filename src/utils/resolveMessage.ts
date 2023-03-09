@@ -79,7 +79,11 @@ export async function expandDiscordLink(message: Message): Promise<void> {
         new ButtonBuilder()
           .setLabel('Jump to original message')
           .setStyle(ButtonStyle.Link)
-          .setURL(messageToShow.url)
+          .setURL(messageToShow.url),
+        new ButtonBuilder()
+					.setCustomId('delete-message')
+					.setLabel('Delete')
+					.setStyle(ButtonStyle.Danger)
       );
 
       await message.reply({
