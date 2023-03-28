@@ -99,6 +99,7 @@ client.once('ready', async () => {
 
 client.on('interactionCreate', async (interaction) => {
   if (interaction.isButton() && interaction.customId === 'delete-message') {
+  try {
     const messageRef = interaction.message.reference?.messageId;
     if (messageRef) {
       const msg = await interaction.message.channel.messages.fetch(messageRef);
@@ -113,6 +114,11 @@ client.on('interactionCreate', async (interaction) => {
       }
     }
   }
+  catch (e) {
+    console.error(e);
+    interaction.reply({ content: 'Something went wrong!', ephemeral: true})
+  }
+}
 
   if (interaction.isChatInputCommand()) {
     const { commandName } = interaction;
