@@ -62,7 +62,7 @@ export const reuploadCommands = async () => {
 
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
 
-  await rest.put(Routes.applicationCommands(process.env.DISCORD_APP!), {
+  await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID!), {
     body: commands,
   });
 

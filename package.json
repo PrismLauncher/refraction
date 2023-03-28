@@ -19,14 +19,14 @@
     "url-regex": "5.0.0"
   },
   "devDependencies": {
-    "@types/node": "18.15.3",
-    "@typescript-eslint/eslint-plugin": "5.56.0",
-    "@typescript-eslint/parser": "5.56.0",
+    "@types/node": "18.15.10",
+    "@typescript-eslint/eslint-plugin": "5.57.0",
+    "@typescript-eslint/parser": "5.57.0",
     "dotenv": "16.0.3",
-    "esbuild": "0.17.12",
+    "esbuild": "0.17.14",
     "eslint": "8.36.0",
     "gray-matter": "4.0.3",
-    "prettier": "2.8.5",
+    "prettier": "2.8.7",
     "typescript": "5.0.2"
   }
 }

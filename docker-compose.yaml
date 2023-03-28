@@ -1,0 +1,41 @@
+version: "3.9"
+
+volumes:
+  pg_data:
+
+services:
+  refraction:
+    container_name: refraction-prismbot
+    image: ghcr.io/prismlauncher/bot:latest
+    restart: unless-stopped
+    environment:
+      - DISCORD_TOKEN=
+      - DISCORD_CLIENT_ID=
+
+  linked-roles:
+    container_name: linked-roles-prismbot
+    image: ghcr.io/prismlauncher/linkedroles:latest
+    restart: unless-stopped
+    environment:
+      - DISCORD_TOKEN=
+      - DISCORD_CLIENT_ID=
+      - DISCORD_CLIENT_SECRET=
+      - DISCORD_REDIRECT_URI=
+      - COOKIE_SECRET=
+      - DATABASE_URL=
+
+  postgres:
+    container_name: postgres
+    image: postgres:15
+    restart: unless-stopped
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=
+      - POSTGRES_PASSWORD=
+      - POSTGRES_DATABASE=
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -U postgres' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5

@@ -24,6 +24,3 @@ export const COLORS = {
   yellow: 0xfde047,
   orange: 0xfb923c,
 } as { [key: string]: number };
-
-/* CHANGEME */
-export const ALLOWED_ROLES = ['Alert', 'Events', 'Progress'];
