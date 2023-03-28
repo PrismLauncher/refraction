@@ -99,26 +99,25 @@ client.once('ready', async () => {
 
 client.on('interactionCreate', async (interaction) => {
   if (interaction.isButton() && interaction.customId === 'delete-message') {
-  try {
-    const messageRef = interaction.message.reference?.messageId;
-    if (messageRef) {
-      const msg = await interaction.message.channel.messages.fetch(messageRef);
+    try {
+      const messageRef = interaction.message.reference?.messageId;
+      if (messageRef) {
+        const msg = await interaction.message.channel.messages.fetch(messageRef);
 
-      if (interaction?.user === msg.author) {
-        await interaction.message.delete();
-      } else {
-        await interaction.reply({
-          content: 'You can only delete your own messages!',
-          ephemeral: true,
-        });
+        if (interaction?.user === msg.author) {
+          await interaction.message.delete();
+        } else {
+          await interaction.reply({
+            content: 'You can only delete your own messages!',
+            ephemeral: true,
+          });
+        }
       }
+    } catch (e) {
+      console.error(e);
+      interaction.reply({ content: 'Something went wrong!', ephemeral: true });
     }
   }
-  catch (e) {
-    console.error(e);
-    interaction.reply({ content: 'Something went wrong!', ephemeral: true})
-  }
-}
 
   if (interaction.isChatInputCommand()) {
     const { commandName } = interaction;
