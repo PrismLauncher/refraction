@@ -13,4 +13,4 @@ On Discord, some systems may use [PluralKit](https://pluralkit.me/) to make thei
 
 For more information about plurality, we recommend [More Than One](https://morethanone.info/) for a useful overview.
 
-**Note: We do NOT tolerate the use of PluralKit for RP.**
+**Note: We do NOT tolerate the use of PluralKit for role playing.**
