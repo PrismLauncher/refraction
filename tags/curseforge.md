@@ -5,4 +5,4 @@ embed:
   color: orange
 ---
 
-CurseForge added a new option to block third party clients like Prism Launcher from accessing mod files, and they started to enforce this option lately. We can't allow you to download those mods directly from Curseforge because of this. However, Prism Launcher 1.3.1 and higher have a workaround to enable the downloading of these mods: letting you to download those opted out mods manually.
+CurseForge added a new option to block third party clients like Prism Launcher from accessing mod files, and they started to enforce this option lately. We can't allow you to download those mods directly from Curseforge because of this. However, Prism Launcher offers a workaround to enable the downloading of these mods, by allowing you to download these mods from your browser and automatically importing them into the instance.
