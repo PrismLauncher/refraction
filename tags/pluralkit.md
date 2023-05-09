@@ -12,3 +12,5 @@ Each member of a system/collective (group residing inside the same physical brai
 On Discord, some systems may use [PluralKit](https://pluralkit.me/) to make their message appear with the correct profile, resulting in a `[BOT]` tag.
 
 For more information about plurality, we recommend [More Than One](https://morethanone.info/) for a useful overview.
+
+**Note: We do NOT tolerate the use of PluralKit for RP.**

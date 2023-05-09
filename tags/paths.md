@@ -16,4 +16,4 @@ embed:
       value: '`~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher`'
 ---
 
-Where Prism Launcher stores your data (e.g. instances)
+Where Prism Launcher stores your data (e.g. instances).

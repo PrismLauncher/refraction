@@ -5,8 +5,8 @@ embed:
   color: yellow
 ---
 
-1. Click the instance that is broken, then select "Edit".
-2. Choose version and then click Forge, then click the change version button.
+1. Click the instance that is broken, then select `Edit`.
+2. Choose `Version` and then click `Forge`, then click the change version button.
 3. You can then change the version, choose the latest, and click OK.
 4. You are good to go! <a:minecraftpartyparrotr:1032312401577652274>
 
