@@ -1,11 +1,11 @@
 ---
 aliases: ['thanosmethod']
 embed:
-  title: Binary Search - method to find mod problems
+  title: Binary Search - A method of finding problems with mods
   color: blue
 ---
 
-The binary search is a way of finding a faulty thing among a lot of other things, without having to remove the things one-by-one. This is useful for finding a broken mod among hundreds of mods, without having to spend time testing the mods one-by-one.
+The binary search is a way of finding a faulty thing amongst a lot of other things, without having to remove the things one-by-one. This is useful for finding a broken mod among hundreds of mods, without having to spend time testing the mods one-by-one.
 
 The procedure is simple:
 
