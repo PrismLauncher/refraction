@@ -1,15 +1,18 @@
-import type { EmbedData } from 'discord.js';
-
 import matter from 'gray-matter';
 import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 import { COLORS } from './constants';
 
+import { type EmbedField } from 'discord.js';
+
 interface Tag {
   name: string;
   aliases?: string[];
-  text?: string;
-  embed?: EmbedData;
+  title?: string;
+  color?: number;
+  content: string;
+  image?: string;
+  fields?: EmbedField[];
 }
 
 const TAG_DIR = join(process.cwd(), 'tags');
@@ -22,23 +25,12 @@ export const getTags = async (): Promise<Tag[]> => {
     const file = join(TAG_DIR, _file);
     const { data, content } = matter(await readFile(file));
 
-    if (data.embed) {
-      tags.push({
-        ...data,
-        name: _file.replace('.md', ''),
-        embed: {
-          ...data.embed,
-          description: content.trim(),
-          color: COLORS[data.embed.color],
-        },
-      });
-    } else {
-      tags.push({
-        ...data,
-        name: _file.replace('.md', ''),
-        text: content.trim(),
-      });
-    }
+    tags.push({
+      ...data,
+      name: _file.replace('.md', ''),
+      content: content.trim(),
+      color: data.color ? COLORS[data.color] : undefined,
+    });
   }
 
   return tags;

@@ -24,17 +24,15 @@ export const tagsCommand = async (
     return;
   }
 
+  const embed = new EmbedBuilder();
+  embed.setTitle(tag.title ?? tag.name);
+  embed.setDescription(tag.content);
+  if (tag.color) embed.setColor(tag.color);
+  if (tag.image) embed.setImage(tag.image);
+  if (tag.fields) embed.setFields(tag.fields);
+
   await i.reply({
-    content:
-      (mention ? `<@${mention.id}> ` : '') +
-      (tag.text ? `**${tag.name}**\n\n` + tag.text : ''),
-    embeds: tag.embed
-      ? [
-          new EmbedBuilder(tag.embed).setFooter({
-            text: `Requested by ${i.user.tag}`,
-            iconURL: i.user.avatarURL() ?? undefined,
-          }),
-        ]
-      : [],
+    content: mention ? `<@${mention.id}> ` : undefined,
+    embeds: [embed],
   });
 };
