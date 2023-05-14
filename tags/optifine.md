@@ -1,8 +1,7 @@
 ---
+title: OptiFine
+color: green
 aliases: ['of', 'optimize', 'opticrap', 'notfine']
-embed:
-  title: OptiFine
-  color: green
 ---
 
 OptiFine is known to cause problems when paired with other mods.

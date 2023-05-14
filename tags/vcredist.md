@@ -1,8 +1,7 @@
 ---
+title: vcredist is required for Prism to run Windows
+color: pink
 aliases: ['msvc']
-embed:
-  title: vcredist is required for Prism to run Windows
-  color: pink
 ---
 
 Like most apps on Windows, you have to install vcredist for Prism to run. Depending on what version of Prism you are using, you may need a different version.
