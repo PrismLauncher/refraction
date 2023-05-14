@@ -1,18 +1,17 @@
 import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
   Colors,
   EmbedBuilder,
   type Message,
   ThreadChannel,
+  ReactionCollector,
 } from 'discord.js';
 
 function findFirstImage(message: Message): string | undefined {
   const result = message.attachments.find((attach) => {
     return attach.contentType?.startsWith('image/');
   });
-  if (result == undefined) {
+
+  if (result === undefined) {
     return undefined;
   } else {
     return result.url;
@@ -23,19 +22,17 @@ export async function expandDiscordLink(message: Message): Promise<void> {
   if (message.author.bot && !message.webhookId) return;
 
   const re =
-    /(https?:\/\/)?(?:canary\.|ptb\.)?discord(?:app)?\.com\/channels\/(?<server_id>\d+)\/(?<channel_id>\d+)\/(?<message_id>\d+)/g;
+    /(https?:\/\/)?(?:canary\.|ptb\.)?discord(?:app)?\.com\/channels\/(?<serverId>\d+)\/(?<channelId>\d+)\/(?<messageId>\d+)/g;
 
   const results = message.content.matchAll(re);
-
-  let n = 0;
+  const resultEmbeds: EmbedBuilder[] = [];
 
   for (const r of results) {
-    if (n >= 3) break; // only process three previews
+    if (resultEmbeds.length >= 3) break; // only process three previews
 
-    if (r.groups == undefined || r.groups.server_id != message.guildId)
-      continue; // do not let the bot leak messages from one server to another
+    if (r.groups == undefined || r.groups.serverId != message.guildId) continue; // do not let the bot leak messages from one server to another
 
-    const channel = await message.guild?.channels.fetch(r.groups.channel_id);
+    const channel = await message.guild?.channels.fetch(r.groups.channelId);
 
     if (!channel || !channel.isTextBased()) continue;
 
@@ -50,52 +47,58 @@ export async function expandDiscordLink(message: Message): Promise<void> {
     }
 
     try {
-      const messageToShow = await channel.messages.fetch(r.groups.message_id);
+      const originalMessage = await channel.messages.fetch(r.groups.messageId);
 
-      const builder = new EmbedBuilder()
+      const embed = new EmbedBuilder()
         .setAuthor({
-          name: `${messageToShow.author.username}#${messageToShow.author.discriminator}`,
-          iconURL: messageToShow.author.displayAvatarURL(),
+          name: originalMessage.author.tag,
+          iconURL: originalMessage.author.displayAvatarURL(),
         })
         .setColor(Colors.Aqua)
-        .setTimestamp(messageToShow.createdTimestamp)
-        .setFooter({ text: `#${messageToShow.channel.name}` });
-      if (messageToShow.content) {
-        builder.setDescription(messageToShow.content);
-      }
-      if (messageToShow.attachments.size > 0) {
-        let attachmentsString = '';
-        messageToShow.attachments.forEach((value) => {
-          attachmentsString += `[${value.name}](${value.url}) `;
+        .setTimestamp(originalMessage.createdTimestamp)
+        .setFooter({ text: `#${originalMessage.channel.name}` });
+
+      embed.setDescription(
+        (originalMessage.content ? originalMessage.content + '\n\n' : '') +
+          `[Jump to original message](${originalMessage.url})`
+      );
+
+      if (originalMessage.attachments.size > 0) {
+        embed.addFields({
+          name: 'Attachments',
+          value: originalMessage.attachments
+            .map((att) => `[${att.name}](${att.url})`)
+            .join('\n'),
         });
 
-        builder.addFields({ name: 'Attachments', value: attachmentsString });
-
-        const firstImage = findFirstImage(messageToShow);
-        if (firstImage != undefined) {
-          builder.setImage(firstImage);
+        const firstImage = findFirstImage(originalMessage);
+        if (firstImage) {
+          embed.setImage(firstImage);
         }
       }
 
-      const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-        new ButtonBuilder()
-          .setLabel('Jump to original message')
-          .setStyle(ButtonStyle.Link)
-          .setURL(messageToShow.url),
-        new ButtonBuilder()
-          .setCustomId('delete-message')
-          .setLabel('Delete')
-          .setStyle(ButtonStyle.Danger)
-      );
-
-      await message.reply({
-        embeds: [builder],
-        components: [row],
-        allowedMentions: { repliedUser: false },
-      });
-      n++;
+      resultEmbeds.push(embed);
     } catch (e) {
       console.error(e);
     }
   }
+
+  const reply = await message.reply({
+    embeds: resultEmbeds,
+    allowedMentions: { repliedUser: false },
+  });
+
+  const collector = new ReactionCollector(reply, {
+    filter: (reaction) => {
+      return reaction.emoji.name === '❌';
+    },
+    time: 5 * 60 * 1000,
+  });
+
+  collector.on('collect', async (_, user) => {
+    if (user === message.author) {
+      await reply.delete();
+      collector.stop();
+    }
+  });
 }
