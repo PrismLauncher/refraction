@@ -20,8 +20,8 @@ function findFirstImage(message: Message): string | undefined {
 }
 
 export async function expandDiscordLink(message: Message): Promise<void> {
-  if (message.author.bot && !message.author.webhookId) return;
-  
+  if (message.author.bot && !message.webhookId) return;
+
   const re =
     /(https?:\/\/)?(?:canary\.|ptb\.)?discord(?:app)?\.com\/channels\/(?<server_id>\d+)\/(?<channel_id>\d+)\/(?<message_id>\d+)/g;
 
