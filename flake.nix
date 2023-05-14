@@ -11,22 +11,28 @@
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, pre-commit-hooks, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = nixpkgs.legacyPackages.${system};
-      in {
-        checks = {
-          pre-commit-check = pre-commit-hooks.lib.${system}.run {
-            src = ./.;
-            hooks = {
-              nixfmt.enable = true;
-              prettier.enable = true;
-            };
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+    pre-commit-hooks,
+    ...
+  }:
+    flake-utils.lib.eachDefaultSystem (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      checks = {
+        pre-commit-check = pre-commit-hooks.lib.${system}.run {
+          src = ./.;
+          hooks = {
+            alejandra.enable = true;
+            prettier.enable = true;
           };
         };
-        devShells.default = pkgs.mkShell {
-          inherit (self.checks.${system}.pre-commit-check) shellHook;
-          packages = with pkgs; [ yarn ];
-        };
-      });
+      };
+      devShells.default = pkgs.mkShell {
+        inherit (self.checks.${system}.pre-commit-check) shellHook;
+        packages = with pkgs; [yarn];
+      };
+    });
 }
