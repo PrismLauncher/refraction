@@ -37,17 +37,6 @@ export const reuploadCommands = async () => {
       .addStringOption((option) =>
         option.setName('id').setDescription('The ID or slug').setRequired(true)
       ),
-    new SlashCommandBuilder()
-      .setName('say')
-      .setDescription('Say something through the bot')
-      .addStringOption((option) =>
-        option
-          .setName('content')
-          .setDescription('Just content?')
-          .setRequired(true)
-      )
-      .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
-      .setDMPermission(false),
     new SlashCommandBuilder().setName('joke').setDescription("it's a joke"),
     new SlashCommandBuilder()
       .setName('rory')

@@ -128,12 +128,6 @@ client.on('interactionCreate', async (interaction) => {
       await starsCommand(interaction);
     } else if (commandName === 'modrinth') {
       await modrinthCommand(interaction);
-    } else if (commandName === 'say') {
-      if (!interaction.channel) return;
-
-      await interaction.deferReply({ ephemeral: true });
-      await interaction.channel.send(interaction.options.getString('content')!);
-      await interaction.editReply('I said what you said!');
     } else if (commandName === 'tag') {
       await tagsCommand(interaction);
     } else if (commandName === 'joke') {
