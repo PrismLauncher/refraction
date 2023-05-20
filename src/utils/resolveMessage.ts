@@ -83,22 +83,24 @@ export async function expandDiscordLink(message: Message): Promise<void> {
     }
   }
 
-  const reply = await message.reply({
-    embeds: resultEmbeds,
-    allowedMentions: { repliedUser: false },
-  });
+  if (resultEmbeds) {
+    const reply = await message.reply({
+      embeds: resultEmbeds,
+      allowedMentions: { repliedUser: false },
+    });
 
-  const collector = new ReactionCollector(reply, {
-    filter: (reaction) => {
-      return reaction.emoji.name === '❌';
-    },
-    time: 5 * 60 * 1000,
-  });
+    const collector = new ReactionCollector(reply, {
+      filter: (reaction) => {
+        return reaction.emoji.name === '❌';
+      },
+      time: 5 * 60 * 1000,
+    });
 
-  collector.on('collect', async (_, user) => {
-    if (user === message.author) {
-      await reply.delete();
-      collector.stop();
-    }
-  });
+    collector.on('collect', async (_, user) => {
+      if (user === message.author) {
+        await reply.delete();
+        collector.stop();
+      }
+    });
+  }
 }
