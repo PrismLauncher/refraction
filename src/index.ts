@@ -98,22 +98,6 @@ client.once('ready', async () => {
 });
 
 client.on('interactionCreate', async (interaction) => {
-  if (interaction.isButton() && interaction.customId === 'delete-message') {
-    const messageRef = interaction.message.reference?.messageId;
-    if (messageRef) {
-      const msg = await interaction.message.channel.messages.fetch(messageRef);
-
-      if (interaction?.user === msg.author) {
-        await interaction.message.delete();
-      } else {
-        await interaction.reply({
-          content: 'You can only delete your own messages!',
-          ephemeral: true,
-        });
-      }
-    }
-  }
-
   if (interaction.isChatInputCommand()) {
     const { commandName } = interaction;
 
