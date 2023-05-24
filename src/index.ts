@@ -4,6 +4,7 @@ import {
   Partials,
   OAuth2Scopes,
   InteractionType,
+  PermissionFlagsBits,
 } from 'discord.js';
 import { reuploadCommands } from './_reupload';
 
@@ -45,21 +46,21 @@ client.once('ready', async () => {
       client.generateInvite({
         scopes: [OAuth2Scopes.Bot],
         permissions: [
-          'AddReactions',
-          'ViewChannel',
-          'BanMembers',
-          'KickMembers',
-          'CreatePublicThreads',
-          'CreatePrivateThreads',
-          'EmbedLinks',
-          'ManageChannels',
-          'ManageRoles',
-          'ModerateMembers',
-          'MentionEveryone',
-          'MuteMembers',
-          'SendMessages',
-          'SendMessagesInThreads',
-          'ReadMessageHistory',
+          PermissionFlagsBits.AddReactions,
+          PermissionFlagsBits.ViewChannel,
+          PermissionFlagsBits.BanMembers,
+          PermissionFlagsBits.KickMembers,
+          PermissionFlagsBits.CreatePublicThreads,
+          PermissionFlagsBits.CreatePrivateThreads,
+          PermissionFlagsBits.EmbedLinks,
+          PermissionFlagsBits.ManageChannels,
+          PermissionFlagsBits.ManageRoles,
+          PermissionFlagsBits.ModerateMembers,
+          PermissionFlagsBits.MentionEveryone,
+          PermissionFlagsBits.MuteMembers,
+          PermissionFlagsBits.SendMessages,
+          PermissionFlagsBits.SendMessagesInThreads,
+          PermissionFlagsBits.ReadMessageHistory,
         ],
       })
     )
