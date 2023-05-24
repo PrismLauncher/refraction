@@ -14,7 +14,7 @@ export const sayCommand = async (
   const message = await interaction.channel.send(content);
   await interaction.editReply('I said what you said!');
 
-  if (typeof process.env.SAY_LOGS_CHANNEL === 'string') {
+  if (process.env.SAY_LOGS_CHANNEL) {
     const logsChannel = await interaction.guild.channels.fetch(
       process.env.SAY_LOGS_CHANNEL
     );
