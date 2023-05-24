@@ -19,6 +19,7 @@ import { modrinthCommand } from './commands/modrinth';
 import { tagsCommand } from './commands/tags';
 import { jokeCommand } from './commands/joke';
 import { roryCommand } from './commands/rory';
+import { sayCommand } from './commands/say';
 
 import random from 'just-random';
 import { green, bold, yellow, cyan } from 'kleur/colors';
@@ -114,11 +115,7 @@ client.on('interactionCreate', async (interaction) => {
     } else if (commandName === 'modrinth') {
       await modrinthCommand(interaction);
     } else if (commandName === 'say') {
-      if (!interaction.channel) return;
-
-      await interaction.deferReply({ ephemeral: true });
-      await interaction.channel.send(interaction.options.getString('content')!);
-      await interaction.editReply('I said what you said!');
+      await sayCommand(interaction);
     } else if (commandName === 'tag') {
       await tagsCommand(interaction);
     } else if (commandName === 'joke') {
