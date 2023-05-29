@@ -4,6 +4,7 @@ import {
   Partials,
   OAuth2Scopes,
   InteractionType,
+  PermissionFlagsBits,
 } from 'discord.js';
 import { reuploadCommands } from './_reupload';
 
@@ -18,6 +19,7 @@ import { modrinthCommand } from './commands/modrinth';
 import { tagsCommand } from './commands/tags';
 import { jokeCommand } from './commands/joke';
 import { roryCommand } from './commands/rory';
+import { sayCommand } from './commands/say';
 
 import random from 'just-random';
 import { green, bold, yellow, cyan } from 'kleur/colors';
@@ -32,7 +34,7 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildMessageReactions,
-    GatewayIntentBits.GuildBans,
+    GatewayIntentBits.GuildModeration,
   ],
   partials: [Partials.Channel],
 });
@@ -45,21 +47,21 @@ client.once('ready', async () => {
       client.generateInvite({
         scopes: [OAuth2Scopes.Bot],
         permissions: [
-          'AddReactions',
-          'ViewChannel',
-          'BanMembers',
-          'KickMembers',
-          'CreatePublicThreads',
-          'CreatePrivateThreads',
-          'EmbedLinks',
-          'ManageChannels',
-          'ManageRoles',
-          'ModerateMembers',
-          'MentionEveryone',
-          'MuteMembers',
-          'SendMessages',
-          'SendMessagesInThreads',
-          'ReadMessageHistory',
+          PermissionFlagsBits.AddReactions,
+          PermissionFlagsBits.ViewChannel,
+          PermissionFlagsBits.BanMembers,
+          PermissionFlagsBits.KickMembers,
+          PermissionFlagsBits.CreatePublicThreads,
+          PermissionFlagsBits.CreatePrivateThreads,
+          PermissionFlagsBits.EmbedLinks,
+          PermissionFlagsBits.ManageChannels,
+          PermissionFlagsBits.ManageRoles,
+          PermissionFlagsBits.ModerateMembers,
+          PermissionFlagsBits.MentionEveryone,
+          PermissionFlagsBits.MuteMembers,
+          PermissionFlagsBits.SendMessages,
+          PermissionFlagsBits.SendMessagesInThreads,
+          PermissionFlagsBits.ReadMessageHistory,
         ],
       })
     )
@@ -98,22 +100,6 @@ client.once('ready', async () => {
 });
 
 client.on('interactionCreate', async (interaction) => {
-  if (interaction.isButton() && interaction.customId === 'delete-message') {
-    const messageRef = interaction.message.reference?.messageId;
-    if (messageRef) {
-      const msg = await interaction.message.channel.messages.fetch(messageRef);
-
-      if (interaction?.user === msg.author) {
-        await interaction.message.delete();
-      } else {
-        await interaction.reply({
-          content: 'You can only delete your own messages!',
-          ephemeral: true,
-        });
-      }
-    }
-  }
-
   if (interaction.isChatInputCommand()) {
     const { commandName } = interaction;
 
@@ -129,11 +115,7 @@ client.on('interactionCreate', async (interaction) => {
     } else if (commandName === 'modrinth') {
       await modrinthCommand(interaction);
     } else if (commandName === 'say') {
-      if (!interaction.channel) return;
-
-      await interaction.deferReply({ ephemeral: true });
-      await interaction.channel.send(interaction.options.getString('content')!);
-      await interaction.editReply('I said what you said!');
+      await sayCommand(interaction);
     } else if (commandName === 'tag') {
       await tagsCommand(interaction);
     } else if (commandName === 'joke') {
