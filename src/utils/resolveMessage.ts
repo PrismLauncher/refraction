@@ -83,7 +83,7 @@ export async function expandDiscordLink(message: Message): Promise<void> {
     }
   }
 
-  if (resultEmbeds.length == 0) {
+  if (resultEmbeds.length > 0) {
     const reply = await message.reply({
       embeds: resultEmbeds,
       allowedMentions: { repliedUser: false },
