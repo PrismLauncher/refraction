@@ -15,6 +15,7 @@ export const ETA_MESSAGES = [
   'Next year',
   'Next week',
   'In Prism Launcher 2.0.0',
+  'At the appropriate juncture, in due course, in the fullness of time',
 ];
 
 export const COLORS = {
