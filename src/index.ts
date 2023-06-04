@@ -77,30 +77,36 @@ client.once('ready', async () => {
   });
 
   client.on('messageCreate', async (e) => {
-    if (e.channel.partial) await e.channel.fetch();
-    if (e.author.partial) await e.author.fetch();
+    try {
+      if (e.channel.partial) await e.channel.fetch();
+      if (e.author.partial) await e.author.fetch();
 
-    if (!e.content) return;
-    if (!e.channel.isTextBased()) return;
+      if (!e.content) return;
+      if (!e.channel.isTextBased()) return;
 
-    if (e.author === client.user) return;
+      if (e.author === client.user) return;
 
-    if (e.cleanContent.match(BuildConfig.ETA_REGEX)) {
-      await e.reply(
-        `${random(BuildConfig.ETA_MESSAGES)} <:pofat:1031701005559144458>`
-      );
+      if (e.cleanContent.match(BuildConfig.ETA_REGEX)) {
+        await e.reply(
+          `${random(BuildConfig.ETA_MESSAGES)} <:pofat:1031701005559144458>`
+        );
+      }
+      const log = await parseLog(e.content);
+      if (log != null) {
+        e.reply({ embeds: [log] });
+        return;
+      }
+      await expandDiscordLink(e);
+    } catch (error) {
+      console.error('Unhandled exception on messageCreate', error);
     }
-    const log = await parseLog(e.content);
-    if (log != null) {
-      e.reply({ embeds: [log] });
-      return;
-    }
-    await expandDiscordLink(e);
   });
 });
 
 client.on('interactionCreate', async (interaction) => {
-  if (interaction.isChatInputCommand()) {
+  try {
+    if (!interaction.isChatInputCommand()) return;
+
     const { commandName } = interaction;
 
     if (commandName === 'ping') {
@@ -123,26 +129,32 @@ client.on('interactionCreate', async (interaction) => {
     } else if (commandName === 'rory') {
       await roryCommand(interaction);
     }
+  } catch (error) {
+    console.error('Unhandled exception on interactionCreate', error);
   }
 });
 
 client.on('messageReactionAdd', async (reaction, user) => {
-  if (reaction.partial) {
-    try {
-      await reaction.fetch();
-    } catch (error) {
-      console.error('Something went wrong when fetching the message:', error);
-      return;
+  try {
+    if (reaction.partial) {
+      try {
+        await reaction.fetch();
+      } catch (error)  {
+        console.error('Something went wrong when fetching the message:', error);
+        return;
+      }
     }
-  }
 
-  if (
-    reaction.message.interaction &&
-    reaction.message.interaction?.type === InteractionType.ApplicationCommand &&
-    reaction.message.interaction?.user === user &&
-    reaction.emoji.name === '❌'
-  ) {
-    await reaction.message.delete();
+    if (
+      reaction.message.interaction &&
+      reaction.message.interaction?.type === InteractionType.ApplicationCommand &&
+      reaction.message.interaction?.user === user &&
+      reaction.emoji.name === '❌'
+    ) {
+      await reaction.message.delete();
+    }
+  } catch (error) {
+    console.error('Unhandled exception on messageReactionAdd', error);
   }
 });
 

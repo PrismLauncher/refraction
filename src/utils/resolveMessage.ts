@@ -32,21 +32,21 @@ export async function expandDiscordLink(message: Message): Promise<void> {
 
     if (r.groups == undefined || r.groups.serverId != message.guildId) continue; // do not let the bot leak messages from one server to another
 
-    const channel = await message.guild?.channels.fetch(r.groups.channelId);
-
-    if (!channel || !channel.isTextBased()) continue;
-
-    if (channel instanceof ThreadChannel) {
-      if (
-        !channel.parent?.members?.some((user) => user.id == message.author.id)
-      )
-        continue; // do not reveal a message to a user who can't see it
-    } else {
-      if (!channel.members?.some((user) => user.id == message.author.id))
-        continue; // do not reveal a message to a user who can't see it
-    }
-
     try {
+      const channel = await message.guild?.channels.fetch(r.groups.channelId);
+
+      if (!channel || !channel.isTextBased()) continue;
+
+      if (channel instanceof ThreadChannel) {
+        if (
+          !channel.parent?.members?.some((user) => user.id == message.author.id)
+        )
+          continue; // do not reveal a message to a user who can't see it
+      } else {
+        if (!channel.members?.some((user) => user.id == message.author.id))
+          continue; // do not reveal a message to a user who can't see it
+      }
+
       const originalMessage = await channel.messages.fetch(r.groups.messageId);
 
       const embed = new EmbedBuilder()
@@ -78,8 +78,7 @@ export async function expandDiscordLink(message: Message): Promise<void> {
       }
 
       resultEmbeds.push(embed);
-    } catch (e) {
-      console.error(e);
+    } catch (ignored) {
     }
   }
 
