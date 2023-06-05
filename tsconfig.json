@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
     "strict": true,
-    "esModuleInterop": true,
     "downlevelIteration": true,
     "module": "esnext",
-    "target": "ES2018",
+    "target": "esnext",
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "rootDir": "src",
-    "outDir": "dist"
+    "skipLibCheck": true,
+    "noEmit": true
   }
 }
