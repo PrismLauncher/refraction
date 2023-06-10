@@ -1,4 +1,9 @@
-import { SlashCommandBuilder, Routes, PermissionFlagsBits } from 'discord.js';
+import {
+  SlashCommandBuilder,
+  Routes,
+  PermissionFlagsBits,
+  type RESTGetAPIOAuth2CurrentApplicationResult,
+} from 'discord.js';
 import { REST } from '@discordjs/rest';
 import { getTags } from './tags';
 
@@ -62,7 +67,11 @@ export const reuploadCommands = async () => {
 
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
 
-  await rest.put(Routes.applicationCommands(process.env.DISCORD_APP!), {
+  const { id: appId } = (await rest.get(
+    Routes.oauth2CurrentApplication()
+  )) as RESTGetAPIOAuth2CurrentApplicationResult;
+
+  await rest.put(Routes.applicationCommands(appId), {
     body: commands,
   });
 

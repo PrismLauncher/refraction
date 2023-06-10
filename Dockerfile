@@ -1,6 +1,11 @@
-FROM docker.io/library/node:19-alpine
+FROM docker.io/library/node:20-alpine
+RUN corepack enable
+RUN corepack prepare pnpm@latest --activate
+
 WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+
+COPY package.json pnpm-lock.yaml .
+RUN pnpm install
+
 COPY . .
-CMD [ "yarn", "start" ]
+CMD [ "pnpm", "run", "start" ]

@@ -5,6 +5,8 @@ import {
   OAuth2Scopes,
   InteractionType,
   PermissionFlagsBits,
+  ChannelType,
+  Events,
 } from 'discord.js';
 import { reuploadCommands } from './_reupload';
 
@@ -76,7 +78,7 @@ client.once('ready', async () => {
     status: 'online',
   });
 
-  client.on('messageCreate', async (e) => {
+  client.on(Events.MessageCreate, async (e) => {
     try {
       if (e.channel.partial) await e.channel.fetch();
       if (e.author.partial) await e.author.fetch();
@@ -98,12 +100,12 @@ client.once('ready', async () => {
       }
       await expandDiscordLink(e);
     } catch (error) {
-      console.error('Unhandled exception on messageCreate', error);
+      console.error('Unhandled exception on MessageCreate', error);
     }
   });
 });
 
-client.on('interactionCreate', async (interaction) => {
+client.on(Events.InteractionCreate, async (interaction) => {
   try {
     if (!interaction.isChatInputCommand()) return;
 
@@ -130,16 +132,16 @@ client.on('interactionCreate', async (interaction) => {
       await roryCommand(interaction);
     }
   } catch (error) {
-    console.error('Unhandled exception on interactionCreate', error);
+    console.error('Unhandled exception on InteractionCreate', error);
   }
 });
 
-client.on('messageReactionAdd', async (reaction, user) => {
+client.on(Events.MessageReactionAdd, async (reaction, user) => {
   try {
     if (reaction.partial) {
       try {
         await reaction.fetch();
-      } catch (error)  {
+      } catch (error) {
         console.error('Something went wrong when fetching the message:', error);
         return;
       }
@@ -147,14 +149,45 @@ client.on('messageReactionAdd', async (reaction, user) => {
 
     if (
       reaction.message.interaction &&
-      reaction.message.interaction?.type === InteractionType.ApplicationCommand &&
+      reaction.message.interaction?.type ===
+        InteractionType.ApplicationCommand &&
       reaction.message.interaction?.user === user &&
       reaction.emoji.name === '❌'
     ) {
       await reaction.message.delete();
     }
   } catch (error) {
-    console.error('Unhandled exception on messageReactionAdd', error);
+    console.error('Unhandled exception on MessageReactionAdd', error);
+  }
+});
+
+client.on(Events.ThreadCreate, async (channel) => {
+  try {
+    if (
+      channel.type === ChannelType.PublicThread &&
+      channel.parent &&
+      channel.parent.name === 'support' &&
+      channel.guild
+    ) {
+      const pingRole = channel.guild.roles.cache.find(
+        (r) => r.name === 'Moderators'
+      );
+
+      if (!pingRole) return;
+
+      await channel.send({
+        content: `
+    <@${channel.ownerId}> We've received your support ticket! Please upload your logs and post the link here if possible. Also, remember not to ping ${pingRole} for support, as they are not support staff!
+        `.trim(),
+        allowedMentions: {
+          repliedUser: true,
+          roles: [],
+          users: channel.ownerId ? [channel.ownerId] : [],
+        },
+      });
+    }
+  } catch (error) {
+    console.error('Error handling ThreadCreate', error);
   }
 });
 

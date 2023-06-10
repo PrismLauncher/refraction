@@ -32,7 +32,7 @@
       };
       devShells.default = pkgs.mkShell {
         inherit (self.checks.${system}.pre-commit-check) shellHook;
-        packages = with pkgs; [yarn];
+        packages = with pkgs; [nodePackages.pnpm];
       };
     });
 }

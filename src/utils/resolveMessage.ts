@@ -79,6 +79,7 @@ export async function expandDiscordLink(message: Message): Promise<void> {
 
       resultEmbeds.push(embed);
     } catch (ignored) {
+      /* */
     }
   }
 
