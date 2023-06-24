@@ -8,6 +8,8 @@ fields:
     value: In the PrismLauncher folder
   - name: Windows
     value: '`%APPDATA%/PrismLauncher`'
+  - name: Scoop
+    value: '`%HOMEPATH%\scoop\persist\prismlauncher`'
   - name: macOS
     value: '`~/Library/Application Support/PrismLauncher`'
   - name: Linux
