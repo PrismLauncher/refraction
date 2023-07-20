@@ -134,6 +134,11 @@ const oomAnalyzer: Analyzer = async (text) => {
       'Out of Memory',
       'Allocating more RAM to your instance could help prevent this crash.',
     ];
+  } else if (text.includes('-805306369')) {
+    return [
+      'Out of Memory',
+      'Allocating more RAM to your instance could help prevent this crash.\nIf you are using a modpack, try allocating more RAM to the pack.',
+    ];
   }
   return null;
 };
