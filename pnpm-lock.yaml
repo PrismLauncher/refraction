@@ -9,8 +9,8 @@ dependencies:
     specifier: 1.7.1
     version: 1.7.1
   discord.js:
-    specifier: 14.12.0
-    version: 14.12.0
+    specifier: 14.12.1
+    version: 14.12.1
   just-random:
     specifier: 3.2.0
     version: 3.2.0
@@ -761,8 +761,8 @@ packages:
     resolution: {integrity: sha512-tdmdH98t3zgjQF6zwOHl0OB/PCBiE4aVsNTuN7m0PfU2jOLx3lNoU6xTeFALntUtlIxN80GTr9RPQR4t7msjSg==}
     dev: false
 
-  /discord.js@14.12.0:
-    resolution: {integrity: sha512-rvqwvcu73p8QCsy90klZ6n8HLfaN9SCCKyGGrgVIHcJ3ywUzr1hU67Zm/0c7h2PR45ySZqSHV8x2mIfJ1+n/OA==}
+  /discord.js@14.12.1:
+    resolution: {integrity: sha512-gGjhTkauIPgFXxpBl0UZgyehrKhDe90cIS8Hn1xFBYQ63EuUAkKoUqRNmc/pcla6DD16s4cUz5tAbdSpXivnxw==}
     engines: {node: '>=16.9.0'}
     dependencies:
       '@discordjs/builders': 1.6.4
