@@ -22,6 +22,7 @@ import { tagsCommand } from './commands/tags';
 import { jokeCommand } from './commands/joke';
 import { roryCommand } from './commands/rory';
 import { sayCommand } from './commands/say';
+import { uwurandomCommand } from './commands/uwurandom';
 
 import random from 'just-random';
 import { green, bold, yellow, cyan } from 'kleur/colors';
@@ -111,25 +112,37 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     const { commandName } = interaction;
 
-    if (commandName === 'ping') {
-      await interaction.reply({
-        content: `Pong! \`${client.ws.ping}ms\``,
-        ephemeral: true,
-      });
-    } else if (commandName === 'members') {
-      await membersCommand(interaction);
-    } else if (commandName === 'stars') {
-      await starsCommand(interaction);
-    } else if (commandName === 'modrinth') {
-      await modrinthCommand(interaction);
-    } else if (commandName === 'say') {
-      await sayCommand(interaction);
-    } else if (commandName === 'tag') {
-      await tagsCommand(interaction);
-    } else if (commandName === 'joke') {
-      await jokeCommand(interaction);
-    } else if (commandName === 'rory') {
-      await roryCommand(interaction);
+    switch (commandName) {
+      case 'ping':
+        await interaction.reply({
+          content: `Pong! \`${client.ws.ping}ms\``,
+          ephemeral: true,
+        });
+        break;
+      case 'members':
+        await membersCommand(interaction);
+        break;
+      case 'stars':
+        await starsCommand(interaction);
+        break;
+      case 'modrinth':
+        await modrinthCommand(interaction);
+        break;
+      case 'say':
+        await sayCommand(interaction);
+        break;
+      case 'tag':
+        await tagsCommand(interaction);
+        break;
+      case 'joke':
+        await jokeCommand(interaction);
+        break;
+      case 'rory':
+        await roryCommand(interaction);
+        break;
+      case 'uwurandom':
+        await uwurandomCommand(interaction);
+        break;
     }
   } catch (error) {
     console.error('Unhandled exception on InteractionCreate', error);
@@ -150,7 +163,7 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
     if (
       reaction.message.interaction &&
       reaction.message.interaction?.type ===
-        InteractionType.ApplicationCommand &&
+      InteractionType.ApplicationCommand &&
       reaction.message.interaction?.user === user &&
       reaction.emoji.name === '❌'
     ) {

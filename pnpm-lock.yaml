@@ -20,6 +20,9 @@ dependencies:
   tsx:
     specifier: 3.12.7
     version: 3.12.7
+  uwurandom-node:
+    specifier: 0.1.0
+    version: 0.1.0
 
 devDependencies:
   '@types/node':
@@ -1471,6 +1474,10 @@ packages:
     dependencies:
       punycode: 2.3.0
     dev: true
+
+  /uwurandom-node@0.1.0:
+    resolution: {integrity: sha512-CoPPYAyDWCwQkSX3ml8+8lTs2A8PrndzbuOX+6qzA9F1G/AC+KN8BalLrwMUABHYXZcYw1SnPe1kp3JFNmYUHw==}
+    dev: false
 
   /which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}

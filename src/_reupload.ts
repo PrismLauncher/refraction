@@ -63,6 +63,17 @@ export const reuploadCommands = async () => {
           .setDescription('specify a Rory ID')
           .setRequired(false)
       ),
+    new SlashCommandBuilder()
+      .setName('uwurandom')
+      .setDescription('Reads n bytes of /dev/uwurandom')
+      .addIntegerOption((option) =>
+        option
+          .setName('n')
+          .setDescription('The number of bytes to read')
+          .setRequired(true)
+          .setMinValue(1)
+          .setMaxValue(200)
+      )
   ].map((command) => command.toJSON());
 
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
