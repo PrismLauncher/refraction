@@ -8,20 +8,19 @@ import {
   ChannelType,
   Events,
 } from 'discord.js';
-import { reuploadCommands } from './_reupload';
+import { reuploadCommands } from './_commands';
 
 import * as BuildConfig from './constants';
 import { parseLog } from './logs';
 import { getLatestMinecraftVersion } from './utils/remoteVersions';
 import { expandDiscordLink } from './utils/resolveMessage';
 
-import { membersCommand } from './commands/members';
-import { starsCommand } from './commands/stars';
 import { modrinthCommand } from './commands/modrinth';
 import { tagsCommand } from './commands/tags';
 import { jokeCommand } from './commands/joke';
 import { roryCommand } from './commands/rory';
 import { sayCommand } from './commands/say';
+import { banCommand, kickCommand, timeoutCommand } from './commands/moderation';
 
 import random from 'just-random';
 import { green, bold, yellow, cyan } from 'kleur/colors';
@@ -116,10 +115,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
         content: `Pong! \`${client.ws.ping}ms\``,
         ephemeral: true,
       });
-    } else if (commandName === 'members') {
-      await membersCommand(interaction);
-    } else if (commandName === 'stars') {
-      await starsCommand(interaction);
     } else if (commandName === 'modrinth') {
       await modrinthCommand(interaction);
     } else if (commandName === 'say') {
@@ -130,6 +125,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
       await jokeCommand(interaction);
     } else if (commandName === 'rory') {
       await roryCommand(interaction);
+    } else if (commandName === 'ban') {
+      await banCommand(interaction);
+    } else if (commandName === 'timeout') {
+      await timeoutCommand(interaction);
+    } else if (commandName === 'kick') {
+      await kickCommand(interaction);
     }
   } catch (error) {
     console.error('Unhandled exception on InteractionCreate', error);
