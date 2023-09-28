@@ -190,7 +190,7 @@ client.on(Events.ThreadCreate, async (channel) => {
 
       await channel.send({
         content: `
-    <@${channel.ownerId}> We've received your support ticket! Please upload your logs and post the link here if possible. Also, remember not to ping ${pingRole} for support, as they are not support staff!
+    <@${channel.ownerId}> We've received your support ticket! Please upload your logs and post the link here if possible (run \`/tag log\` to find out how). Please don't ping people for support questions, unless you have their permission.
         `.trim(),
         allowedMentions: {
           repliedUser: true,

@@ -9,22 +9,22 @@
     "lint": "tsc && eslint ."
   },
   "dependencies": {
-    "@discordjs/rest": "2.0.0",
-    "discord.js": "14.12.1",
+    "@discordjs/rest": "2.0.1",
+    "discord.js": "14.13.0",
     "just-random": "3.2.0",
     "kleur": "4.1.5",
-    "tsx": "3.12.7",
+    "tsx": "3.13.0",
     "uwurandom-node": "0.1.0"
   },
   "devDependencies": {
-    "@types/node": "20.4.5",
-    "@typescript-eslint/eslint-plugin": "6.2.1",
-    "@typescript-eslint/parser": "6.2.1",
+    "@types/node": "20.7.0",
+    "@typescript-eslint/eslint-plugin": "6.7.3",
+    "@typescript-eslint/parser": "6.7.3",
     "dotenv": "16.3.1",
-    "eslint": "8.46.0",
+    "eslint": "8.50.0",
     "gray-matter": "4.0.3",
-    "prettier": "3.0.0",
-    "typescript": "5.1.6"
+    "prettier": "3.0.3",
+    "typescript": "5.2.2"
   },
-  "packageManager": "pnpm@8.6.11"
+  "packageManager": "pnpm@8.8.0"
 }
