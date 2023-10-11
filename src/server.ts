@@ -6,6 +6,7 @@ import {
   type RESTGetAPICurrentUserConnectionsResult,
   type RESTGetAPIUserResult,
   ConnectionService,
+  RESTPostOAuth2AccessTokenResult,
 } from 'discord.js';
 
 import { Octokit } from '@octokit/core';
@@ -55,11 +56,13 @@ const octokit = new MyOctokit({
   },
 });
 
-const makeRestAPI = (accessToken: string) => {
-  return new REST({
+const makeRestAPI = (accessToken: string | undefined) => {
+  const rest = new REST({
     version: '10',
     authPrefix: 'Bearer',
-  }).setToken(accessToken);
+  });
+  if (accessToken) rest.setToken(accessToken);
+  return rest;
 };
 
 // TODO: add state param
@@ -72,24 +75,20 @@ const generateAuthorizeUrl = () => {
   return url.toString();
 };
 
-const getTokensFromOAuth = async (code: string) => {
-  try {
-    return await axios.post(
-      OAuth2Routes.tokenURL,
-      {
-        client_id: config.discord.clientId,
-        client_secret: config.discord.clientSecret,
-        code,
-        grant_type: 'authorization_code',
-        redirect_uri: config.discord.oauth2.redirectUri,
-        scope: config.discord.oauth2.scope,
-      },
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-    );
-  } catch (e) {
-    if (!(e instanceof AxiosError) || e.status != 400) throw e;
-    return null;
-  }
+const getTokensFromOAuth = async (rest: REST, code: string) => {
+  return (await rest.post(Routes.oauth2TokenExchange(), {
+    auth: false,
+    body: new URLSearchParams({
+      client_id: config.discord.clientId,
+      client_secret: config.discord.clientSecret,
+      code,
+      grant_type: 'authorization_code',
+      redirect_uri: config.discord.oauth2.redirectUri,
+      scope: config.discord.oauth2.scope,
+    }),
+    passThroughBody: true,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  })) as RESTPostOAuth2AccessTokenResult;
 };
 
 const getDiscordProfile = async (rest: REST) => {
@@ -134,7 +133,9 @@ export const listen = () => {
       return;
     }
 
-    const tokenResponse = await getTokensFromOAuth(code.toString());
+    const anonRest = makeRestAPI(undefined);
+
+    const tokenResponse = await getTokensFromOAuth(anonRest, code.toString());
 
     if (!tokenResponse) {
       reply
@@ -145,13 +146,14 @@ export const listen = () => {
       return;
     }
 
-    const accessToken = tokenResponse.data.access_token;
-    const refreshToken = tokenResponse.data.refresh_token;
-
-    const userRest = makeRestAPI(accessToken);
+    const userRest = makeRestAPI(tokenResponse.access_token);
     const discordUserId = (await getDiscordProfile(userRest)).id;
 
-    storeToken(discordUserId, accessToken, refreshToken);
+    storeToken(
+      discordUserId,
+      tokenResponse.access_token,
+      tokenResponse.refresh_token
+    );
 
     const githubUserIds = await getGitHubConnections(userRest);
 
