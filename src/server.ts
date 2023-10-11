@@ -3,12 +3,21 @@ import {
   Routes,
   OAuth2Routes,
   type RESTPutAPICurrentUserApplicationRoleConnectionJSONBody,
+  type RESTGetAPICurrentUserConnectionsResult,
+  ConnectionService,
 } from 'discord.js';
+
+import { Octokit } from '@octokit/core';
+import { paginateRest } from '@octokit/plugin-paginate-rest';
+import { throttling } from '@octokit/plugin-throttling';
+import { retry } from '@octokit/plugin-retry';
 
 import axios from 'axios';
 import express from 'express';
 
 import config from './config';
+
+const MyOctokit = Octokit.plugin(paginateRest, throttling, retry);
 
 const makeRestAPI = (token = config.discord.botToken, bot = true) => {
   return new REST({
@@ -59,16 +68,65 @@ export const listenApp = () => {
 
     const rest = makeRestAPI(tokenResponse.data.access_token, false);
 
-    // Get GitHub connections
-    // Ask GitHub for contributions
+    const connections = (await rest.get(
+      Routes.userConnections()
+    )) as RESTGetAPICurrentUserConnectionsResult;
+    const githubUserIds = connections
+      .filter((connection) => connection.type == ConnectionService.GitHub)
+      .map((connection) => connection.id);
 
-    // potentially add platform_name and platform_username
+    // Ask GitHub for contributions
     const metadata: RESTPutAPICurrentUserApplicationRoleConnectionJSONBody = {
       metadata: {
         contributed_launcher: 'true',
         contributed_translations: 'true',
       },
     };
+
+    const octokit = new MyOctokit({
+      throttle: {
+        onRateLimit: (retryAfter, options) => {
+          octokit.log.warn(
+            `Request quota exhausted for request ${options.method} ${options.url}`
+          );
+
+          // Retry twice after hitting a rate limit error, then give up
+          if (options.request.retryCount <= 2) {
+            console.log(`Retrying after ${retryAfter} seconds!`);
+            return true;
+          }
+        },
+        onSecondaryRateLimit: (retryAfter, options, octokit) => {
+          // does not retry, only logs a warning
+          octokit.log.warn(
+            `Secondary quota detected for request ${options.method} ${options.url}`
+          );
+        },
+      },
+    });
+
+    for (const repo of config.github.repos) {
+      const key = `contributed_${repo.key}`;
+      metadata.metadata![key] = 'false';
+
+      await octokit.paginate(
+        'GET /repos/{owner}/{repo}/contributors',
+        { owner: repo.owner, repo: repo.repo },
+        (response, done) => {
+          if (
+            response.data.find((contributor) =>
+              githubUserIds.includes(contributor.id!.toString())
+            )
+          ) {
+            done();
+            metadata.metadata![key] = 'true';
+          }
+          return response.data;
+        }
+      );
+    }
+
+    // potentially add platform_name and platform_username
 
     const discordResponse = await rest.put(
       Routes.userApplicationRoleConnection(config.discord.clientId),

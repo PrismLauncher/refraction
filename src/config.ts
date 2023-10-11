@@ -12,20 +12,29 @@ export default {
     },
   },
   github: {
-    repoRoleMapping: {
-      'PrismLauncher/PrismLauncher': {
+    repos: [
+      {
+        owner: 'PrismLauncher',
+        repo: 'PrismLauncher',
+
         key: 'launcher',
         name: 'Launcher contributor',
       },
-      'PrismLauncher/prismlauncher.org': {
+      {
+        owner: 'PrismLauncher',
+        repo: 'prismlauncher.org',
+
         key: 'website',
         name: 'Web developer',
       },
-      'PrismLauncher/Translations': {
+      {
+        owner: 'PrismLauncher',
+        repo: 'Translations',
+
         key: 'translations',
         name: 'Translator',
       },
-    },
+    ],
   },
   expressPort: Number(process.env.EXPRESS_PORT) || 3000,
 };

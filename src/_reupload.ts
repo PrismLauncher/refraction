@@ -24,12 +24,12 @@ export const registerRoleConnectionMetadata = async () => {
 
   const metadata: RESTPutAPIApplicationRoleConnectionMetadataJSONBody = [];
 
-  for (const [repo, mapping] of Object.entries(config.github.repoRoleMapping)) {
+  for (const repo of config.github.repos) {
     metadata.push({
       type: ApplicationRoleConnectionMetadataType.BooleanEqual,
-      key: `contributed_${mapping.key}`,
-      name: mapping.name,
-      description: `The user has contributed to ${repo}`,
+      key: `contributed_${repo.key}`,
+      name: repo.name,
+      description: `The user has contributed to ${repo.owner}/${repo.repo}`,
     });
   }
 
