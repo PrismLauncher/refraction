@@ -26,7 +26,10 @@
           src = ./.;
           hooks = {
             alejandra.enable = true;
-            prettier.enable = true;
+            prettier = {
+              enable = true;
+              excludes = ["flake.lock" "pnpm-lock.yaml"];
+            };
           };
         };
       };
