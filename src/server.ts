@@ -16,7 +16,12 @@ import { retry } from '@octokit/plugin-retry';
 import axios from 'axios';
 import express from 'express';
 
-import { storeToken } from './storage';
+import {
+  areContributors,
+  contributorsStored,
+  storeGitHubContributors,
+  storeToken,
+} from './storage';
 import config from './config';
 
 const MyOctokit = Octokit.plugin(paginateRest, throttling, retry);
@@ -84,16 +89,22 @@ const getGitHubConnections = async (rest: REST) => {
     Routes.userConnections()
   )) as RESTGetAPICurrentUserConnectionsResult;
 
-  return connections
-    .filter((connection) => connection.type == ConnectionService.GitHub)
-    .map((connection) => connection.id);
+  return connections.reduce((result, connection) => {
+    if (connection.type == ConnectionService.GitHub) result.push(connection.id);
+    return result;
+  }, [] as string[]);
 };
 
-const getGitHubContributors = async (owner: string, repo: string) => {
-  return await octokit.paginate('GET /repos/{owner}/{repo}/contributors', {
-    owner,
-    repo,
-  });
+const getGitHubContributorIds = async (owner: string, repo: string) => {
+  return (
+    await octokit.paginate('GET /repos/{owner}/{repo}/contributors', {
+      owner,
+      repo,
+    })
+  ).reduce((result, contributor) => {
+    if (contributor.id) result.push(contributor.id.toString());
+    return result;
+  }, [] as string[]);
 };
 
 export const listen = () => {
@@ -131,27 +142,29 @@ export const listen = () => {
       const key = `contributed_${repo.key}`;
       metadata.metadata![key] = 'false';
 
-      const contributors = await getGitHubContributors(repo.owner, repo.repo);
+      if (!(await contributorsStored(repo.owner, repo.repo))) {
+        console.debug(`Cache miss for ${repo.owner}/${repo.repo} contributors`);
+        const contributors = await getGitHubContributorIds(
+          repo.owner,
+          repo.repo
+        );
+        await storeGitHubContributors(repo.owner, repo.repo, contributors);
+      }
 
-      if (
-        contributors.find((contributor) =>
-          githubUserIds.includes(contributor.id!.toString())
-        )
-      ) {
+      if (await areContributors(repo.owner, repo.repo, githubUserIds)) {
         metadata.metadata![key] = 'true';
       }
     }
 
     // potentially add platform_name and platform_username
 
-    const discordResponse = await userRest.put(
+    await userRest.put(
       Routes.userApplicationRoleConnection(config.discord.clientId),
       {
         body: metadata,
       }
     );
 
-    console.log(discordResponse);
     response.sendStatus(200);
   });
   app.listen(config.expressPort);
