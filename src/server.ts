@@ -1,6 +1,7 @@
 import {
   REST,
   Routes,
+  OAuth2Routes,
   type RESTPutAPICurrentUserApplicationRoleConnectionJSONBody,
 } from 'discord.js';
 
@@ -18,7 +19,7 @@ const makeRestAPI = (token = config.discord.botToken, bot = true) => {
 
 // TODO: add state param
 const generateAuthorizeUrl = () => {
-  const url = new URL('authorize', config.discord.oauth2.baseUrl);
+  const url = new URL(OAuth2Routes.authorizationURL);
   url.searchParams.append('client_id', config.discord.clientId);
   url.searchParams.append('redirect_uri', config.discord.oauth2.redirectUri);
   url.searchParams.append('response_type', 'code');
@@ -41,9 +42,8 @@ export const listenApp = () => {
       return;
     }
 
-    // TODO: use axios base url
     const tokenResponse = await axios.post(
-      new URL('token', config.discord.oauth2.baseUrl).toString(),
+      OAuth2Routes.tokenURL,
       {
         client_id: config.discord.clientId,
         client_secret: config.discord.clientSecret,
