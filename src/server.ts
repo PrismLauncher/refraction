@@ -13,8 +13,8 @@ import { paginateRest } from '@octokit/plugin-paginate-rest';
 import { throttling } from '@octokit/plugin-throttling';
 import { retry } from '@octokit/plugin-retry';
 
-import axios from 'axios';
-import express from 'express';
+import axios, { AxiosError } from 'axios';
+import Fastify, { RequestGenericInterface } from 'fastify';
 
 import {
   areContributors,
@@ -24,9 +24,16 @@ import {
 } from './storage';
 import config from './config';
 
+interface OAuth2Callback extends RequestGenericInterface {
+  Querystring: {
+    code: string;
+  };
+}
+
 const MyOctokit = Octokit.plugin(paginateRest, throttling, retry);
 
 const octokit = new MyOctokit({
+  auth: config.github.token,
   throttle: {
     onRateLimit: (retryAfter, options) => {
       octokit.log.warn(
@@ -66,18 +73,23 @@ const generateAuthorizeUrl = () => {
 };
 
 const getTokensFromOAuth = async (code: string) => {
-  return await axios.post(
-    OAuth2Routes.tokenURL,
-    {
-      client_id: config.discord.clientId,
-      client_secret: config.discord.clientSecret,
-      code,
-      grant_type: 'authorization_code',
-      redirect_uri: config.discord.oauth2.redirectUri,
-      scope: config.discord.oauth2.scope,
-    },
-    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-  );
+  try {
+    return await axios.post(
+      OAuth2Routes.tokenURL,
+      {
+        client_id: config.discord.clientId,
+        client_secret: config.discord.clientSecret,
+        code,
+        grant_type: 'authorization_code',
+        redirect_uri: config.discord.oauth2.redirectUri,
+        scope: config.discord.oauth2.scope,
+      },
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    );
+  } catch (e) {
+    if (!(e instanceof AxiosError) || e.status != 400) throw e;
+    return null;
+  }
 };
 
 const getDiscordProfile = async (rest: REST) => {
@@ -108,21 +120,30 @@ const getGitHubContributorIds = async (owner: string, repo: string) => {
 };
 
 export const listen = () => {
-  const app = express();
+  const fastify = Fastify({ logger: true });
 
-  app.get('/oauth2/authorize', (_, response) => {
-    response.redirect(generateAuthorizeUrl());
+  fastify.get('/oauth2/authorize', (_, reply) => {
+    reply.redirect(generateAuthorizeUrl());
   });
 
-  app.get('/oauth2/callback', async (request, response) => {
+  fastify.get<OAuth2Callback>('/oauth2/callback', async (request, reply) => {
     const { code } = request.query;
 
     if (!code) {
-      response.sendStatus(400);
+      reply.code(400);
       return;
     }
 
     const tokenResponse = await getTokensFromOAuth(code.toString());
+
+    if (!tokenResponse) {
+      reply
+        .code(400)
+        .send(
+          'The authorization code is invalid. Please restart the authorization process.'
+        );
+      return;
+    }
 
     const accessToken = tokenResponse.data.access_token;
     const refreshToken = tokenResponse.data.refresh_token;
@@ -143,7 +164,9 @@ export const listen = () => {
       metadata.metadata![key] = 'false';
 
       if (!(await contributorsStored(repo.owner, repo.repo))) {
-        console.debug(`Cache miss for ${repo.owner}/${repo.repo} contributors`);
+        request.log.debug(
+          `Cache miss for ${repo.owner}/${repo.repo} contributors`
+        );
         const contributors = await getGitHubContributorIds(
           repo.owner,
           repo.repo
@@ -165,7 +188,11 @@ export const listen = () => {
       }
     );
 
-    response.sendStatus(200);
+    reply
+      .code(200)
+      .send(
+        'You should have your linked roles now! You can close this page now.'
+      );
   });
-  app.listen(config.expressPort);
+  fastify.listen({ port: config.expressPort });
 };

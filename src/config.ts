@@ -12,6 +12,7 @@ export default {
     },
   },
   github: {
+    token: process.env.GITHUB_TOKEN,
     repos: [
       {
         owner: 'PrismLauncher',
