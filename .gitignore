@@ -10,3 +10,4 @@ node_modules/
 eslint_report.json
 
 .DS_Store
+*.rdb
