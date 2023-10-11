@@ -14,9 +14,18 @@ export default {
   },
   github: {
     repoRoleMapping: {
-      'PrismLauncher/PrismLauncher': 'launcher',
-      'PrismLauncher/prismlauncher.org': 'website',
-      'PrismLauncher/Translations': 'translations',
+      'PrismLauncher/PrismLauncher': {
+        key: 'launcher',
+        name: 'Launcher contributor',
+      },
+      'PrismLauncher/prismlauncher.org': {
+        key: 'website',
+        name: 'Web developer',
+      },
+      'PrismLauncher/Translations': {
+        key: 'translations',
+        name: 'Translator',
+      },
     },
   },
   expressPort: Number(process.env.EXPRESS_PORT) || 3000,

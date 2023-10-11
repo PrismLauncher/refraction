@@ -12,6 +12,7 @@ import {
 import config from './config';
 
 import reupload from './_reupload';
+import { listenApp } from './server';
 
 import * as BuildConfig from './constants';
 import { parseLog } from './logs';
@@ -200,6 +201,7 @@ client.on(Events.ThreadCreate, async (channel) => {
 reupload()
   .then(() => {
     client.login(config.discord.botToken);
+    listenApp();
   })
   .catch((e) => {
     console.error(e);
