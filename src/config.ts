@@ -12,5 +12,12 @@ export default {
       sayLogChannelId: process.env.DISCORD_SAY_LOG_CHANNELID || '',
     },
   },
+  github: {
+    repoRoleMapping: {
+      'PrismLauncher/PrismLauncher': 'launcher',
+      'PrismLauncher/prismlauncher.org': 'website',
+      'PrismLauncher/Translations': 'translations',
+    },
+  },
   expressPort: Number(process.env.EXPRESS_PORT) || 3000,
 };

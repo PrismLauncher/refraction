@@ -2,12 +2,46 @@ import {
   SlashCommandBuilder,
   Routes,
   PermissionFlagsBits,
-  type RESTGetAPIOAuth2CurrentApplicationResult,
+  type RESTPutAPIApplicationRoleConnectionMetadataJSONBody,
+  ApplicationRoleConnectionMetadataType,
 } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import { getTags } from './tags';
 
 import config from './config';
+
+const makeRestAPI = () => {
+  return new REST({ version: '10' }).setToken(config.discord.botToken);
+};
+
+export default async () => {
+  await registerRoleConnectionMetadata();
+  await reuploadCommands();
+};
+
+export const registerRoleConnectionMetadata = async () => {
+  const rest = makeRestAPI();
+
+  const metadata: RESTPutAPIApplicationRoleConnectionMetadataJSONBody = [];
+
+  for (const [repo, roleKey] of Object.entries(config.github.repoRoleMapping)) {
+    metadata.push({
+      type: ApplicationRoleConnectionMetadataType.BooleanEqual,
+      key: `contributed_${roleKey}`,
+      name: `Contributed to ${repo}`,
+      description: `The user has contributed to ${repo}`,
+    });
+  }
+
+  await rest.put(
+    Routes.applicationRoleConnectionMetadata(config.discord.clientId),
+    {
+      body: metadata,
+    }
+  );
+
+  console.log('Successfully registered application role connection metadata');
+};
 
 export const reuploadCommands = async () => {
   const tags = await getTags();
@@ -67,13 +101,9 @@ export const reuploadCommands = async () => {
       ),
   ].map((command) => command.toJSON());
 
-  const rest = new REST({ version: '10' }).setToken(config.discord.botToken);
+  const rest = makeRestAPI();
 
-  const { id: appId } = (await rest.get(
-    Routes.oauth2CurrentApplication()
-  )) as RESTGetAPIOAuth2CurrentApplicationResult;
-
-  await rest.put(Routes.applicationCommands(appId), {
+  await rest.put(Routes.applicationCommands(config.discord.clientId), {
     body: commands,
   });
 

@@ -11,7 +11,7 @@ import {
 
 import config from './config';
 
-import { reuploadCommands } from './_reupload';
+import reupload from './_reupload';
 
 import * as BuildConfig from './constants';
 import { parseLog } from './logs';
@@ -197,7 +197,7 @@ client.on(Events.ThreadCreate, async (channel) => {
   }
 });
 
-reuploadCommands()
+reupload()
   .then(() => {
     client.login(config.discord.botToken);
   })
