@@ -5,7 +5,7 @@ export default {
     botToken: process.env.DISCORD_BOT_TOKEN || '',
     oauth2: {
       redirectUri: `${process.env.PUBLIC_URI}/oauth2/callback`,
-      scope: 'connections role_connections.write',
+      scope: 'identify connections role_connections.write',
     },
     channels: {
       sayLogChannelId: process.env.DISCORD_SAY_LOG_CHANNELID || '',
@@ -37,4 +37,5 @@ export default {
     ],
   },
   expressPort: Number(process.env.EXPRESS_PORT) || 3000,
+  redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
 };

@@ -4,6 +4,7 @@ import {
   OAuth2Routes,
   type RESTPutAPICurrentUserApplicationRoleConnectionJSONBody,
   type RESTGetAPICurrentUserConnectionsResult,
+  type RESTGetAPIUserResult,
   ConnectionService,
 } from 'discord.js';
 
@@ -15,6 +16,7 @@ import { retry } from '@octokit/plugin-retry';
 import axios from 'axios';
 import express from 'express';
 
+import { storeToken } from './storage';
 import config from './config';
 
 const MyOctokit = Octokit.plugin(paginateRest, throttling, retry);
@@ -73,6 +75,10 @@ const getTokensFromOAuth = async (code: string) => {
   );
 };
 
+const getDiscordProfile = async (rest: REST) => {
+  return (await rest.get(Routes.user())) as RESTGetAPIUserResult;
+};
+
 const getGitHubConnections = async (rest: REST) => {
   const connections = (await rest.get(
     Routes.userConnections()
@@ -90,7 +96,7 @@ const getGitHubContributors = async (owner: string, repo: string) => {
   });
 };
 
-export const listenApp = () => {
+export const listen = () => {
   const app = express();
 
   app.get('/oauth2/authorize', (_, response) => {
@@ -107,9 +113,14 @@ export const listenApp = () => {
 
     const tokenResponse = await getTokensFromOAuth(code.toString());
 
-    // TODO: store tokens in Redis
+    const accessToken = tokenResponse.data.access_token;
+    const refreshToken = tokenResponse.data.refresh_token;
 
-    const userRest = makeRestAPI(tokenResponse.data.access_token);
+    const userRest = makeRestAPI(accessToken);
+    const discordUserId = (await getDiscordProfile(userRest)).id;
+
+    storeToken(discordUserId, accessToken, refreshToken);
+
     const githubUserIds = await getGitHubConnections(userRest);
 
     const metadata: RESTPutAPICurrentUserApplicationRoleConnectionJSONBody = {
