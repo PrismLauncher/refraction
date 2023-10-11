@@ -4,6 +4,8 @@ import {
   EmbedBuilder,
 } from 'discord.js';
 
+import config from '../config';
+
 export const sayCommand = async (
   interaction: ChatInputCommandInteraction<CacheType>
 ) => {
@@ -14,9 +16,9 @@ export const sayCommand = async (
   const message = await interaction.channel.send(content);
   await interaction.editReply('I said what you said!');
 
-  if (process.env.SAY_LOGS_CHANNEL) {
+  if (config.discord.channels.sayLogChannelId) {
     const logsChannel = await interaction.guild.channels.fetch(
-      process.env.SAY_LOGS_CHANNEL
+      config.discord.channels.sayLogChannelId
     );
 
     if (!logsChannel?.isTextBased()) return;

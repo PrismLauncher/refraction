@@ -8,6 +8,9 @@ import {
   ChannelType,
   Events,
 } from 'discord.js';
+
+import config from './config';
+
 import { reuploadCommands } from './_reupload';
 
 import * as BuildConfig from './constants';
@@ -196,7 +199,7 @@ client.on(Events.ThreadCreate, async (channel) => {
 
 reuploadCommands()
   .then(() => {
-    client.login(process.env.DISCORD_TOKEN);
+    client.login(config.discord.botToken);
   })
   .catch((e) => {
     console.error(e);

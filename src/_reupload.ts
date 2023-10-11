@@ -7,6 +7,8 @@ import {
 import { REST } from '@discordjs/rest';
 import { getTags } from './tags';
 
+import config from './config';
+
 export const reuploadCommands = async () => {
   const tags = await getTags();
 
@@ -65,7 +67,7 @@ export const reuploadCommands = async () => {
       ),
   ].map((command) => command.toJSON());
 
-  const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
+  const rest = new REST({ version: '10' }).setToken(config.discord.botToken);
 
   const { id: appId } = (await rest.get(
     Routes.oauth2CurrentApplication()
