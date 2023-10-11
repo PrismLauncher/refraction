@@ -78,7 +78,7 @@ export const listenApp = () => {
     );
 
     console.log(discordResponse);
-    response.sendStatus(204);
+    response.sendStatus(200);
   });
   app.listen(config.expressPort);
 };
