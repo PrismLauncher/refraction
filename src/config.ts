@@ -36,6 +36,8 @@ export default {
         name: 'Translator',
       },
     ],
+    cacheSec: 3600,
+    updateJobCron: '0 */10 * * * *', // every 10 minutes
   },
   expressPort: Number(process.env.EXPRESS_PORT) || 3000,
   redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',

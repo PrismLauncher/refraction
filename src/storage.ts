@@ -2,7 +2,7 @@ import { createClient } from 'redis';
 
 import config from './config';
 
-const client = createClient({
+export const client = createClient({
   url: config.redisUrl,
 });
 
@@ -27,7 +27,7 @@ export const storeGitHubContributors = async (
     .multi()
     .del(key)
     .sAdd(key, contributorIds)
-    .expire(key, 300, 'NX')
+    .expire(key, config.github.cacheSec, 'NX')
     .exec();
 };
 

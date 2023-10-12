@@ -14,6 +14,7 @@ import config from './config';
 import reupload from './_reupload';
 import { listen as listenApp } from './server';
 import { connect as connectStorage } from './storage';
+import { scheduleJobs } from './tasks';
 
 import * as BuildConfig from './constants';
 import { parseLog } from './logs';
@@ -203,6 +204,7 @@ reupload()
   .then(() => {
     client.login(config.discord.botToken);
     connectStorage();
+    scheduleJobs();
     listenApp();
   })
   .catch((e) => {

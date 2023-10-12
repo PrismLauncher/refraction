@@ -9,20 +9,9 @@ import {
   RESTPostOAuth2AccessTokenResult,
 } from 'discord.js';
 
-import { Octokit } from '@octokit/core';
-import { paginateRest } from '@octokit/plugin-paginate-rest';
-import { throttling } from '@octokit/plugin-throttling';
-import { retry } from '@octokit/plugin-retry';
-
-import axios, { AxiosError } from 'axios';
 import Fastify, { RequestGenericInterface } from 'fastify';
 
-import {
-  areContributors,
-  contributorsStored,
-  storeGitHubContributors,
-  storeToken,
-} from './storage';
+import { areContributors, contributorsStored, storeToken } from './storage';
 import config from './config';
 
 interface OAuth2Callback extends RequestGenericInterface {
@@ -30,31 +19,6 @@ interface OAuth2Callback extends RequestGenericInterface {
     code: string;
   };
 }
-
-const MyOctokit = Octokit.plugin(paginateRest, throttling, retry);
-
-const octokit = new MyOctokit({
-  auth: config.github.token,
-  throttle: {
-    onRateLimit: (retryAfter, options) => {
-      octokit.log.warn(
-        `Request quota exhausted for request ${options.method} ${options.url}`
-      );
-
-      // Retry twice after hitting a rate limit error, then give up
-      if (options.request.retryCount <= 2) {
-        console.log(`Retrying after ${retryAfter} seconds!`);
-        return true;
-      }
-    },
-    onSecondaryRateLimit: (retryAfter, options, octokit) => {
-      // does not retry, only logs a warning
-      octokit.log.warn(
-        `Secondary quota detected for request ${options.method} ${options.url}`
-      );
-    },
-  },
-});
 
 const makeRestAPI = (accessToken: string | undefined) => {
   const rest = new REST({
@@ -106,18 +70,6 @@ const getGitHubConnections = async (rest: REST) => {
   }, [] as string[]);
 };
 
-const getGitHubContributorIds = async (owner: string, repo: string) => {
-  return (
-    await octokit.paginate('GET /repos/{owner}/{repo}/contributors', {
-      owner,
-      repo,
-    })
-  ).reduce((result, contributor) => {
-    if (contributor.id) result.push(contributor.id.toString());
-    return result;
-  }, [] as string[]);
-};
-
 export const listen = () => {
   const fastify = Fastify({ logger: true });
 
@@ -129,8 +81,7 @@ export const listen = () => {
     const { code } = request.query;
 
     if (!code) {
-      reply.code(400);
-      return;
+      return reply.code(400);
     }
 
     const anonRest = makeRestAPI(undefined);
@@ -138,12 +89,11 @@ export const listen = () => {
     const tokenResponse = await getTokensFromOAuth(anonRest, code.toString());
 
     if (!tokenResponse) {
-      reply
+      return reply
         .code(400)
         .send(
           'The authorization code is invalid. Please restart the authorization process.'
         );
-      return;
     }
 
     const userRest = makeRestAPI(tokenResponse.access_token);
@@ -166,14 +116,11 @@ export const listen = () => {
       metadata.metadata![key] = 'false';
 
       if (!(await contributorsStored(repo.owner, repo.repo))) {
-        request.log.debug(
-          `Cache miss for ${repo.owner}/${repo.repo} contributors`
-        );
-        const contributors = await getGitHubContributorIds(
-          repo.owner,
-          repo.repo
-        );
-        await storeGitHubContributors(repo.owner, repo.repo, contributors);
+        return reply
+          .code(500)
+          .send(
+            "We don't have data about GitHub contributors right now. Yell at @scrumplex if you see this."
+          );
       }
 
       if (await areContributors(repo.owner, repo.repo, githubUserIds)) {
@@ -190,7 +137,7 @@ export const listen = () => {
       }
     );
 
-    reply
+    return reply
       .code(200)
       .send(
         'You should have your linked roles now! You can close this page now.'
