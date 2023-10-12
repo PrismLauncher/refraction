@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import {
   Client,
   GatewayIntentBits,
@@ -31,7 +33,9 @@ import { sayCommand } from './commands/say';
 
 import random from 'just-random';
 import { green, bold, yellow, cyan } from 'kleur/colors';
+
 import 'dotenv/config';
+
 import { proxied } from './utils/pluralKit';
 
 const client = new Client({
