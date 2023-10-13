@@ -143,5 +143,5 @@ export const listen = () => {
         'You should have your linked roles now! You can close this page now.'
       );
   });
-  fastify.listen({ port: config.expressPort });
+  fastify.listen({ port: config.httpPort });
 };
