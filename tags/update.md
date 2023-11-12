@@ -8,4 +8,4 @@ Windows auto-updating is only supported on 8.0+. For Prism 7.2 or below, you wil
 
 Prism Launcher auto-updates for macOS using the [Sparkle Framework](https://sparkle-project.org/).
 
-For Linux, just use your package manager! Appimage and portable auto-updating has been added in 8.0.
+For Linux, just use your package manager! Otherwise, AppImage and portable auto-updating was added in 8.0.
