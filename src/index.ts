@@ -7,7 +7,6 @@ import {
   PermissionFlagsBits,
   ChannelType,
   Events,
-  Message,
 } from 'discord.js';
 import { reuploadCommands } from './_reupload';
 import {
@@ -51,11 +50,6 @@ const client = new Client({
   ],
   partials: [Partials.Channel],
 });
-
-const handleWebhookMessage = async (e: Message<boolean>) => {
-  const pkMessage = await fetchPluralKitMessage(e);
-  if (pkMessage !== null) storeUserPlurality(pkMessage.sender);
-};
 
 client.once('ready', async () => {
   console.log(green('Discord bot ready!'));
@@ -107,7 +101,8 @@ client.once('ready', async () => {
       if (e.webhookId !== null) {
         // defer PK detection
         setTimeout(async () => {
-          await handleWebhookMessage(e);
+          const pkMessage = await fetchPluralKitMessage(e);
+          if (pkMessage !== null) storeUserPlurality(pkMessage.sender);
         }, pkDelay);
       }
 
