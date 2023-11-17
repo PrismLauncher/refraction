@@ -9,6 +9,11 @@ import {
   Events,
 } from 'discord.js';
 import { reuploadCommands } from './_reupload';
+import {
+  connect as connectStorage,
+  isUserPlural,
+  storeUserPlurality,
+} from './storage';
 
 import * as BuildConfig from './constants';
 import { parseLog } from './logs';
@@ -26,7 +31,11 @@ import { sayCommand } from './commands/say';
 import random from 'just-random';
 import { green, bold, yellow, cyan } from 'kleur/colors';
 import 'dotenv/config';
-import { proxied } from './utils/pluralKit';
+import {
+  fetchPluralKitMessage,
+  isMessageProxied,
+  pkDelay,
+} from './utils/pluralKit';
 
 const client = new Client({
   intents: [
@@ -89,7 +98,16 @@ client.once('ready', async () => {
 
       if (e.author === client.user) return;
 
-      if (await proxied(e)) return;
+      if (e.webhookId !== null) {
+        // defer PK detection
+        setTimeout(async () => {
+          const pkMessage = await fetchPluralKitMessage(e);
+          if (pkMessage !== null) storeUserPlurality(pkMessage.sender);
+        }, pkDelay);
+      }
+
+      if ((await isUserPlural(e.author.id)) && (await isMessageProxied(e)))
+        return;
 
       if (e.cleanContent.match(BuildConfig.ETA_REGEX)) {
         await e.reply(
@@ -196,6 +214,7 @@ client.on(Events.ThreadCreate, async (channel) => {
 
 reuploadCommands()
   .then(() => {
+    connectStorage();
     client.login(process.env.DISCORD_TOKEN);
   })
   .catch((e) => {

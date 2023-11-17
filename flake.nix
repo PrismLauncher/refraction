@@ -37,7 +37,7 @@
           shellHook = ''
             ${config.pre-commit.installationScript}
           '';
-          packages = with pkgs; [nodePackages.pnpm];
+          packages = with pkgs; [nodePackages.pnpm redis];
         };
         formatter = pkgs.alejandra;
       };
