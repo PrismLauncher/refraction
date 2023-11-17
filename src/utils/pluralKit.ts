@@ -4,7 +4,7 @@ interface PkMessage {
   sender: string;
 }
 
-export const pkDelay = 500;
+export const pkDelay = 1000;
 
 export async function fetchPluralKitMessage(message: Message) {
   const response = await fetch(
