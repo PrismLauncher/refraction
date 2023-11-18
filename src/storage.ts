@@ -45,6 +45,19 @@ export const areContributors = async (
   return (await client.smIsMember(key, contributorIds)).includes(true);
 };
 
+export const storeUserPlurality = async (userId: string) => {
+  // Just store some value. We only care about the presence of this key
+  await client
+    .multi()
+    .set(`user:${userId}:pk`, '0')
+    .expire(`user:${userId}:pk`, 7 * 24 * 60 * 60)
+    .exec();
+};
+
+export const isUserPlural = async (userId: string) => {
+  return (await client.exists(`user:${userId}:pk`)) > 0;
+};
+
 export const connect = () => {
   client.connect();
 };

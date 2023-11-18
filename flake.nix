@@ -47,7 +47,7 @@
             ${config.pre-commit.installationScript}
           '';
           nativeBuildInputs = [config.proc.groups.daemons.package];
-          packages = with pkgs; [nodePackages.pnpm];
+          packages = with pkgs; [nodePackages.pnpm redis];
         };
         formatter = pkgs.alejandra;
       };
