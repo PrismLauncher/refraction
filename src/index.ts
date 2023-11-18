@@ -44,8 +44,6 @@ import {
   pkDelay,
 } from './utils/pluralKit';
 
-import 'dotenv/config';
-
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
