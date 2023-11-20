@@ -7,4 +7,4 @@ aliases: ['unstable']
 You can download unstable builds [here](https://nightly.link/PrismLauncher/PrismLauncher/workflows/trigger_builds/develop).
 
 > **:warning: Caution**
-> Prism Launcher unstable builds **will** have more bugs and are more likely to break!
+> Unstable builds have more bugs and are therefore more likely to break! By using the latest commit you are using software which has not been properly tested. For this reason we recommend using Portable or AppImage builds, or least making a backup.
