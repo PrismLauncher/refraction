@@ -3,112 +3,88 @@ name: Docker
 on:
   push:
     branches: ['main']
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: prismlauncher/refraction
-
-permissions:
-  contents: read
-  packages: write
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
+    name: Build image
+
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform:
-          - linux/arm64
-          - linux/amd64
+        arch: [x86_64, aarch64]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+      - uses: actions/checkout@v4
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        if: ${{ matrix.platform != 'linux/amd64' }}
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v8
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v2
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=raw,value=latest
-
-      - name: Build and push by digest
-        uses: docker/build-push-action@v5
+      - name: Build Docker image
         id: build
-        with:
-          context: .
-          provenance: false
-          labels: ${{ steps.meta.outputs.labels }}
-          platforms: ${{ matrix.platform }}
-          outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
-
-      - name: Export digests
         run: |
-          mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
+          nix build -L --accept-flake-config .#container-${{ matrix.arch }}
+          [ ! -L result ] && exit 1
+          echo "path=$(realpath result)" >> "$GITHUB_OUTPUT"
 
-      - name: Upload digests
+      - name: Upload image
         uses: actions/upload-artifact@v3
         with:
-          name: digests
-          path: /tmp/digests/*
+          name: container-${{ matrix.arch }}
+          path: ${{ steps.build.outputs.path }}
           if-no-files-found: error
           retention-days: 1
 
   push:
+    name: Push image
+
+    needs: build
     runs-on: ubuntu-latest
-    needs:
-      - build
+
+    permissions:
+      packages: write
+
+    env:
+      REGISTRY: ghcr.io
+      USERNAME: ${{ github.actor }}
+      IMAGE_NAME: ${{ github.repository }}
+
+    if: github.event_name == 'push'
 
     steps:
-      - name: Download digests
+      - uses: actions/checkout@v4
+
+      - name: Download images
         uses: actions/download-artifact@v3
         with:
-          name: digests
-          path: /tmp/digests
+          path: images
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to the Container registry
+      - name: Login to registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ env.USERNAME }}
+          password: ${{ github.token }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=raw,value=latest
-
-      - name: Create manifest list and push
-        working-directory: /tmp/digests
+      - name: Push to registry
+        env:
+          TAG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
         run: |
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@sha256:%s ' *)
+          set -eux
 
-      - name: Inspect image
-        run: |
-          docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
+          architectures=("x86_64" "aarch64")
+          for arch in "${architectures[@]}"; do
+            docker load < images/container-"$arch"/*.tar.gz
+            docker tag refraction:latest-"$arch" ${{ env.TAG }}-"$arch"
+            docker push ${{ env.TAG }}-"$arch"
+          done
+
+          docker manifest create ${{ env.TAG }} \
+            --amend ${{ env.TAG }}-x86_64 \
+            --amend ${{ env.TAG }}-aarch64
+
+          docker manifest push ${{ env.TAG }}
