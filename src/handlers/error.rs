@@ -6,7 +6,7 @@ use log::*;
 use poise::serenity_prelude::Timestamp;
 use poise::FrameworkError;
 
-pub async fn handle(error: poise::FrameworkError<'_, Data, Report>) {
+pub async fn handle(error: FrameworkError<'_, Data, Report>) {
     match error {
         FrameworkError::Setup { error, .. } => error!("Error setting up client!\n{error:#?}"),
 

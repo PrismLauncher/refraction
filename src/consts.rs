@@ -11,3 +11,22 @@ pub static COLORS: Lazy<HashMap<&str, (u8, u8, u8)>> = Lazy::new(|| {
         ("orange", (251, 146, 60)),
     ])
 });
+
+pub const ETA_MESSAGES: [&str; 16] = [
+    "Sometime",
+    "Some day",
+    "Not far",
+    "The future",
+    "Never",
+    "Perhaps tomorrow?",
+    "There are no ETAs",
+    "No",
+    "Nah",
+    "Yes",
+    "Yas",
+    "Next month",
+    "Next year",
+    "Next week",
+    "In Prism Launcher 2.0.0",
+    "At the appropriate juncture, in due course, in the fullness of time",
+];
