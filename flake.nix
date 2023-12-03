@@ -3,44 +3,41 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    flake-parts.url = "github:hercules-ci/flake-parts";
+    parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
+
+    naersk = {
+      url = "github:nix-community/naersk";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     pre-commit-hooks = {
       url = "github:cachix/pre-commit-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    flake-root.url = "github:srid/flake-root";
+    proc-flake.url = "github:srid/proc-flake";
   };
 
-  outputs = {
-    flake-parts,
-    pre-commit-hooks,
-    ...
-  } @ inputs:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+  outputs = {parts, ...} @ inputs:
+    parts.lib.mkFlake {inherit inputs;} {
       imports = [
-        pre-commit-hooks.flakeModule
-      ];
+        ./nix/dev.nix
+        ./nix/packages.nix
+        ./nix/deployment.nix
 
-      perSystem = {
-        config,
-        lib,
-        pkgs,
-        ...
-      }: {
-        pre-commit.settings.hooks = {
-          alejandra.enable = true;
-          prettier = {
-            enable = true;
-            excludes = ["flake.lock" "pnpm-lock.yaml"];
-          };
-        };
-        devShells.default = pkgs.mkShell {
-          shellHook = ''
-            ${config.pre-commit.installationScript}
-          '';
-          packages = with pkgs; [nodePackages.pnpm redis];
-        };
-        formatter = pkgs.alejandra;
-      };
+        inputs.pre-commit-hooks.flakeModule
+        inputs.flake-root.flakeModule
+        inputs.proc-flake.flakeModule
+      ];
 
       systems = [
         "x86_64-linux"
