@@ -2,6 +2,7 @@ use crate::{consts, Context};
 
 use color_eyre::eyre::{eyre, Result};
 
+/// Returns the number of members in the server
 #[poise::command(slash_command, prefix_command)]
 pub async fn members(ctx: Context<'_>) -> Result<()> {
     let guild = ctx.guild().ok_or_else(|| eyre!("Couldn't fetch guild!"))?;

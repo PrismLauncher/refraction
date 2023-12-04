@@ -22,7 +22,7 @@ fn create_moderation_embed(
     |e: &mut CreateEmbed| e.title(title).fields(fields).color(COLORS["red"])
 }
 
-// ban a user
+/// Ban a user
 #[poise::command(
     slash_command,
     prefix_command,
@@ -54,7 +54,7 @@ pub async fn ban_user(
     Ok(())
 }
 
-// kick a user
+/// Kick a user
 #[poise::command(
     slash_command,
     prefix_command,

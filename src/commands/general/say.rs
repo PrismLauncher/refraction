@@ -2,8 +2,14 @@ use crate::Context;
 
 use color_eyre::eyre::{eyre, Result};
 
-#[poise::command(slash_command, prefix_command, ephemeral)]
-pub async fn say(ctx: Context<'_>, content: String) -> Result<()> {
+/// Say something through the bot
+#[poise::command(
+    slash_command,
+    prefix_command,
+    ephemeral,
+    default_member_permissions = "MODERATE_MEMBERS"
+)]
+pub async fn say(ctx: Context<'_>, #[description = "Just content?"] content: String) -> Result<()> {
     let guild = ctx.guild().ok_or_else(|| eyre!("Couldn't get guild!"))?;
     let channel = ctx
         .guild_channel()

@@ -3,8 +3,12 @@ use crate::Context;
 
 use color_eyre::eyre::Result;
 
+/// Gets a Rory photo!
 #[poise::command(slash_command, prefix_command)]
-pub async fn rory(ctx: Context<'_>, id: Option<u64>) -> Result<()> {
+pub async fn rory(
+    ctx: Context<'_>,
+    #[description = "specify a Rory ID"] id: Option<u64>,
+) -> Result<()> {
     let resp = get_rory(id).await?;
 
     ctx.send(|m| {

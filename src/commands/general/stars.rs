@@ -2,6 +2,7 @@ use crate::{consts::COLORS, Context};
 
 use color_eyre::eyre::{Context as _, Result};
 
+/// Returns GitHub stargazer count
 #[poise::command(slash_command, prefix_command)]
 pub async fn stars(ctx: Context<'_>) -> Result<()> {
     let prismlauncher = ctx
