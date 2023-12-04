@@ -13,6 +13,7 @@ pub fn to_global_commands() -> Vec<Command<Data, Report>> {
         general::rory(),
         general::say(),
         general::stars(),
+        general::tag(),
         moderation::ban_user(),
         moderation::kick_user(),
     ]

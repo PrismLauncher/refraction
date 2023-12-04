@@ -12,6 +12,7 @@ mod commands;
 mod config;
 mod consts;
 mod handlers;
+mod tags;
 mod utils;
 
 type Context<'a> = poise::Context<'a, Data, Report>;

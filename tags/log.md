@@ -1,7 +1,7 @@
 ---
 title: Upload Logs
 color: orange
-aliases: ['sendlog', 'logs', '🪵']
+aliases: ['sendlog', 'logs']
 image: https://cdn.discordapp.com/attachments/1031694870756204566/1156971972232740874/image.png
 ---
 

@@ -9,8 +9,8 @@ mod eta;
 pub async fn handle(
     ctx: &Context,
     event: &Event<'_>,
-    framework: FrameworkContext<'_, Data, Report>,
-    data: &Data,
+    _framework: FrameworkContext<'_, Data, Report>,
+    _data: &Data,
 ) -> Result<()> {
     match event {
         Event::Ready { data_about_bot } => {

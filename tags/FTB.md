@@ -1,7 +1,6 @@
 ---
 title: Can I install/download FTB packs directly from Prism?
 color: orange
-aliases: ['FTB']
 ---
 
 You cannot download FTB packs directly from Prism Launcher.
