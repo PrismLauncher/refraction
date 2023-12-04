@@ -1,10 +1,14 @@
 use crate::{consts, utils};
 
 use color_eyre::eyre::Result;
+use once_cell::sync::Lazy;
 use poise::serenity_prelude::{Context, Message};
+use regex::Regex;
 
-pub async fn handle(ctx: &Context, message: &Message) -> Result<()> {
-    if !message.content.contains(" eta ") {
+static ETA_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"\beta\b").unwrap());
+
+pub async fn handle(ctx: &Context, msg: &Message) -> Result<()> {
+    if !ETA_REGEX.is_match(&msg.content) {
         return Ok(());
     }
 
@@ -13,6 +17,6 @@ pub async fn handle(ctx: &Context, message: &Message) -> Result<()> {
         utils::random_choice(consts::ETA_MESSAGES)?
     );
 
-    message.reply(ctx, response).await?;
+    msg.reply(ctx, response).await?;
     Ok(())
 }
