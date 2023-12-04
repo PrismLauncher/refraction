@@ -1,7 +1,6 @@
 ---
 title: Install arm64 Java on macOS
 color: yellow
-aliases: ['armmacosjava']
 ---
 
 On macOS arm64, also known as Apple Silicon (M1, M2, etc.), you will need to install the arm64 version of Java. We recommend using builds from Azul, the links for which can be found below:

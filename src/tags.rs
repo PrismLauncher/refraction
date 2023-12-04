@@ -7,7 +7,6 @@ pub const TAG_DIR: &str = "tags";
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TagFrontmatter {
     pub title: String,
-    pub aliases: Option<Vec<String>>,
     pub color: Option<String>,
     pub image: Option<String>,
     pub fields: Option<Vec<EmbedField>>,

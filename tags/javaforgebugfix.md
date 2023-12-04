@@ -1,7 +1,6 @@
 ---
 title: Forge Bugfix
 color: yellow
-aliases: ['javaforgebug', 'forgebug', 'forgejavabugfix', 'forgejavabug']
 image: https://media.discordapp.net/attachments/1040383700845740072/1057840239751729172/Fix.png
 ---
 

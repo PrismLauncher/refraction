@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::path::Path;
 use std::{env, fs};
 
@@ -22,11 +21,12 @@ fn main() {
         .into_iter()
         .map(|name| {
             let file_name = format!("{TAG_DIR}/{name}");
-            let content = fs::read_to_string(&file_name).unwrap();
+            let file_content = fs::read_to_string(&file_name).unwrap();
 
             let matter = Matter::<engine::YAML>::new();
-            let frontmatter: TagFrontmatter = matter
-                .parse(&content)
+            let parsed = matter.parse(&file_content);
+            let content = parsed.content;
+            let data = parsed
                 .data
                 .unwrap()
                 .deserialize()
@@ -40,31 +40,14 @@ fn main() {
             Tag {
                 content,
                 file_name: name,
-                frontmatter,
+                frontmatter: data,
             }
-        })
-        .collect();
-
-    let aliases: HashMap<String, Vec<String>> = tags
-        .iter()
-        .filter_map(|t| {
-            t.frontmatter
-                .aliases
-                .clone()
-                .map(|aliases| (t.file_name.clone(), aliases))
         })
         .collect();
 
     let formatted_names: Vec<String> = tags
         .iter()
-        .flat_map(|t| {
-            let mut res = Vec::from([t.file_name.replace(".md", "").replace('-', "_")]);
-            if let Some(tag_aliases) = aliases.get(&t.file_name) {
-                res.append(&mut tag_aliases.clone())
-            }
-
-            res
-        })
+        .map(|t| t.file_name.replace(".md", "").replace('-', "_"))
         .collect();
 
     let tag_choice = format!(
@@ -91,20 +74,7 @@ fn main() {
             .iter()
             .map(|n| {
                 let file_name = n.replace('_', "-") + ".md";
-
-                // assume this is an alias if we can't match the file name
-                let name = if tag_files.contains(&file_name) {
-                    file_name
-                } else {
-                    aliases
-                        .iter()
-                        .find(|a| a.1.contains(n))
-                        .unwrap()
-                        .0
-                        .to_string()
-                };
-
-                format!("Self::{n} => \"{name}\",")
+                format!("Self::{n} => \"{file_name}\",")
             })
             .collect::<Vec<String>>()
             .join("\n")

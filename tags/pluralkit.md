@@ -1,7 +1,6 @@
 ---
 title: Why PluralKit?
 color: blue
-aliases: ['pk']
 ---
 
 Plurality is the existence of multiple self-aware entities inside the same brain.
