@@ -11,14 +11,16 @@
   filter = path: type: let
     path' = toString path;
     base = baseNameOf path';
+    parent = baseNameOf (dirOf path');
 
     dirBlocklist = ["nix"];
 
     matches = lib.any (suffix: lib.hasSuffix suffix base) [".rs"];
     isCargo = base == "Cargo.lock" || base == "Cargo.toml";
+    isTag = parent == "tags";
     isAllowedDir = !(builtins.elem base dirBlocklist);
   in
-    (type == "directory" && isAllowedDir) || matches || isCargo;
+    (type == "directory" && isAllowedDir) || matches || isCargo || isTag;
 
   filterSource = src:
     lib.cleanSourceWith {
