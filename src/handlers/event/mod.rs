@@ -1,7 +1,8 @@
-use crate::Data;
+use crate::{api, Data};
 
 use color_eyre::eyre::{Report, Result};
-use poise::serenity_prelude::Context;
+use log::*;
+use poise::serenity_prelude::{Activity, Context, OnlineStatus};
 use poise::{Event, FrameworkContext};
 
 mod delete;
@@ -17,13 +18,20 @@ pub async fn handle(
 ) -> Result<()> {
     match event {
         Event::Ready { data_about_bot } => {
-            log::info!("Logged in as {}!", data_about_bot.user.name)
+            info!("Logged in as {}!", data_about_bot.user.name);
+
+            let latest_minecraft_version = api::prism_meta::get_latest_minecraft_version().await?;
+            let activity = Activity::playing(format!("Minecraft {}", latest_minecraft_version));
+
+            info!("Setting presence to activity {activity:#?}");
+            ctx.set_presence(Some(activity), OnlineStatus::Online).await;
         }
 
         Event::Message { new_message } => {
             // ignore new messages from bots
             // NOTE: the webhook_id check allows us to still respond to PK users
             if new_message.author.bot && new_message.webhook_id.is_none() {
+                debug!("Ignoring message {} from bot", new_message.id);
                 return Ok(());
             }
 

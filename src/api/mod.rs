@@ -1,6 +1,7 @@
 use once_cell::sync::Lazy;
 
 pub mod dadjoke;
+pub mod prism_meta;
 pub mod rory;
 
 pub static USER_AGENT: Lazy<String> = Lazy::new(|| {

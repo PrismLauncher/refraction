@@ -27,7 +27,7 @@ pub async fn get_rory(id: Option<u64>) -> Result<RoryResponse> {
         .get(format!("{RORY}{ENDPOINT}/{target}"))
         .build()?;
 
-    info!("making request to {}", req.url());
+    info!("Making request to {}", req.url());
     let resp = REQWEST_CLIENT.execute(req).await?;
     let status = resp.status();
 
