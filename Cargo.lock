@@ -1235,6 +1235,7 @@ dependencies = [
  "rand",
  "redis",
  "redis-macros",
+ "regex",
  "reqwest",
  "serde",
  "serde_json",

@@ -6,6 +6,7 @@ use poise::{Event, FrameworkContext};
 
 mod delete;
 mod eta;
+mod expand_link;
 mod support_onboard;
 
 pub async fn handle(
@@ -26,7 +27,8 @@ pub async fn handle(
                 return Ok(());
             }
 
-            eta::handle(ctx, new_message).await?
+            eta::handle(ctx, new_message).await?;
+            expand_link::handle(ctx, new_message).await?;
         }
 
         Event::ReactionAdd { add_reaction } => delete::handle(ctx, add_reaction).await?,
