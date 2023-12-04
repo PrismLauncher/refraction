@@ -6,6 +6,7 @@ use poise::{Event, FrameworkContext};
 
 mod delete;
 mod eta;
+mod support_onboard;
 
 pub async fn handle(
     ctx: &Context,
@@ -29,6 +30,8 @@ pub async fn handle(
         }
 
         Event::ReactionAdd { add_reaction } => delete::handle(ctx, add_reaction).await?,
+
+        Event::ThreadCreate { thread } => support_onboard::handle(ctx, thread).await?,
 
         _ => {}
     }
