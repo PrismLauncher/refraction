@@ -4,6 +4,7 @@ use color_eyre::eyre::{Report, Result};
 use poise::serenity_prelude::Context;
 use poise::{Event, FrameworkContext};
 
+mod delete;
 mod eta;
 
 pub async fn handle(
@@ -17,7 +18,17 @@ pub async fn handle(
             log::info!("Logged in as {}!", data_about_bot.user.name)
         }
 
-        Event::Message { new_message } => eta::handle_eta(ctx, new_message).await?,
+        Event::Message { new_message } => {
+            // ignore new messages from bots
+            // NOTE: the webhook_id check allows us to still respond to PK users
+            if new_message.author.bot && new_message.webhook_id.is_none() {
+                return Ok(());
+            }
+
+            eta::handle(ctx, new_message).await?
+        }
+
+        Event::ReactionAdd { add_reaction } => delete::handle(ctx, add_reaction).await?,
 
         _ => {}
     }

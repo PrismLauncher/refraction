@@ -3,7 +3,7 @@ use crate::{consts, utils};
 use color_eyre::eyre::Result;
 use poise::serenity_prelude::{Context, Message};
 
-pub async fn handle_eta(ctx: &Context, message: &Message) -> Result<()> {
+pub async fn handle(ctx: &Context, message: &Message) -> Result<()> {
     if !message.content.contains(" eta ") {
         return Ok(());
     }
