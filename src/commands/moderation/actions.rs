@@ -26,7 +26,8 @@ fn create_moderation_embed(
 #[poise::command(
     slash_command,
     prefix_command,
-    default_member_permissions = "BAN_MEMBERS"
+    default_member_permissions = "BAN_MEMBERS",
+    required_permissions = "BAN_MEMBERS"
 )]
 pub async fn ban_user(
     ctx: Context<'_>,
@@ -54,7 +55,8 @@ pub async fn ban_user(
 #[poise::command(
     slash_command,
     prefix_command,
-    default_member_permissions = "KICK_MEMBERS"
+    default_member_permissions = "KICK_MEMBERS",
+    required_permissions = "KICK_MEMBERS"
 )]
 pub async fn kick_user(ctx: Context<'_>, user: User, reason: Option<String>) -> Result<()> {
     let guild = ctx

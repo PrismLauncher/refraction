@@ -7,7 +7,8 @@ use color_eyre::eyre::{eyre, Result};
     slash_command,
     prefix_command,
     ephemeral,
-    default_member_permissions = "MODERATE_MEMBERS"
+    default_member_permissions = "MODERATE_MEMBERS",
+    required_permissions = "MODERATE_MEMBERS"
 )]
 pub async fn say(ctx: Context<'_>, #[description = "Just content?"] content: String) -> Result<()> {
     let guild = ctx.guild().ok_or_else(|| eyre!("Couldn't get guild!"))?;
