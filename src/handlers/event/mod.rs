@@ -8,13 +8,14 @@ use poise::{Event, FrameworkContext};
 mod delete;
 mod eta;
 mod expand_link;
+pub mod pluralkit;
 mod support_onboard;
 
 pub async fn handle(
     ctx: &Context,
     event: &Event<'_>,
     _framework: FrameworkContext<'_, Data, Report>,
-    _data: &Data,
+    data: &Data,
 ) -> Result<()> {
     match event {
         Event::Ready { data_about_bot } => {
@@ -32,6 +33,16 @@ pub async fn handle(
             // NOTE: the webhook_id check allows us to still respond to PK users
             if new_message.author.bot && new_message.webhook_id.is_none() {
                 debug!("Ignoring message {} from bot", new_message.id);
+                return Ok(());
+            }
+
+            // detect PK users first to make sure we don't respond to unproxied messages
+            pluralkit::handle(ctx, new_message, data).await?;
+
+            if data.storage.is_user_plural(new_message.author.id).await?
+                && pluralkit::is_message_proxied(new_message).await?
+            {
+                debug!("Not replying to unproxied PluralKit message");
                 return Ok(());
             }
 

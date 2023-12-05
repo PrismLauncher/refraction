@@ -6,12 +6,14 @@ use log::*;
 use poise::{
     serenity_prelude as serenity, EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
 };
+use storage::Storage;
 
 mod api;
 mod commands;
 mod config;
 mod consts;
 mod handlers;
+mod storage;
 mod tags;
 mod utils;
 
@@ -19,20 +21,20 @@ type Context<'a> = poise::Context<'a, Data, Report>;
 
 #[derive(Clone)]
 pub struct Data {
-    config: config::Config,
-    redis: redis::Client,
+    config: Config,
+    storage: Storage,
     octocrab: Arc<octocrab::Octocrab>,
 }
 
 impl Data {
     pub fn new() -> Result<Self> {
         let config = Config::new_from_env()?;
-        let redis = redis::Client::open(config.redis_url.clone())?;
+        let storage = Storage::new(&config.redis_url)?;
         let octocrab = octocrab::instance();
 
         Ok(Self {
             config,
-            redis,
+            storage,
             octocrab,
         })
     }
