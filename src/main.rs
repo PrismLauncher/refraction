@@ -62,7 +62,7 @@ async fn main() -> Result<()> {
             Box::pin(handlers::handle_event(ctx, event, framework, data))
         },
         prefix_options: PrefixFrameworkOptions {
-            prefix: Some("!".into()),
+            prefix: Some("r".into()),
             edit_tracker: Some(EditTracker::for_timespan(Duration::from_secs(3600))),
             ..Default::default()
         },
