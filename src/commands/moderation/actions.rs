@@ -1,146 +1,233 @@
 use crate::{consts::COLORS, Context};
 
-use color_eyre::eyre::{eyre, Result};
-use poise::serenity_prelude::{
-    futures::TryFutureExt, CreateEmbed, CreateMessage, FutureExt, Guild, Timestamp, User, UserId,
-};
+use async_trait::async_trait;
+use color_eyre::eyre::{eyre, Context as _, Result};
+use log::*;
+use poise::serenity_prelude::{CacheHttp, Http, Member, Timestamp};
 
-struct Action {
-    reason: String,
-    data: ActionData,
+type Fields<'a> = Vec<(&'a str, String, bool)>;
+
+#[async_trait]
+pub trait ModActionInfo {
+    fn to_fields(&self) -> Option<Fields>;
+    fn description(&self) -> String;
+    async fn run_action(
+        &self,
+        http: impl CacheHttp + AsRef<Http>,
+        user: &Member,
+        reason: String,
+    ) -> Result<()>;
 }
 
-enum ActionData {
-    Kick,
-    Ban { purge: u8 },
-    Timeout { until: Timestamp },
+pub struct ModAction<T>
+where
+    T: ModActionInfo,
+{
+    pub reason: Option<String>,
+    pub data: T,
 }
 
-fn build_dm<'a, 'b>(
-    message: &'b mut CreateMessage<'a>,
-    guild: &Guild,
-    action: &Action,
-) -> &'b mut CreateMessage<'a> {
-    let description = match &action.data {
-        ActionData::Kick => "kicked from".to_string(),
-        ActionData::Ban { purge: _ } => "banned from".to_string(),
-        ActionData::Timeout { until } => {
-            format!("timed out until <t:{}> in", until.unix_timestamp())
-        }
-    };
-    let guild_name = &guild.name;
-    let reason = &action.reason;
-    message.content(format!(
-        "You have been {description} {guild_name}.\nReason: {reason}"
-    ))
-}
+impl<T: ModActionInfo> ModAction<T> {
+    fn get_all_fields(&self) -> Fields {
+        let mut fields = vec![];
 
-async fn moderate(
-    ctx: &Context<'_>,
-    users: &Vec<UserId>,
-    action: &Action,
-    quiet: bool,
-) -> Result<()> {
-    let guild = ctx
-        .guild()
-        .ok_or_else(|| eyre!("Couldn't get guild from message!"))?;
-    let reason = &action.reason;
-
-    let mut count = 0;
-
-    for user in users {
-        if quiet {
-            if let Ok(channel) = user.create_dm_channel(ctx.http()).await {
-                let _ = channel
-                    .send_message(ctx.http(), |message| build_dm(message, &guild, action))
-                    .await;
-            }
+        if let Some(reason) = self.reason.clone() {
+            fields.push(("Reason:", reason, false));
         }
 
-        let success = match action.data {
-            ActionData::Kick => guild
-                .kick_with_reason(ctx.http(), user, reason)
-                .await
-                .is_ok(),
-
-            ActionData::Ban { purge } => guild
-                .ban_with_reason(ctx.http(), user, purge, reason)
-                .await
-                .is_ok(),
-
-            ActionData::Timeout { until } => guild
-                .edit_member(ctx.http(), user, |member| {
-                    member.disable_communication_until_datetime(until)
-                })
-                .await
-                .is_ok(),
-        };
-        if success {
-            count += 1;
+        if let Some(mut action_fields) = self.data.to_fields() {
+            fields.append(&mut action_fields);
         }
+
+        fields
     }
 
-    let total = users.len();
-    if count == total {
-        ctx.reply("✅ Done!").await?;
-    } else {
-        ctx.reply(format!("⚠️ {count}/{total} succeeded!"))
+    /// internal mod logging
+    pub async fn log_action(&self, ctx: &Context<'_>) -> Result<()> {
+        let channel_id = ctx
+            .data()
+            .config
+            .discord
+            .channels
+            .say_log_channel_id
+            .ok_or_else(|| eyre!("Couldn't find say_log_channel_id! Unable to log mod action"))?;
+
+        let channel = ctx
+          .http()
+          .get_channel(channel_id.into())
+          .await
+          .wrap_err_with(|| "Couldn't resolve say_log_channel_id as a Channel! Are you sure you sure you used the right one?")?;
+
+        let channel = channel
+          .guild()
+          .ok_or_else(|| eyre!("Couldn't resolve say_log_channel_id as a GuildChannel! Are you sure you used the right one?"))?;
+
+        let fields = self.get_all_fields();
+        let title = format!("{} user!", self.data.description());
+
+        channel
+            .send_message(ctx, |m| {
+                m.embed(|e| e.title(title).fields(fields).color(COLORS["red"]))
+            })
             .await?;
+
+        Ok(())
     }
 
-    Ok(())
+    /// public facing message
+    pub async fn reply(
+        &self,
+        ctx: &Context<'_>,
+        user: &Member,
+        dm_user: Option<bool>,
+    ) -> Result<()> {
+        let mut resp = format!("{} {}!", self.data.description(), user.user.name);
+
+        if dm_user.unwrap_or_default() {
+            resp = format!("{resp} (user notified with direct message)");
+        }
+
+        ctx.reply(resp).await?;
+
+        Ok(())
+    }
+
+    pub async fn dm_user(&self, ctx: &Context<'_>, user: &Member) -> Result<()> {
+        let guild = ctx.http().get_guild(*user.guild_id.as_u64()).await?;
+        let title = format!("{} from {}!", self.data.description(), guild.name);
+
+        user.user
+            .dm(ctx, |m| {
+                m.embed(|e| {
+                    e.title(title).color(COLORS["red"]);
+
+                    if let Some(reason) = &self.reason {
+                        e.description(format!("Reason: {}", reason));
+                    }
+
+                    e
+                })
+            })
+            .await?;
+
+        Ok(())
+    }
+
+    pub async fn handle(
+        &self,
+        ctx: &Context<'_>,
+        user: &Member,
+        quiet: Option<bool>,
+        dm_user: Option<bool>,
+        handle_reply: bool,
+    ) -> Result<()> {
+        let actual_reason = self.reason.clone().unwrap_or("".to_string());
+        self.data.run_action(ctx, user, actual_reason).await?;
+
+        if quiet.unwrap_or_default() {
+            ctx.defer_ephemeral().await?;
+        } else {
+            ctx.defer().await?;
+        }
+
+        self.log_action(ctx).await?;
+
+        if dm_user.unwrap_or_default() {
+            self.dm_user(ctx, user).await?;
+        }
+
+        if handle_reply {
+            self.reply(ctx, user, dm_user).await?;
+        }
+
+        Ok(())
+    }
 }
 
-/// Ban a user
-#[poise::command(
-    slash_command,
-    prefix_command,
-    default_member_permissions = "BAN_MEMBERS",
-    required_permissions = "BAN_MEMBERS",
-    aliases("ban")
-)]
-pub async fn ban(
-    ctx: Context<'_>,
-    users: Vec<UserId>,
-    purge: Option<u8>,
-    reason: Option<String>,
-    quiet: Option<bool>,
-) -> Result<()> {
-    moderate(
-        &ctx,
-        &users,
-        &Action {
-            reason: reason.unwrap_or_default(),
-            data: ActionData::Ban {
-                purge: purge.unwrap_or(0),
-            },
-        },
-        quiet.unwrap_or(false),
-    )
-    .await
+pub struct Ban {
+    pub purge_messages_days: u8,
 }
 
-/// Kick a user
-#[poise::command(
-    slash_command,
-    prefix_command,
-    default_member_permissions = "KICK_MEMBERS",
-    required_permissions = "KICK_MEMBERS"
-)]
-pub async fn kick(
-    ctx: Context<'_>,
-    users: Vec<UserId>,
-    reason: Option<String>,
-    quiet: Option<bool>,
-) -> Result<()> {
-    moderate(
-        &ctx,
-        &users,
-        &Action {
-            reason: reason.unwrap_or_default(),
-            data: ActionData::Kick {},
-        },
-        quiet.unwrap_or(false),
-    )
-    .await
+#[async_trait]
+impl ModActionInfo for Ban {
+    fn to_fields(&self) -> Option<Fields> {
+        let fields = vec![(
+            "Purged messages:",
+            format!("Last {} day(s)", self.purge_messages_days),
+            false,
+        )];
+
+        Some(fields)
+    }
+
+    fn description(&self) -> String {
+        "Banned".to_string()
+    }
+
+    async fn run_action(
+        &self,
+        http: impl CacheHttp + AsRef<Http>,
+        user: &Member,
+        reason: String,
+    ) -> Result<()> {
+        debug!("Banning user {user} with reason: \"{reason}\"");
+
+        user.ban_with_reason(http, self.purge_messages_days, reason)
+            .await?;
+
+        Ok(())
+    }
+}
+
+pub struct Timeout {
+    pub time_until: Timestamp,
+}
+
+#[async_trait]
+impl ModActionInfo for Timeout {
+    fn to_fields(&self) -> Option<Fields> {
+        let fields = vec![("Timed out until:", self.time_until.to_string(), false)];
+
+        Some(fields)
+    }
+
+    fn description(&self) -> String {
+        "Timed out".to_string()
+    }
+
+    #[allow(unused_variables)]
+    async fn run_action(
+        &self,
+        http: impl CacheHttp + AsRef<Http>,
+        user: &Member,
+        reason: String,
+    ) -> Result<()> {
+        todo!()
+    }
+}
+
+pub struct Kick {}
+
+#[async_trait]
+impl ModActionInfo for Kick {
+    fn to_fields(&self) -> Option<Fields> {
+        None
+    }
+
+    fn description(&self) -> String {
+        "Kicked".to_string()
+    }
+
+    async fn run_action(
+        &self,
+        http: impl CacheHttp + AsRef<Http>,
+        user: &Member,
+        reason: String,
+    ) -> Result<()> {
+        debug!("Kicked user {user} with reason: \"{reason}\"");
+
+        user.kick_with_reason(http, &reason).await?;
+
+        Ok(())
+    }
 }
