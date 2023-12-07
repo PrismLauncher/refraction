@@ -27,3 +27,6 @@ repl-result-out*
 
 .DS_Store
 *.rdb
+
+# JetBrains
+.idea/
