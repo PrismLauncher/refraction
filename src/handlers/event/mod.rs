@@ -5,9 +5,10 @@ use log::*;
 use poise::serenity_prelude::{Activity, Context, OnlineStatus};
 use poise::{Event, FrameworkContext};
 
-mod delete;
+mod delete_on_reaction;
 mod eta;
 mod expand_link;
+mod message_logger;
 pub mod pluralkit;
 mod support_onboard;
 
@@ -46,11 +47,30 @@ pub async fn handle(
                 return Ok(());
             }
 
+            // store all new messages to monitor edits and deletes
+            message_logger::handle_create(data, new_message).await?;
+
             eta::handle(ctx, new_message).await?;
             expand_link::handle(ctx, new_message).await?;
         }
 
-        Event::ReactionAdd { add_reaction } => delete::handle(ctx, add_reaction).await?,
+        Event::MessageDelete {
+            channel_id,
+            deleted_message_id,
+            guild_id: _,
+        } => message_logger::handle_delete(ctx, data, channel_id, deleted_message_id).await?,
+
+        Event::MessageUpdate {
+            old_if_available: _,
+            new: _,
+            event,
+        } => {
+            message_logger::handle_update(data, event).await?;
+        }
+
+        Event::ReactionAdd { add_reaction } => {
+            delete_on_reaction::handle(ctx, add_reaction).await?
+        }
 
         Event::ThreadCreate { thread } => support_onboard::handle(ctx, thread).await?,
 
