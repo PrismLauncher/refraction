@@ -4,7 +4,7 @@ use std::error::Error;
 use color_eyre::eyre::{eyre, Result};
 use poise::serenity_prelude::{ArgumentConvert, ChannelId, GuildId, Member};
 
-mod actions;
+pub mod actions;
 use actions::{Ban, Kick, ModAction};
 
 async fn split_argument<T>(
