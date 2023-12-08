@@ -9,14 +9,18 @@ pub async fn rory(
     ctx: Context<'_>,
     #[description = "specify a Rory ID"] id: Option<u64>,
 ) -> Result<()> {
-    let resp = get_rory(id).await?;
+    let rory = get_rory(id).await?;
 
     ctx.send(|m| {
         m.embed(|e| {
-            e.title("Rory :3")
-                .url(&resp.url)
-                .image(resp.url)
-                .footer(|f| f.text(format!("ID {}", resp.id)))
+            if let Some(error) = rory.error {
+                e.title("Error!").description(error)
+            } else {
+                e.title("Rory :3")
+                    .url(&rory.url)
+                    .image(rory.url)
+                    .footer(|f| f.text(format!("ID {}", rory.id)))
+            }
         })
     })
     .await?;

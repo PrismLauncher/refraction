@@ -17,6 +17,7 @@ pub async fn say(ctx: Context<'_>, #[description = "Just content?"] content: Str
         .await
         .ok_or_else(|| eyre!("Couldn't get channel!"))?;
 
+    ctx.defer_ephemeral().await?;
     channel.say(ctx, &content).await?;
     ctx.say("I said what you said!").await?;
 

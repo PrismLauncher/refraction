@@ -16,6 +16,6 @@ pub async fn get_joke() -> Result<String> {
     if let StatusCode::OK = status {
         Ok(resp.text().await?)
     } else {
-        Err(eyre!("Failed to fetch joke from {DADJOKE} with {status}"))
+        Err(eyre!("Couldn't get a joke!"))
     }
 }
