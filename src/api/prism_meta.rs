@@ -22,7 +22,7 @@ pub async fn get_latest_minecraft_version() -> Result<String> {
         .get(format!("{PRISM_META}{MINECRAFT_PACKAGEJSON_ENDPOINT}"))
         .build()?;
 
-    info!("Making request to {}", req.url());
+    debug!("Making request to {}", req.url());
     let resp = REQWEST_CLIENT.execute(req).await?;
     let status = resp.status();
 

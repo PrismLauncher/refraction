@@ -9,7 +9,7 @@ const DADJOKE: &str = "https://icanhazdadjoke.com";
 pub async fn get_joke() -> Result<String> {
     let req = REQWEST_CLIENT.get(DADJOKE).build()?;
 
-    info!("Making request to {}", req.url());
+    debug!("Making request to {}", req.url());
     let resp = REQWEST_CLIENT.execute(req).await?;
     let status = resp.status();
 

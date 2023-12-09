@@ -3,12 +3,12 @@ use poise::serenity_prelude::{Context, Message};
 
 use crate::utils;
 
-pub async fn handle(ctx: &Context, msg: &Message) -> Result<()> {
-    let embeds = utils::resolve_message(ctx, msg).await?;
+pub async fn handle(ctx: &Context, message: &Message) -> Result<()> {
+    let embeds = utils::resolve_message(ctx, message).await?;
 
     // TOOD getchoo: actually reply to user
     // ...not sure why Message doesn't give me a builder in reply() or equivalents
-    let our_channel = msg
+    let our_channel = message
         .channel(ctx)
         .await
         .wrap_err_with(|| "Couldn't get channel from message!")?

@@ -7,8 +7,8 @@ use regex::Regex;
 
 static ETA_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"\beta\b").unwrap());
 
-pub async fn handle(ctx: &Context, msg: &Message) -> Result<()> {
-    if !ETA_REGEX.is_match(&msg.content) {
+pub async fn handle(ctx: &Context, message: &Message) -> Result<()> {
+    if !ETA_REGEX.is_match(&message.content) {
         return Ok(());
     }
 
@@ -17,6 +17,6 @@ pub async fn handle(ctx: &Context, msg: &Message) -> Result<()> {
         utils::random_choice(consts::ETA_MESSAGES)?
     );
 
-    msg.reply(ctx, response).await?;
+    message.reply(ctx, response).await?;
     Ok(())
 }

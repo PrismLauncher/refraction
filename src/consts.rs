@@ -10,6 +10,7 @@ pub static COLORS: Lazy<HashMap<&str, Color>> = Lazy::new(|| {
         ("blue", Color::from((96, 165, 250))),
         ("yellow", Color::from((253, 224, 71))),
         ("orange", Color::from((251, 146, 60))),
+        // TODO purple & pink :D
     ])
 });
 

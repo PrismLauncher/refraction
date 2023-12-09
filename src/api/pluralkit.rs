@@ -19,7 +19,7 @@ pub async fn get_sender(message_id: MessageId) -> Result<UserId> {
         .get(format!("{PLURAL_KIT}{MESSAGES_ENDPOINT}/{message_id}"))
         .build()?;
 
-    info!("Making request to {}", req.url());
+    debug!("Making request to {}", req.url());
     let resp = REQWEST_CLIENT.execute(req).await?;
     let status = resp.status();
 

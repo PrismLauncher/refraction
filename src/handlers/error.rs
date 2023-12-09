@@ -17,7 +17,7 @@ pub async fn handle(error: FrameworkError<'_, Data, Report>) {
                     e.title("Something went wrong!")
                         .description("oopsie")
                         .timestamp(Timestamp::now())
-                        .color(COLORS["orange"])
+                        .color(COLORS["red"])
                 })
             })
             .await

@@ -5,6 +5,7 @@ use log::*;
 use poise::serenity_prelude::{Activity, Context, OnlineStatus};
 use poise::{Event, FrameworkContext};
 
+mod analyze_logs;
 mod delete_on_reaction;
 mod eta;
 mod expand_link;
@@ -52,6 +53,7 @@ pub async fn handle(
 
             eta::handle(ctx, new_message).await?;
             expand_link::handle(ctx, new_message).await?;
+            analyze_logs::handle(ctx, new_message).await?;
         }
 
         Event::MessageDelete {

@@ -16,31 +16,26 @@ const RORY: &str = "https://rory.cat";
 const ENDPOINT: &str = "/purr";
 
 pub async fn get_rory(id: Option<u64>) -> Result<RoryResponse> {
-    let target = {
-        if let Some(id) = id {
-            id.to_string()
-        } else {
-            "".to_string()
-        }
-    };
+    let target = id.map(|id| id.to_string()).unwrap_or_default();
 
     let req = REQWEST_CLIENT
         .get(format!("{RORY}{ENDPOINT}/{target}"))
         .build()
         .wrap_err_with(|| "Couldn't build reqwest client!")?;
 
-    info!("Making request to {}", req.url());
+    debug!("Making request to {}", req.url());
     let resp = REQWEST_CLIENT
         .execute(req)
         .await
-        .wrap_err_with(|| "Couldn't make request for shiggy!")?;
+        .wrap_err_with(|| "Couldn't make request for rory!")?;
+
     let status = resp.status();
 
     if let StatusCode::OK = status {
         let data = resp
             .json::<RoryResponse>()
             .await
-            .wrap_err_with(|| "Couldn't parse the shiggy response!")?;
+            .wrap_err_with(|| "Couldn't parse the rory response!")?;
 
         Ok(data)
     } else {
