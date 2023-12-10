@@ -5,18 +5,18 @@ pub type Issue = Option<(String, String)>;
 
 pub fn find_issues(log: &str) -> Vec<(String, String)> {
     let issues = [
-        fabric_internal,
+        wrong_java,
         flatpak_nvidia,
         forge_java,
         intel_hd,
-        java_option,
         macos_ns,
+        fabric_internal,
         oom,
-        optinofine,
-        outdated_launcher,
-        wrong_java,
+        optinotfine,
+        java_option,
+        lwjgl_2_java_9,
+        pre_1_12_native_transport_java_9,
     ];
-
     issues.iter().filter_map(|issue| issue(log)).collect()
 }
 
@@ -138,7 +138,7 @@ fn oom(log: &str) -> Issue {
     found.then_some(issue)
 }
 
-fn optinofine(log: &str) -> Issue {
+fn optinotfine(log: &str) -> Issue {
     let issue = (
         "Potential OptiFine Incompatibilities".to_string(),
         "OptiFine is known to cause problems when paired with other mods. \
@@ -178,4 +178,41 @@ fn wrong_java(log: &str) -> Issue {
 
     log.contains("Java major version is incompatible. Things might break.")
         .then_some(issue)
+}
+
+fn lwjgl_2_java_9(log: &str) -> Issue {
+    let issue = (
+        "Linux: crash with pre-1.13 and Java 9+".to_string(),
+        "Using pre-1.13 (which uses LWJGL 2) with Java 9 or later usually causes a crash. \
+        Switching to Java 8 or below will fix your issue.
+        Alternatively, you can use [Temurin](https://adoptium.net/temurin/releases). \
+        However, multiplayer will not work in versions from 1.8 to 1.11.
+        For more information, type `/tag java`."
+            .to_string(),
+    );
+
+    let found = log.contains("check_match: Assertion `version->filename == NULL || ! _dl_name_match_p (version->filename, map)' failed!");
+    found.then_some(issue)
+}
+
+fn pre_1_12_native_transport_java_9(log: &str) -> Issue {
+    let issue = (
+        "Linux: broken multiplayer with 1.8-1.11 and Java 9+".to_string(),
+        "These versions of Minecraft use an outdated version of Netty which does not properly support Java 9.
+
+Switching to Java 8 or below will fix this issue. For more information, type `/tag java`.
+
+If you must use a newer version, do the following:
+- Open `options.txt` (in the main window Edit -> Open .minecraft) and change.
+- Find `useNativeTransport:true` and change it to `useNativeTransport:false`.
+Note: whilst Netty was introduced in 1.7, this option did not exist \
+which is why the issue was not present."
+            .to_string(),
+    );
+
+    let found = log.contains(
+        "java.lang.RuntimeException: Unable to access address of buffer\n\tat io.netty.channel.epoll"
+    );
+
+    found.then_some(issue)
 }
