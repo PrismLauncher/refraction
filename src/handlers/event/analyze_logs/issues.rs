@@ -1,23 +1,33 @@
+use crate::Data;
+
+use color_eyre::eyre::Result;
 use once_cell::sync::Lazy;
 use regex::Regex;
 
 pub type Issue = Option<(String, String)>;
 
-pub fn find_issues(log: &str) -> Vec<(String, String)> {
+pub async fn find_issues(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
     let issues = [
-        wrong_java,
+        fabric_internal,
         flatpak_nvidia,
         forge_java,
         intel_hd,
-        macos_ns,
-        fabric_internal,
-        oom,
-        optinotfine,
         java_option,
         lwjgl_2_java_9,
+        macos_ns,
+        oom,
+        optinotfine,
         pre_1_12_native_transport_java_9,
+        wrong_java,
     ];
-    issues.iter().filter_map(|issue| issue(log)).collect()
+
+    let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
+
+    if let Some(issues) = outdated_launcher(log, data).await? {
+        res.push(issues)
+    }
+
+    Ok(res)
 }
 
 fn fabric_internal(log: &str) -> Issue {
@@ -117,6 +127,21 @@ fn java_option(log: &str) -> Issue {
     None
 }
 
+fn lwjgl_2_java_9(log: &str) -> Issue {
+    let issue = (
+        "Linux: crash with pre-1.13 and Java 9+".to_string(),
+        "Using pre-1.13 (which uses LWJGL 2) with Java 9 or later usually causes a crash. \
+        Switching to Java 8 or below will fix your issue.
+        Alternatively, you can use [Temurin](https://adoptium.net/temurin/releases). \
+        However, multiplayer will not work in versions from 1.8 to 1.11.
+        For more information, type `/tag java`."
+            .to_string(),
+    );
+
+    let found = log.contains("check_match: Assertion `version->filename == NULL || ! _dl_name_match_p (version->filename, map)' failed!");
+    found.then_some(issue)
+}
+
 fn macos_ns(log: &str) -> Issue {
     let issue = (
     "MacOS NSInternalInconsistencyException".to_string(),
@@ -151,9 +176,64 @@ fn optinotfine(log: &str) -> Issue {
     found.then_some(issue)
 }
 
-// TODO: @TheKodeToad
-fn outdated_launcher(_log: &str) -> Issue {
-    todo!()
+async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
+    static OUTDATED_LAUNCHER_REGEX: Lazy<Regex> =
+        Lazy::new(|| Regex::new("Prism Launcher version: [0-9].[0-9].[0-9]").unwrap());
+
+    let Some(captures) = OUTDATED_LAUNCHER_REGEX.captures(log) else {
+        return Ok(None);
+    };
+
+    let version_from_log = captures[0].replace("Prism Launcher version: ", "");
+
+    let storage = &data.storage;
+    let latest_version = if storage.launcher_version_is_cached().await? {
+        storage.get_launcher_version().await?
+    } else {
+        let version = data
+            .octocrab
+            .repos("PrismLauncher", "PrismLauncher")
+            .releases()
+            .get_latest()
+            .await?
+            .tag_name;
+
+        storage.cache_launcher_version(&version).await?;
+        version
+    };
+
+    if version_from_log < latest_version {
+        let issue = (
+          "Outdated Prism Launcher".to_string(), 
+          format!("Your installed version is {version_from_log}, while the newest version is {latest_version}.\nPlease update, for more info see https://prismlauncher.org/download/")
+        );
+
+        Ok(Some(issue))
+    } else {
+        Ok(None)
+    }
+}
+
+fn pre_1_12_native_transport_java_9(log: &str) -> Issue {
+    let issue = (
+        "Linux: broken multiplayer with 1.8-1.11 and Java 9+".to_string(),
+        "These versions of Minecraft use an outdated version of Netty which does not properly support Java 9.
+
+Switching to Java 8 or below will fix this issue. For more information, type `/tag java`.
+
+If you must use a newer version, do the following:
+- Open `options.txt` (in the main window Edit -> Open .minecraft) and change.
+- Find `useNativeTransport:true` and change it to `useNativeTransport:false`.
+Note: whilst Netty was introduced in 1.7, this option did not exist \
+which is why the issue was not present."
+            .to_string(),
+    );
+
+    let found = log.contains(
+        "java.lang.RuntimeException: Unable to access address of buffer\n\tat io.netty.channel.epoll"
+    );
+
+    found.then_some(issue)
 }
 
 fn wrong_java(log: &str) -> Issue {
@@ -178,41 +258,4 @@ fn wrong_java(log: &str) -> Issue {
 
     log.contains("Java major version is incompatible. Things might break.")
         .then_some(issue)
-}
-
-fn lwjgl_2_java_9(log: &str) -> Issue {
-    let issue = (
-        "Linux: crash with pre-1.13 and Java 9+".to_string(),
-        "Using pre-1.13 (which uses LWJGL 2) with Java 9 or later usually causes a crash. \
-        Switching to Java 8 or below will fix your issue.
-        Alternatively, you can use [Temurin](https://adoptium.net/temurin/releases). \
-        However, multiplayer will not work in versions from 1.8 to 1.11.
-        For more information, type `/tag java`."
-            .to_string(),
-    );
-
-    let found = log.contains("check_match: Assertion `version->filename == NULL || ! _dl_name_match_p (version->filename, map)' failed!");
-    found.then_some(issue)
-}
-
-fn pre_1_12_native_transport_java_9(log: &str) -> Issue {
-    let issue = (
-        "Linux: broken multiplayer with 1.8-1.11 and Java 9+".to_string(),
-        "These versions of Minecraft use an outdated version of Netty which does not properly support Java 9.
-
-Switching to Java 8 or below will fix this issue. For more information, type `/tag java`.
-
-If you must use a newer version, do the following:
-- Open `options.txt` (in the main window Edit -> Open .minecraft) and change.
-- Find `useNativeTransport:true` and change it to `useNativeTransport:false`.
-Note: whilst Netty was introduced in 1.7, this option did not exist \
-which is why the issue was not present."
-            .to_string(),
-    );
-
-    let found = log.contains(
-        "java.lang.RuntimeException: Unable to access address of buffer\n\tat io.netty.channel.epoll"
-    );
-
-    found.then_some(issue)
 }

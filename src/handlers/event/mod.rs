@@ -53,7 +53,7 @@ pub async fn handle(
 
             eta::handle(ctx, new_message).await?;
             expand_link::handle(ctx, new_message).await?;
-            analyze_logs::handle(ctx, new_message).await?;
+            analyze_logs::handle(ctx, new_message, data).await?;
         }
 
         Event::MessageDelete {

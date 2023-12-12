@@ -1,4 +1,6 @@
 use crate::consts::COLORS;
+use crate::Data;
+
 use color_eyre::eyre::Result;
 use log::*;
 use poise::serenity_prelude::{Context, Message};
@@ -9,7 +11,7 @@ mod providers;
 use issues::find_issues;
 use providers::find_log;
 
-pub async fn handle(ctx: &Context, message: &Message) -> Result<()> {
+pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()> {
     let channel = message.channel_id;
 
     let log = find_log(message).await;
@@ -34,7 +36,7 @@ pub async fn handle(ctx: &Context, message: &Message) -> Result<()> {
         return Ok(());
     };
 
-    let issues = find_issues(&log);
+    let issues = find_issues(&log, data).await?;
 
     channel
         .send_message(ctx, |m| {

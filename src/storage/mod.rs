@@ -8,7 +8,8 @@ use redis::{AsyncCommands as _, Client, FromRedisValue, ToRedisArgs};
 pub mod message_logger;
 use message_logger::*;
 
-pub const PK_KEY: &str = "pluralkit-v1";
+const PK_KEY: &str = "pluralkit-v1";
+const LAUNCHER_VERSION_KEY: &str = "launcher-version-v1";
 
 #[derive(Clone, Debug)]
 pub struct Storage {
@@ -133,5 +134,23 @@ impl Storage {
         self.delete_key(&key).await?;
 
         Ok(())
+    }
+
+    pub async fn cache_launcher_version(&self, version: &str) -> Result<()> {
+        self.set_key(LAUNCHER_VERSION_KEY, version).await?;
+
+        Ok(())
+    }
+
+    pub async fn get_launcher_version(&self) -> Result<String> {
+        let res = self.get_key(LAUNCHER_VERSION_KEY).await?;
+
+        Ok(res)
+    }
+
+    pub async fn launcher_version_is_cached(&self) -> Result<bool> {
+        let res = self.key_exists(LAUNCHER_VERSION_KEY).await?;
+
+        Ok(res)
     }
 }
