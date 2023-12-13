@@ -2,7 +2,7 @@ use crate::Context;
 use std::error::Error;
 
 use color_eyre::eyre::{eyre, Result};
-use poise::serenity_prelude::{ArgumentConvert, ChannelId, GuildId, Member};
+use poise::serenity_prelude::{ArgumentConvert, ChannelId, GuildId, User};
 
 pub mod actions;
 use actions::{Ban, Kick, ModAction};
@@ -40,7 +40,7 @@ where
 )]
 pub async fn ban_user(
     ctx: Context<'_>,
-    #[description = "User to ban"] user: Member,
+    #[description = "User to ban"] user: User,
     #[description = "Reason to ban"] reason: Option<String>,
     #[description = "Number of days to purge their messages from (defaults to 0)"]
     purge_messages_days: Option<u8>,
@@ -84,7 +84,7 @@ pub async fn mass_ban(
         .ok_or_else(|| eyre!("Couldn't get GuildId!"))?;
 
     let dmd = purge_messages_days.unwrap_or(0);
-    let users: Vec<Member> = split_argument(&ctx, Some(gid), None, users).await?;
+    let users: Vec<User> = split_argument(&ctx, Some(gid), None, users).await?;
 
     for user in &users {
         let action = ModAction {
@@ -114,7 +114,7 @@ pub async fn mass_ban(
 )]
 pub async fn kick_user(
     ctx: Context<'_>,
-    #[description = "User to kick"] user: Member,
+    #[description = "User to kick"] user: User,
     #[description = "Reason to kick"] reason: Option<String>,
     #[description = "If true, the reply from the bot will be ephemeral"] quiet: Option<bool>,
     #[description = "If true, the affected user will be sent a DM"] dm_user: Option<bool>,
@@ -148,7 +148,7 @@ pub async fn mass_kick(
     let gid = ctx
         .guild_id()
         .ok_or_else(|| eyre!("Couldn't get GuildId!"))?;
-    let users: Vec<Member> = split_argument(&ctx, Some(gid), None, users).await?;
+    let users: Vec<User> = split_argument(&ctx, Some(gid), None, users).await?;
 
     for user in &users {
         let action = ModAction {

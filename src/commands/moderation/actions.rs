@@ -3,7 +3,7 @@ use crate::{consts::COLORS, Context};
 use async_trait::async_trait;
 use color_eyre::eyre::{eyre, Context as _, Result};
 use log::*;
-use poise::serenity_prelude::{CacheHttp, Http, Member, Timestamp};
+use poise::serenity_prelude::{CacheHttp, GuildId, Http, Timestamp, User};
 
 type Fields<'a> = Vec<(&'a str, String, bool)>;
 
@@ -14,7 +14,8 @@ pub trait ModActionInfo {
     async fn run_action(
         &self,
         http: impl CacheHttp + AsRef<Http>,
-        user: &Member,
+        user: &User,
+        guild_id: &GuildId,
         reason: String,
     ) -> Result<()>;
 }
@@ -75,13 +76,8 @@ impl<T: ModActionInfo> ModAction<T> {
     }
 
     /// public facing message
-    pub async fn reply(
-        &self,
-        ctx: &Context<'_>,
-        user: &Member,
-        dm_user: Option<bool>,
-    ) -> Result<()> {
-        let mut resp = format!("{} {}!", self.data.description(), user.user.name);
+    pub async fn reply(&self, ctx: &Context<'_>, user: &User, dm_user: Option<bool>) -> Result<()> {
+        let mut resp = format!("{} {}!", self.data.description(), user.name);
 
         if dm_user.unwrap_or_default() {
             resp = format!("{resp} (user notified with direct message)");
@@ -92,23 +88,22 @@ impl<T: ModActionInfo> ModAction<T> {
         Ok(())
     }
 
-    pub async fn dm_user(&self, ctx: &Context<'_>, user: &Member) -> Result<()> {
-        let guild = ctx.http().get_guild(*user.guild_id.as_u64()).await?;
+    pub async fn dm_user(&self, ctx: &Context<'_>, user: &User, guild_id: &GuildId) -> Result<()> {
+        let guild = ctx.http().get_guild(*guild_id.as_u64()).await?;
         let title = format!("{} from {}!", self.data.description(), guild.name);
 
-        user.user
-            .dm(ctx, |m| {
-                m.embed(|e| {
-                    e.title(title).color(COLORS["red"]);
+        user.dm(ctx, |m| {
+            m.embed(|e| {
+                e.title(title).color(COLORS["red"]);
 
-                    if let Some(reason) = &self.reason {
-                        e.description(format!("Reason: {}", reason));
-                    }
+                if let Some(reason) = &self.reason {
+                    e.description(format!("Reason: {}", reason));
+                }
 
-                    e
-                })
+                e
             })
-            .await?;
+        })
+        .await?;
 
         Ok(())
     }
@@ -116,7 +111,7 @@ impl<T: ModActionInfo> ModAction<T> {
     pub async fn handle(
         &self,
         ctx: &Context<'_>,
-        user: &Member,
+        user: &User,
         quiet: Option<bool>,
         dm_user: Option<bool>,
         handle_reply: bool,
@@ -127,13 +122,19 @@ impl<T: ModActionInfo> ModAction<T> {
             ctx.defer().await?;
         }
 
+        let guild_id = ctx
+            .guild_id()
+            .ok_or_else(|| eyre!("Couldn't get GuildId for context!"))?;
         let actual_reason = self.reason.clone().unwrap_or("".to_string());
 
         if dm_user.unwrap_or_default() {
-            self.dm_user(ctx, user).await?;
+            self.dm_user(ctx, user, &guild_id).await?;
         }
 
-        self.data.run_action(ctx, user, actual_reason).await?;
+        self.data
+            .run_action(ctx, user, &guild_id, actual_reason)
+            .await?;
+
         self.log_action(ctx).await?;
 
         if handle_reply {
@@ -167,12 +168,14 @@ impl ModActionInfo for Ban {
     async fn run_action(
         &self,
         http: impl CacheHttp + AsRef<Http>,
-        user: &Member,
+        user: &User,
+        guild_id: &GuildId,
         reason: String,
     ) -> Result<()> {
         debug!("Banning user {user} with reason: \"{reason}\"");
 
-        user.ban_with_reason(http, self.purge_messages_days, reason)
+        guild_id
+            .ban_with_reason(http, user, self.purge_messages_days, reason)
             .await?;
 
         Ok(())
@@ -199,7 +202,8 @@ impl ModActionInfo for Timeout {
     async fn run_action(
         &self,
         http: impl CacheHttp + AsRef<Http>,
-        user: &Member,
+        user: &User,
+        guild_id: &GuildId,
         reason: String,
     ) -> Result<()> {
         todo!()
@@ -221,12 +225,13 @@ impl ModActionInfo for Kick {
     async fn run_action(
         &self,
         http: impl CacheHttp + AsRef<Http>,
-        user: &Member,
+        user: &User,
+        guild_id: &GuildId,
         reason: String,
     ) -> Result<()> {
         debug!("Kicked user {user} with reason: \"{reason}\"");
 
-        user.kick_with_reason(http, &reason).await?;
+        guild_id.kick_with_reason(http, user, &reason).await?;
 
         Ok(())
     }
