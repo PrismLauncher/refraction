@@ -1,12 +1,18 @@
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
+use std::time::Duration;
 
 use color_eyre::eyre::{Context as _, Report, Result};
+use color_eyre::owo_colors::OwoColorize;
 use config::Config;
 use log::*;
 use poise::{
-    serenity_prelude as serenity, EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
+    serenity_prelude::{self as serenity, ShardManager},
+    EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
 };
 use storage::Storage;
+use tokio::signal::ctrl_c;
+use tokio::signal::unix::{signal, SignalKind};
+use tokio::sync::Mutex;
 
 mod api;
 mod commands;
@@ -53,6 +59,12 @@ async fn setup(
     Ok(data)
 }
 
+async fn handle_shutdown(shard_manager: Arc<Mutex<ShardManager>>, reason: &str) {
+    warn!("{reason}! Shutting down bot...");
+    shard_manager.lock().await.shutdown_all().await;
+    println!("{}", "Everything is shutdown. Goodbye!".green())
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     dotenvy::dotenv().ok();
@@ -91,12 +103,22 @@ async fn main() -> Result<()> {
         .token(token)
         .intents(intents)
         .options(options)
-        .setup(|ctx, ready, framework| Box::pin(setup(ctx, ready, framework)));
+        .setup(|ctx, ready, framework| Box::pin(setup(ctx, ready, framework)))
+        .build()
+        .await
+        .wrap_err_with(|| "Failed to build framework!")?;
+
+    let shard_manager = framework.shard_manager().clone();
+    let mut sigterm = signal(SignalKind::terminate())?;
 
     tokio::select! {
-        result = framework.run() => { result.map_err(Report::from) },
-        _ = tokio::signal::ctrl_c() => {
-            info!("Interrupted! Exiting...");
+        result = framework.start() => result.map_err(Report::from),
+        _ = sigterm.recv() => {
+            handle_shutdown(shard_manager, "Recieved SIGTERM").await;
+            std::process::exit(0);
+        }
+        _ = ctrl_c() => {
+            handle_shutdown(shard_manager, "Interrupted").await;
             std::process::exit(130);
         }
     }
