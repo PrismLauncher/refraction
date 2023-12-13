@@ -8,7 +8,14 @@ use poise::FrameworkError;
 
 pub async fn handle(error: FrameworkError<'_, Data, Report>) {
     match error {
-        FrameworkError::Setup { error, .. } => error!("Error setting up client!\n{error:#?}"),
+        FrameworkError::Setup {
+            error, framework, ..
+        } => {
+            error!("Error setting up client! Bailing out");
+            framework.shard_manager().lock().await.shutdown_all().await;
+
+            panic!("{error}")
+        }
 
         FrameworkError::Command { error, ctx } => {
             error!("Error in command {}:\n{error:?}", ctx.command().name);

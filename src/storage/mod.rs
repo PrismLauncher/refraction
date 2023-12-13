@@ -13,7 +13,7 @@ const LAUNCHER_VERSION_KEY: &str = "launcher-version-v1";
 
 #[derive(Clone, Debug)]
 pub struct Storage {
-    client: Client,
+    pub client: Client,
 }
 
 impl Storage {

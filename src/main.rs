@@ -1,15 +1,19 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use color_eyre::eyre::{Context as _, Report, Result};
+use color_eyre::eyre::{eyre, Context as _, Report, Result};
 use color_eyre::owo_colors::OwoColorize;
-use config::Config;
+
 use log::*;
+
 use poise::{
-    serenity_prelude::{self as serenity, ShardManager},
-    EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
+    serenity_prelude as serenity, EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
 };
-use storage::Storage;
+
+use serenity::ShardManager;
+
+use redis::ConnectionLike;
+
 use tokio::signal::ctrl_c;
 use tokio::signal::unix::{signal, SignalKind};
 use tokio::sync::Mutex;
@@ -22,6 +26,9 @@ mod handlers;
 mod storage;
 mod tags;
 mod utils;
+
+use config::Config;
+use storage::Storage;
 
 type Context<'a> = poise::Context<'a, Data, Report>;
 
@@ -51,10 +58,19 @@ async fn setup(
     _ready: &serenity::Ready,
     framework: &Framework<Data, Report>,
 ) -> Result<Data> {
+    let data = Data::new()?;
+
+    // test redis connection
+    let mut client = data.storage.client.clone();
+
+    if !client.check_connection() {
+        return Err(eyre!(
+            "Couldn't connect to storage! Is your daemon running?"
+        ));
+    }
+
     poise::builtins::register_globally(ctx, &framework.options().commands).await?;
     info!("Registered global commands!");
-
-    let data = Data::new()?;
 
     Ok(data)
 }
