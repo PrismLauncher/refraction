@@ -121,20 +121,20 @@ impl<T: ModActionInfo> ModAction<T> {
         dm_user: Option<bool>,
         handle_reply: bool,
     ) -> Result<()> {
-        let actual_reason = self.reason.clone().unwrap_or("".to_string());
-        self.data.run_action(ctx, user, actual_reason).await?;
-
         if quiet.unwrap_or_default() {
             ctx.defer_ephemeral().await?;
         } else {
             ctx.defer().await?;
         }
 
-        self.log_action(ctx).await?;
+        let actual_reason = self.reason.clone().unwrap_or("".to_string());
 
         if dm_user.unwrap_or_default() {
             self.dm_user(ctx, user).await?;
         }
+
+        self.data.run_action(ctx, user, actual_reason).await?;
+        self.log_action(ctx).await?;
 
         if handle_reply {
             self.reply(ctx, user, dm_user).await?;
