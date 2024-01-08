@@ -9,7 +9,6 @@ mod analyze_logs;
 mod delete_on_reaction;
 mod eta;
 mod expand_link;
-mod message_logger;
 pub mod pluralkit;
 mod support_onboard;
 
@@ -48,26 +47,9 @@ pub async fn handle(
                 return Ok(());
             }
 
-            // store all new messages to monitor edits and deletes
-            message_logger::handle_create(data, new_message).await?;
-
             eta::handle(ctx, new_message).await?;
             expand_link::handle(ctx, new_message).await?;
             analyze_logs::handle(ctx, new_message, data).await?;
-        }
-
-        Event::MessageDelete {
-            channel_id,
-            deleted_message_id,
-            guild_id: _,
-        } => message_logger::handle_delete(ctx, data, channel_id, deleted_message_id).await?,
-
-        Event::MessageUpdate {
-            old_if_available: _,
-            new: _,
-            event,
-        } => {
-            message_logger::handle_update(data, event).await?;
         }
 
         Event::ReactionAdd { add_reaction } => {

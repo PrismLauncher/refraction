@@ -2,11 +2,8 @@ use std::fmt::Debug;
 
 use color_eyre::eyre::Result;
 use log::*;
-use poise::serenity_prelude::{ChannelId, MessageId, UserId};
+use poise::serenity_prelude::UserId;
 use redis::{AsyncCommands as _, Client, FromRedisValue, ToRedisArgs};
-
-pub mod message_logger;
-use message_logger::*;
 
 const PK_KEY: &str = "pluralkit-v1";
 const LAUNCHER_VERSION_KEY: &str = "launcher-version-v1";
@@ -95,45 +92,6 @@ impl Storage {
     pub async fn is_user_plural(&self, user_id: UserId) -> Result<bool> {
         let key = format!("{PK_KEY}:{user_id}");
         self.key_exists(&key).await
-    }
-
-    pub async fn store_message(
-        &self,
-        channel_id: &ChannelId,
-        message_id: &MessageId,
-        content: String,
-        author: UserId,
-    ) -> Result<()> {
-        let key = format!("{MSG_LOG_KEY}:{channel_id}:{message_id}");
-
-        let val = MessageLog { author, content };
-
-        self.set_key(&key, val).await?;
-        self.expire_key(&key, 30 * 24 * 60 * 60).await?; // only store for 30 days
-
-        Ok(())
-    }
-
-    pub async fn get_message(
-        &self,
-        channel_id: &ChannelId,
-        message_id: &MessageId,
-    ) -> Result<MessageLog> {
-        let key = format!("{MSG_LOG_KEY}:{channel_id}:{message_id}");
-        let res = self.get_key(&key).await?;
-
-        Ok(res)
-    }
-
-    pub async fn delete_message(
-        &self,
-        channel_id: &ChannelId,
-        message_id: &MessageId,
-    ) -> Result<()> {
-        let key = format!("{MSG_LOG_KEY}:{channel_id}:{message_id}");
-        self.delete_key(&key).await?;
-
-        Ok(())
     }
 
     pub async fn cache_launcher_version(&self, version: &str) -> Result<()> {
