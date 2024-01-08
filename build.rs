@@ -8,15 +8,15 @@ include!("src/tags.rs");
 /// generate the ChoiceParameter enum and tag data we will use in the `tag` command
 #[allow(dead_code)]
 fn main() {
-    let out_dir = env::var_os("OUT_DIR").unwrap();
-    let generated = Path::new(&out_dir).join("generated.rs");
+	let out_dir = env::var_os("OUT_DIR").unwrap();
+	let generated = Path::new(&out_dir).join("generated.rs");
 
-    let tag_files: Vec<String> = fs::read_dir(TAG_DIR)
-        .unwrap()
-        .map(|f| f.unwrap().file_name().to_string_lossy().to_string())
-        .collect();
+	let tag_files: Vec<String> = fs::read_dir(TAG_DIR)
+		.unwrap()
+		.map(|f| f.unwrap().file_name().to_string_lossy().to_string())
+		.collect();
 
-    let tags: Vec<Tag> = tag_files
+	let tags: Vec<Tag> = tag_files
         .clone()
         .into_iter()
         .map(|name| {
@@ -45,23 +45,23 @@ fn main() {
         })
         .collect();
 
-    let formatted_names: Vec<String> = tags
-        .iter()
-        .map(|t| t.file_name.replace(".md", "").replace('-', "_"))
-        .collect();
+	let formatted_names: Vec<String> = tags
+		.iter()
+		.map(|t| t.file_name.replace(".md", "").replace('-', "_"))
+		.collect();
 
-    let tag_choice = format!(
-        r#"
+	let tag_choice = format!(
+		r#"
     #[allow(non_camel_case_types, clippy::upper_case_acronyms)]
     #[derive(Clone, Debug, poise::ChoiceParameter)]
     pub enum TagChoice {{
     {}
     }}"#,
-        formatted_names.join(",\n")
-    );
+		formatted_names.join(",\n")
+	);
 
-    let to_str = format!(
-        r#"
+	let to_str = format!(
+		r#"
     impl TagChoice {{
     fn as_str(&self) -> &str {{
     match &self {{
@@ -70,22 +70,22 @@ fn main() {
     }}
     }}
     "#,
-        formatted_names
-            .iter()
-            .map(|n| {
-                let file_name = n.replace('_', "-") + ".md";
-                format!("Self::{n} => \"{file_name}\",")
-            })
-            .collect::<Vec<String>>()
-            .join("\n")
-    );
+		formatted_names
+			.iter()
+			.map(|n| {
+				let file_name = n.replace('_', "-") + ".md";
+				format!("Self::{n} => \"{file_name}\",")
+			})
+			.collect::<Vec<String>>()
+			.join("\n")
+	);
 
-    let contents = Vec::from([tag_choice, to_str]).join("\n\n");
+	let contents = Vec::from([tag_choice, to_str]).join("\n\n");
 
-    fs::write(generated, contents).unwrap();
-    println!(
-        "cargo:rustc-env=TAGS={}",
-        // make sure we can deserialize with env! at runtime
-        serde_json::to_string(&tags).unwrap()
-    );
+	fs::write(generated, contents).unwrap();
+	println!(
+		"cargo:rustc-env=TAGS={}",
+		// make sure we can deserialize with env! at runtime
+		serde_json::to_string(&tags).unwrap()
+	);
 }

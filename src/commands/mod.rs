@@ -6,13 +6,13 @@ use poise::Command;
 mod general;
 
 pub fn to_global_commands() -> Vec<Command<Data, Report>> {
-    vec![
-        general::joke(),
-        general::members(),
-        general::ping(),
-        general::rory(),
-        general::say(),
-        general::stars(),
-        general::tag(),
-    ]
+	vec![
+		general::joke(),
+		general::members(),
+		general::ping(),
+		general::rory(),
+		general::say(),
+		general::stars(),
+		general::tag(),
+	]
 }

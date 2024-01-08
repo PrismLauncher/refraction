@@ -12,57 +12,57 @@ use issues::find_issues;
 use providers::find_log;
 
 pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()> {
-    let channel = message.channel_id;
+	let channel = message.channel_id;
 
-    let log = find_log(message).await;
+	let log = find_log(message).await;
 
-    if log.is_err() {
-        channel
-            .send_message(ctx, |m| {
-                m.reference_message(message)
-                    .allowed_mentions(|am| am.replied_user(true))
-                    .embed(|e| {
-                        e.title("Analyze failed!")
-                            .description("Couldn't download log")
-                    })
-            })
-            .await?;
+	if log.is_err() {
+		channel
+			.send_message(ctx, |m| {
+				m.reference_message(message)
+					.allowed_mentions(|am| am.replied_user(true))
+					.embed(|e| {
+						e.title("Analyze failed!")
+							.description("Couldn't download log")
+					})
+			})
+			.await?;
 
-        return Ok(());
-    }
+		return Ok(());
+	}
 
-    let Some(log) = log? else {
-        debug!("No log found in message! Skipping analysis");
-        return Ok(());
-    };
+	let Some(log) = log? else {
+		debug!("No log found in message! Skipping analysis");
+		return Ok(());
+	};
 
-    let issues = find_issues(&log, data).await?;
+	let issues = find_issues(&log, data).await?;
 
-    channel
-        .send_message(ctx, |m| {
-            m.reference_message(message)
-                .allowed_mentions(|am| am.replied_user(true))
-                .embed(|e| {
-                    e.title("Log analysis");
+	channel
+		.send_message(ctx, |m| {
+			m.reference_message(message)
+				.allowed_mentions(|am| am.replied_user(true))
+				.embed(|e| {
+					e.title("Log analysis");
 
-                    if issues.is_empty() {
-                        e.color(COLORS["green"]).field(
-                            "Analyze failed!",
-                            "No issues found automatically",
-                            false,
-                        );
-                    } else {
-                        e.color(COLORS["red"]);
+					if issues.is_empty() {
+						e.color(COLORS["green"]).field(
+							"Analyze failed!",
+							"No issues found automatically",
+							false,
+						);
+					} else {
+						e.color(COLORS["red"]);
 
-                        for (title, description) in issues {
-                            e.field(title, description, false);
-                        }
-                    }
+						for (title, description) in issues {
+							e.field(title, description, false);
+						}
+					}
 
-                    e
-                })
-        })
-        .await?;
+					e
+				})
+		})
+		.await?;
 
-    Ok(())
+	Ok(())
 }
