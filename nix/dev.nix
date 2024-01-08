@@ -3,6 +3,7 @@
     lib,
     pkgs,
     config,
+    self',
     ...
   }: {
     pre-commit.settings.hooks = {
@@ -38,7 +39,7 @@
         rust-analyzer
 
         # nix
-        config.formatter
+        self'.formatter
         nil
       ];
 
