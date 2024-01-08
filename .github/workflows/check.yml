@@ -53,7 +53,7 @@ jobs:
       - name: Run Clippy
         continue-on-error: true
         run: |
-          set -euxo pipefail
+          set -euo pipefail
 
           cargo clippy \
             --all-features \
@@ -62,7 +62,7 @@ jobs:
           | clippy-sarif | tee /tmp/clippy.sarif | sarif-fmt
 
       - name: Upload results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: /tmp/clippy.sarif
           wait-for-processing: true

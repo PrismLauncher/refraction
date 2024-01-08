@@ -9,8 +9,8 @@ on:
 jobs:
   build:
     name: Build image
-
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         arch: [x86_64, aarch64]
@@ -32,7 +32,7 @@ jobs:
           echo "path=$(realpath result)" >> "$GITHUB_OUTPUT"
 
       - name: Upload image
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: container-${{ matrix.arch }}
           path: ${{ steps.build.outputs.path }}
@@ -59,7 +59,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download images
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: images
 
@@ -74,7 +74,7 @@ jobs:
         env:
           TAG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
         run: |
-          set -eux
+          set -eu
 
           architectures=("x86_64" "aarch64")
           for arch in "${architectures[@]}"; do
