@@ -15,7 +15,10 @@ use serenity::ShardManager;
 use redis::ConnectionLike;
 
 use tokio::signal::ctrl_c;
+#[cfg(target_family = "unix")]
 use tokio::signal::unix::{signal, SignalKind};
+#[cfg(target_family = "windows")]
+use tokio::signal::windows::ctrl_close;
 use tokio::sync::Mutex;
 
 mod api;
@@ -125,12 +128,15 @@ async fn main() -> Result<()> {
 		.wrap_err_with(|| "Failed to build framework!")?;
 
 	let shard_manager = framework.shard_manager().clone();
+	#[cfg(target_family = "unix")]
 	let mut sigterm = signal(SignalKind::terminate())?;
+	#[cfg(target_family = "windows")]
+	let mut sigterm = ctrl_close()?;
 
 	tokio::select! {
 		result = framework.start() => result.map_err(Report::from),
 		_ = sigterm.recv() => {
-			handle_shutdown(shard_manager, "Recieved SIGTERM").await;
+			handle_shutdown(shard_manager, "Received SIGTERM").await;
 			std::process::exit(0);
 		}
 		_ = ctrl_c() => {
