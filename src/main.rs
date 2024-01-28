@@ -41,7 +41,7 @@ pub struct Data {
 
 impl Data {
 	pub fn new() -> Result<Self> {
-		let config = Config::new_from_env()?;
+		let config = Config::new_from_env();
 		let storage = Storage::new(&config.redis_url)?;
 		let octocrab = octocrab::instance();
 

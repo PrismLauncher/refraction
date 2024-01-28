@@ -1,8 +1,6 @@
 use color_eyre::eyre::{eyre, Result};
 use rand::seq::SliceRandom;
 
-#[macro_use]
-mod macros;
 mod resolve_message;
 
 pub use resolve_message::resolve as resolve_message;
