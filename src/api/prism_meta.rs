@@ -1,6 +1,6 @@
 use crate::api::REQWEST_CLIENT;
 
-use eyre::{eyre, Context, Result};
+use eyre::{eyre, Context, OptionExt, Result};
 use log::debug;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
@@ -30,12 +30,12 @@ pub async fn get_latest_minecraft_version() -> Result<String> {
 		let data = resp
 			.json::<MinecraftPackageJson>()
 			.await
-			.wrap_err_with(|| "Couldn't parse Minecraft versions!")?;
+			.wrap_err("Couldn't parse Minecraft versions!")?;
 
 		let version = data
 			.recommended
 			.first()
-			.ok_or_else(|| eyre!("Couldn't find latest version of Minecraft!"))?;
+			.ok_or_eyre("Couldn't find latest version of Minecraft!")?;
 
 		Ok(version.clone())
 	} else {

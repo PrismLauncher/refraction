@@ -90,8 +90,8 @@ async fn main() -> Result<()> {
 	color_eyre::install()?;
 	env_logger::init();
 
-	let token = std::env::var("DISCORD_BOT_TOKEN")
-		.wrap_err_with(|| "Couldn't find bot token in environment!")?;
+	let token =
+		std::env::var("DISCORD_BOT_TOKEN").wrap_err("Couldn't find bot token in environment!")?;
 
 	let intents =
 		serenity::GatewayIntents::non_privileged() | serenity::GatewayIntents::MESSAGE_CONTENT;

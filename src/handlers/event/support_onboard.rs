@@ -1,4 +1,4 @@
-use eyre::{eyre, Result};
+use eyre::{eyre, OptionExt, Result};
 use log::debug;
 use poise::serenity_prelude::{
 	ChannelType, Context, CreateAllowedMentions, CreateMessage, GuildChannel,
@@ -24,7 +24,7 @@ pub async fn handle(ctx: &Context, thread: &GuildChannel) -> Result<()> {
 
 	let owner = thread
 		.owner_id
-		.ok_or_else(|| eyre!("Couldn't get owner of thread!"))?;
+		.ok_or_eyre("Couldn't get owner of thread!")?;
 
 	let msg = format!(
     "<@{}> We've received your support ticket! {} {}",

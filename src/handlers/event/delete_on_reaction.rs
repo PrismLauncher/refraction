@@ -5,12 +5,12 @@ pub async fn handle(ctx: &Context, reaction: &Reaction) -> Result<()> {
 	let user = reaction
 		.user(ctx)
 		.await
-		.wrap_err_with(|| "Couldn't fetch user from reaction!")?;
+		.wrap_err("Couldn't fetch user from reaction!")?;
 
 	let message = reaction
 		.message(ctx)
 		.await
-		.wrap_err_with(|| "Couldn't fetch message from reaction!")?;
+		.wrap_err("Couldn't fetch message from reaction!")?;
 
 	if let Some(interaction) = &message.interaction {
 		if interaction.kind == InteractionType::Command

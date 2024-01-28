@@ -3,7 +3,7 @@ use crate::tags::Tag;
 use crate::{consts, Context};
 use std::env;
 
-use eyre::{eyre, Result};
+use eyre::{OptionExt, Result};
 use once_cell::sync::Lazy;
 use poise::serenity_prelude::{Color, CreateEmbed, User};
 use poise::CreateReply;
@@ -22,7 +22,7 @@ pub async fn tag(
 	let tag = TAGS
 		.iter()
 		.find(|t| t.file_name == tag_file)
-		.ok_or_else(|| eyre!("Tried to get non-existent tag: {tag_file}"))?;
+		.ok_or_eyre("Tried to get non-existent tag: {tag_file}")?;
 
 	let frontmatter = &tag.frontmatter;
 

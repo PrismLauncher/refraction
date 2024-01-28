@@ -1,6 +1,6 @@
 use crate::api::REQWEST_CLIENT;
 
-use eyre::{eyre, Result};
+use eyre::{eyre, OptionExt, Result};
 use once_cell::sync::Lazy;
 use regex::Regex;
 use reqwest::StatusCode;
@@ -48,7 +48,7 @@ pub async fn find(content: &str) -> Result<Option<String>> {
 	let paste_files: PasteResponse = resp.json().await?;
 	let file_id = &paste_files
 		.result
-		.ok_or_else(|| eyre!("Couldn't find any files associated with paste {paste_id}!"))?[0]
+		.ok_or_eyre("Couldn't find any files associated with paste {paste_id}!")?[0]
 		.id;
 
 	let raw_url = format!("{PASTE_GG}{PASTES_ENDPOINT}/{paste_id}/files/{file_id}/raw");

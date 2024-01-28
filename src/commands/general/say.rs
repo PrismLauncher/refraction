@@ -1,6 +1,6 @@
 use crate::Context;
 
-use eyre::{eyre, Result};
+use eyre::{OptionExt, Result};
 use poise::serenity_prelude::{CreateEmbed, CreateEmbedAuthor, CreateMessage};
 
 /// Say something through the bot
@@ -12,14 +12,11 @@ use poise::serenity_prelude::{CreateEmbed, CreateEmbedAuthor, CreateMessage};
 	required_permissions = "MODERATE_MEMBERS"
 )]
 pub async fn say(ctx: Context<'_>, #[description = "Just content?"] content: String) -> Result<()> {
-	let guild = ctx
-		.guild()
-		.ok_or_else(|| eyre!("Couldn't get guild!"))?
-		.to_owned();
+	let guild = ctx.guild().ok_or_eyre("Couldn't get guild!")?.to_owned();
 	let channel = ctx
 		.guild_channel()
 		.await
-		.ok_or_else(|| eyre!("Couldn't get channel!"))?;
+		.ok_or_eyre("Couldn't get channel!")?;
 
 	ctx.defer_ephemeral().await?;
 	channel.say(ctx, &content).await?;
@@ -30,7 +27,7 @@ pub async fn say(ctx: Context<'_>, #[description = "Just content?"] content: Str
 			.channels
 			.iter()
 			.find(|c| c.0 == &channel_id)
-			.ok_or_else(|| eyre!("Couldn't get log channel from guild!"))?;
+			.ok_or_eyre("Couldn't get log channel from guild!")?;
 
 		let author = CreateEmbedAuthor::new(ctx.author().tag())
 			.icon_url(ctx.author().avatar_url().unwrap_or("Undefined".to_string()));

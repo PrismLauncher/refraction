@@ -13,7 +13,7 @@ pub async fn stars(ctx: Context<'_>) -> Result<()> {
 		.repos("PrismLauncher", "PrismLauncher")
 		.get()
 		.await
-		.wrap_err_with(|| "Couldn't get PrismLauncher/PrismLauncher from GitHub!")?;
+		.wrap_err("Couldn't get PrismLauncher/PrismLauncher from GitHub!")?;
 
 	let count = if let Some(count) = prismlauncher.stargazers_count {
 		count.to_string()
