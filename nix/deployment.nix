@@ -14,7 +14,7 @@
     ...
   }: let
     crossPkgsFor =
-      rec {
+      {
         x86_64-linux = {
           x86_64 = pkgs.pkgsStatic;
           aarch64 = pkgs.pkgsCross.aarch64-multiplatform.pkgsStatic;
@@ -30,7 +30,7 @@
           aarch64 = pkgs.pkgsCross.aarch64-multiplatform.pkgsStatic;
         };
 
-        aarch64-darwin = x86_64-darwin;
+        aarch64-darwin = crossPkgsFor.x86_64-darwin;
       }
       .${system};
 
@@ -56,17 +56,17 @@
         optimizeSize = true;
       };
 
-      newAttrs = lib.fix (finalAttrs: {
+      newAttrs = {
         CARGO_BUILD_TARGET = target;
         "CC_${target'}" = "${cc}/bin/${cc.targetPrefix}cc";
         "CARGO_TARGET_${targetUpper}_RUSTFLAGS" = "-C target-feature=+crt-static";
-        "CARGO_TARGET_${targetUpper}_LINKER" = finalAttrs."CC_${target'}";
-      });
+        "CARGO_TARGET_${targetUpper}_LINKER" = newAttrs."CC_${target'}";
+      };
 
       inherit (crossPkgsFor.${arch}.stdenv) cc;
     in
       lib.getExe (
-        refraction.overrideAttrs (_: newAttrs)
+        refraction.overrideAttrs (lib.const newAttrs)
       );
 
     containerFor = arch:

@@ -6,12 +6,12 @@
   perSystem = {
     pkgs,
     system,
-    config,
+    self',
     ...
   }: {
     packages = {
       refraction = pkgs.callPackage ./derivation.nix {
-        version = builtins.substring 0 8 self.lastModifiedDate or "dirty";
+        version = builtins.substring 0 7 self.rev or "dirty";
 
         inherit
           (pkgs.darwin.apple_sdk.frameworks)
@@ -23,7 +23,7 @@
         naersk = inputs.naersk.lib.${system};
       };
 
-      default = config.packages.refraction;
+      default = self'.packages.refraction;
     };
   };
 }

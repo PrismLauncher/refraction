@@ -9,7 +9,9 @@
     pre-commit.settings.hooks = {
       actionlint.enable = true;
       alejandra.enable = true;
+      deadnix.enable = true;
       rustfmt.enable = true;
+      statix.enable = true;
       nil.enable = true;
       prettier = {
         enable = true;
@@ -17,8 +19,8 @@
       };
     };
 
-    proc.groups.daemons.processes = {
-      redis.command = "${lib.getExe' pkgs.redis "redis-server"}";
+    procfiles.daemons.processes = {
+      redis = lib.getExe' pkgs.redis "redis-server";
     };
 
     devShells.default = pkgs.mkShell {
@@ -29,7 +31,7 @@
       packages = with pkgs; [
         # general
         actionlint
-        config.proc.groups.daemons.package
+        config.procfiles.daemons.package
 
         # rust
         cargo
@@ -40,7 +42,9 @@
 
         # nix
         self'.formatter
+        deadnix
         nil
+        statix
       ];
 
       RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";

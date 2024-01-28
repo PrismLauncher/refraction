@@ -23,8 +23,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    flake-root.url = "github:srid/flake-root";
-    proc-flake.url = "github:srid/proc-flake";
+    procfile-nix = {
+      url = "github:getchoo/procfile-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {parts, ...} @ inputs:
@@ -35,8 +37,7 @@
         ./nix/deployment.nix
 
         inputs.pre-commit-hooks.flakeModule
-        inputs.flake-root.flakeModule
-        inputs.proc-flake.flakeModule
+        inputs.procfile-nix.flakeModule
       ];
 
       systems = [
