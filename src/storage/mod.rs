@@ -60,6 +60,7 @@ impl Storage {
 		Ok(exists > 0)
 	}
 
+	/* we'll probably use this again
 	async fn delete_key(&self, key: &str) -> Result<()> {
 		debug!("Deleting key {key}");
 
@@ -68,6 +69,7 @@ impl Storage {
 
 		Ok(())
 	}
+	*/
 
 	async fn expire_key(&self, key: &str, expire_seconds: i64) -> Result<()> {
 		debug!("Expiring key {key} in {expire_seconds}");
@@ -84,7 +86,7 @@ impl Storage {
 
 		// Just store some value. We only care about the presence of this key
 		self.set_key(&key, 0).await?;
-		self.expire_key(&key, 7 * 24 * 60 * 60).await?;
+		self.expire_key(&key, 7 * 24 * 60 * 60).await?; // weekly
 
 		Ok(())
 	}
@@ -96,18 +98,13 @@ impl Storage {
 
 	pub async fn cache_launcher_version(&self, version: &str) -> Result<()> {
 		self.set_key(LAUNCHER_VERSION_KEY, version).await?;
+		self.expire_key(LAUNCHER_VERSION_KEY, 24 * 60 * 60).await?; // 1 day
 
 		Ok(())
 	}
 
 	pub async fn get_launcher_version(&self) -> Result<String> {
 		let res = self.get_key(LAUNCHER_VERSION_KEY).await?;
-
-		Ok(res)
-	}
-
-	pub async fn launcher_version_is_cached(&self) -> Result<bool> {
-		let res = self.key_exists(LAUNCHER_VERSION_KEY).await?;
 
 		Ok(res)
 	}

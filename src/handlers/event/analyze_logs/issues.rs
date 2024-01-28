@@ -187,8 +187,8 @@ async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 	let version_from_log = captures[0].replace("Prism Launcher version: ", "");
 
 	let storage = &data.storage;
-	let latest_version = if storage.launcher_version_is_cached().await? {
-		storage.get_launcher_version().await?
+	let latest_version = if let Ok(version) = storage.get_launcher_version().await {
+		version
 	} else {
 		let version = data
 			.octocrab
