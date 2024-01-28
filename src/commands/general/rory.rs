@@ -1,7 +1,7 @@
 use crate::api::rory;
 use crate::Context;
 
-use color_eyre::eyre::Result;
+use eyre::Result;
 use poise::serenity_prelude::{CreateEmbed, CreateEmbedFooter};
 use poise::CreateReply;
 

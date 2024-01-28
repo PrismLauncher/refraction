@@ -1,6 +1,6 @@
 use crate::Context;
 
-use color_eyre::eyre::Result;
+use eyre::Result;
 
 /// Replies with pong!
 #[poise::command(slash_command, prefix_command, ephemeral)]

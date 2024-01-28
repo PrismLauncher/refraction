@@ -1,6 +1,6 @@
 use crate::api::REQWEST_CLIENT;
 
-use color_eyre::eyre::{eyre, Result};
+use eyre::{eyre, Result};
 use once_cell::sync::Lazy;
 use regex::Regex;
 use reqwest::StatusCode;

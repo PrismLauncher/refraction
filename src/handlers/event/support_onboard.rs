@@ -1,4 +1,4 @@
-use color_eyre::eyre::{eyre, Result};
+use eyre::{eyre, Result};
 use log::debug;
 use poise::serenity_prelude::{
 	ChannelType, Context, CreateAllowedMentions, CreateMessage, GuildChannel,

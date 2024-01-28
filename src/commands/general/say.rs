@@ -1,6 +1,6 @@
 use crate::Context;
 
-use color_eyre::eyre::{eyre, Result};
+use eyre::{eyre, Result};
 use poise::serenity_prelude::{CreateEmbed, CreateEmbedAuthor, CreateMessage};
 
 /// Say something through the bot

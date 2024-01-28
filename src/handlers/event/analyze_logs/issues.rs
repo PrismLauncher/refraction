@@ -1,6 +1,6 @@
 use crate::Data;
 
-use color_eyre::eyre::Result;
+use eyre::Result;
 use once_cell::sync::Lazy;
 use regex::Regex;
 

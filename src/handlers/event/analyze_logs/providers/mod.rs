@@ -1,4 +1,4 @@
-use color_eyre::eyre::Result;
+use eyre::Result;
 use poise::serenity_prelude::Message;
 
 #[path = "0x0.rs"]

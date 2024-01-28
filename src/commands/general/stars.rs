@@ -1,6 +1,6 @@
 use crate::{consts, Context};
 
-use color_eyre::eyre::{Context as _, Result};
+use eyre::{Context as _, Result};
 use poise::serenity_prelude::CreateEmbed;
 use poise::CreateReply;
 

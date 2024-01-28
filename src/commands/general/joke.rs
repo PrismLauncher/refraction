@@ -1,7 +1,7 @@
 use crate::api::dadjoke;
 use crate::Context;
 
-use color_eyre::eyre::Result;
+use eyre::Result;
 
 /// It's a joke
 #[poise::command(slash_command, prefix_command)]

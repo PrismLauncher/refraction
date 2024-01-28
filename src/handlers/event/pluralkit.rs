@@ -1,7 +1,7 @@
 use crate::{api, Data};
 use std::time::Duration;
 
-use color_eyre::eyre::Result;
+use eyre::Result;
 use log::debug;
 use poise::serenity_prelude::{Context, Message};
 use tokio::time::sleep;

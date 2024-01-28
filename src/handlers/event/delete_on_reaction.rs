@@ -1,4 +1,4 @@
-use color_eyre::eyre::{Context as _, Result};
+use eyre::{Context as _, Result};
 use poise::serenity_prelude::{Context, InteractionType, Reaction};
 
 pub async fn handle(ctx: &Context, reaction: &Reaction) -> Result<()> {

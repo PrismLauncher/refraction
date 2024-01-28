@@ -5,15 +5,14 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use color_eyre::eyre::{eyre, Context as _, Report, Result};
-use color_eyre::owo_colors::OwoColorize;
-
+use eyre::{eyre, Context as _, Report, Result};
 use log::{info, warn};
 
 use poise::{
 	serenity_prelude as serenity, EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
 };
 
+use owo_colors::OwoColorize;
 use redis::ConnectionLike;
 
 use tokio::signal::ctrl_c;

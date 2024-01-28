@@ -1,6 +1,6 @@
 use crate::{api, Data};
 
-use color_eyre::eyre::{Report, Result};
+use eyre::{Report, Result};
 use log::{debug, info};
 use poise::serenity_prelude::{ActivityData, Context, FullEvent, OnlineStatus};
 use poise::FrameworkContext;

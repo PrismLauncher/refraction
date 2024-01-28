@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use color_eyre::eyre::{eyre, Context as _, Result};
+use eyre::{eyre, Context as _, Result};
 use log::debug;
 use once_cell::sync::Lazy;
 use poise::serenity_prelude::{

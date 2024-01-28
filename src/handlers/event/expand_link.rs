@@ -1,4 +1,4 @@
-use color_eyre::eyre::Result;
+use eyre::Result;
 use poise::serenity_prelude::{Context, CreateAllowedMentions, CreateMessage, Message};
 
 use crate::utils;

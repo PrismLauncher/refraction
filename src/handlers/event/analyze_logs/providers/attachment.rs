@@ -1,4 +1,4 @@
-use color_eyre::eyre::Result;
+use eyre::Result;
 use poise::serenity_prelude::Message;
 
 pub async fn find(message: &Message) -> Result<Option<String>> {

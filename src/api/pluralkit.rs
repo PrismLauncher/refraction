@@ -1,6 +1,6 @@
 use crate::api::REQWEST_CLIENT;
 
-use color_eyre::eyre::{eyre, Context, Result};
+use eyre::{eyre, Context, Result};
 use log::debug;
 use poise::serenity_prelude::{MessageId, UserId};
 use reqwest::StatusCode;

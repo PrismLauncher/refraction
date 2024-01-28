@@ -1,6 +1,6 @@
 use crate::api::REQWEST_CLIENT;
 
-use color_eyre::eyre::{eyre, Result};
+use eyre::{eyre, Result};
 use log::debug;
 use reqwest::StatusCode;
 

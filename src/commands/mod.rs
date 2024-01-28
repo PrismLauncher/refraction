@@ -1,6 +1,6 @@
 use crate::Data;
 
-use color_eyre::eyre::Report;
+use eyre::Report;
 use poise::Command;
 
 mod general;

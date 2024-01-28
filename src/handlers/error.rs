@@ -1,7 +1,7 @@
-use crate::consts::COLORS;
+use crate::consts;
 use crate::Data;
 
-use color_eyre::eyre::Report;
+use eyre::Report;
 use log::error;
 use poise::serenity_prelude::{CreateEmbed, Timestamp};
 use poise::{CreateReply, FrameworkError};
@@ -24,7 +24,7 @@ pub async fn handle(error: FrameworkError<'_, Data, Report>) {
 				.title("Something went wrong!")
 				.description("oopsie")
 				.timestamp(Timestamp::now())
-				.color(COLORS["red"]);
+				.color(consts::COLORS["red"]);
 
 			let reply = CreateReply::default().embed(embed);
 

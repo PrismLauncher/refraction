@@ -1,7 +1,7 @@
 use crate::consts::COLORS;
 use crate::Data;
 
-use color_eyre::eyre::Result;
+use eyre::Result;
 use log::debug;
 use poise::serenity_prelude::{
 	Context, CreateAllowedMentions, CreateEmbed, CreateMessage, Message,

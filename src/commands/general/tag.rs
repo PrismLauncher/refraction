@@ -3,7 +3,7 @@ use crate::tags::Tag;
 use crate::{consts, Context};
 use std::env;
 
-use color_eyre::eyre::{eyre, Result};
+use eyre::{eyre, Result};
 use once_cell::sync::Lazy;
 use poise::serenity_prelude::{Color, CreateEmbed, User};
 use poise::CreateReply;
