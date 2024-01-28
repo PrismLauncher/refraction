@@ -13,7 +13,7 @@ pub async fn handle(ctx: &Context, reaction: &Reaction) -> Result<()> {
 		.wrap_err_with(|| "Couldn't fetch message from reaction!")?;
 
 	if let Some(interaction) = &message.interaction {
-		if interaction.kind == InteractionType::ApplicationCommand
+		if interaction.kind == InteractionType::Command
 			&& interaction.user == user
 			&& reaction.emoji.unicode_eq("❌")
 		{

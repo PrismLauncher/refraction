@@ -5,7 +5,8 @@ use std::env;
 
 use color_eyre::eyre::{eyre, Result};
 use once_cell::sync::Lazy;
-use poise::serenity_prelude::{Color, User};
+use poise::serenity_prelude::{Color, CreateEmbed, User};
+use poise::CreateReply;
 
 include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 static TAGS: Lazy<Vec<Tag>> = Lazy::new(|| serde_json::from_str(env!("TAGS")).unwrap());
@@ -25,36 +26,40 @@ pub async fn tag(
 
 	let frontmatter = &tag.frontmatter;
 
-	ctx.send(|m| {
-		if let Some(user) = user {
-			m.content(format!("<@{}>", user.id));
+	let embed = {
+		let mut e = CreateEmbed::new();
+
+		if let Some(color) = &frontmatter.color {
+			let color = *consts::COLORS
+				.get(color.as_str())
+				.unwrap_or(&Color::default());
+			e = e.color(color);
 		}
 
-		m.embed(|e| {
-			e.title(&frontmatter.title);
-			e.description(&tag.content);
+		if let Some(image) = &frontmatter.image {
+			e = e.image(image);
+		}
 
-			if let Some(color) = &frontmatter.color {
-				let color = *consts::COLORS
-					.get(color.as_str())
-					.unwrap_or(&Color::default());
-				e.color(color);
+		if let Some(fields) = &frontmatter.fields {
+			for field in fields {
+				e = e.field(&field.name, &field.value, field.inline);
 			}
+		}
 
-			if let Some(image) = &frontmatter.image {
-				e.image(image);
-			}
+		e
+	};
 
-			if let Some(fields) = &frontmatter.fields {
-				for field in fields {
-					e.field(&field.name, &field.value, field.inline);
-				}
-			}
+	let reply = {
+		let mut r = CreateReply::default();
 
-			e
-		})
-	})
-	.await?;
+		if let Some(user) = user {
+			r = r.content(format!("<@{}>", user.id));
+		}
+
+		r.embed(embed)
+	};
+
+	ctx.send(reply).await?;
 
 	Ok(())
 }

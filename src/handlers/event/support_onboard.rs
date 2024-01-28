@@ -1,22 +1,23 @@
 use color_eyre::eyre::{eyre, Result};
 use log::*;
-use poise::serenity_prelude::{ChannelType, Context, GuildChannel};
+use poise::serenity_prelude::{
+	ChannelType, Context, CreateAllowedMentions, CreateMessage, GuildChannel,
+};
 
 pub async fn handle(ctx: &Context, thread: &GuildChannel) -> Result<()> {
 	if thread.kind != ChannelType::PublicThread {
+		debug!("Not doing support onboard in non-thread channel");
 		return Ok(());
 	}
 
-	let parent_id = thread
+	if thread
 		.parent_id
-		.ok_or_else(|| eyre!("Couldn't get parent ID from thread {}!", thread.name))?;
-
-	let parent_channel = ctx
-		.cache
-		.guild_channel(parent_id)
-		.ok_or_else(|| eyre!("Couldn't get GuildChannel {}!", parent_id))?;
-
-	if parent_channel.name != "support" {
+		.ok_or_else(|| eyre!("Couldn't get parent ID from thread {}!", thread.name))?
+		.name(ctx)
+		.await
+		.unwrap_or("".to_string())
+		!= "support"
+	{
 		debug!("Not posting onboarding message to threads outside of support");
 		return Ok(());
 	}
@@ -32,12 +33,15 @@ pub async fn handle(ctx: &Context, thread: &GuildChannel) -> Result<()> {
     "Please don't ping people for support questions, unless you have their permission."
     );
 
-	thread
-		.send_message(ctx, |m| {
-			m.content(msg)
-				.allowed_mentions(|am| am.replied_user(true).users(Vec::from([owner])))
-		})
-		.await?;
+	let allowed_mentions = CreateAllowedMentions::new()
+		.replied_user(true)
+		.users(Vec::from([owner]));
+
+	let message = CreateMessage::new()
+		.content(msg)
+		.allowed_mentions(allowed_mentions);
+
+	thread.send_message(ctx, message).await?;
 
 	Ok(())
 }

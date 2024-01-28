@@ -1,6 +1,8 @@
-use crate::{consts::COLORS, Context};
+use crate::{consts, Context};
 
 use color_eyre::eyre::{Context as _, Result};
+use poise::serenity_prelude::CreateEmbed;
+use poise::CreateReply;
 
 /// Returns GitHub stargazer count
 #[poise::command(slash_command, prefix_command)]
@@ -19,13 +21,12 @@ pub async fn stars(ctx: Context<'_>) -> Result<()> {
 		"undefined".to_string()
 	};
 
-	ctx.send(|m| {
-		m.embed(|e| {
-			e.title(format!("⭐ {count} total stars!"))
-				.color(COLORS["yellow"])
-		})
-	})
-	.await?;
+	let embed = CreateEmbed::new()
+		.title(format!("⭐ {count} total stars!"))
+		.color(consts::COLORS["yellow"]);
+	let reply = CreateReply::default().embed(embed);
+
+	ctx.send(reply).await?;
 
 	Ok(())
 }

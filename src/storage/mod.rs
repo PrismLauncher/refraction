@@ -69,7 +69,7 @@ impl Storage {
 		Ok(())
 	}
 
-	async fn expire_key(&self, key: &str, expire_seconds: usize) -> Result<()> {
+	async fn expire_key(&self, key: &str, expire_seconds: i64) -> Result<()> {
 		debug!("Expiring key {key} in {expire_seconds}");
 
 		let mut con = self.client.get_async_connection().await?;

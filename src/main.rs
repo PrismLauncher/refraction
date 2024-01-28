@@ -10,8 +10,6 @@ use poise::{
 	serenity_prelude as serenity, EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
 };
 
-use serenity::ShardManager;
-
 use redis::ConnectionLike;
 
 use tokio::signal::ctrl_c;
@@ -19,7 +17,6 @@ use tokio::signal::ctrl_c;
 use tokio::signal::unix::{signal, SignalKind};
 #[cfg(target_family = "windows")]
 use tokio::signal::windows::ctrl_close;
-use tokio::sync::Mutex;
 
 mod api;
 mod commands;
@@ -78,9 +75,9 @@ async fn setup(
 	Ok(data)
 }
 
-async fn handle_shutdown(shard_manager: Arc<Mutex<ShardManager>>, reason: &str) {
+async fn handle_shutdown(shard_manager: Arc<serenity::ShardManager>, reason: &str) {
 	warn!("{reason}! Shutting down bot...");
-	shard_manager.lock().await.shutdown_all().await;
+	shard_manager.shutdown_all().await;
 	println!("{}", "Everything is shutdown. Goodbye!".green())
 }
 
@@ -111,7 +108,9 @@ async fn main() -> Result<()> {
 
 		prefix_options: PrefixFrameworkOptions {
 			prefix: Some("r".into()),
-			edit_tracker: Some(EditTracker::for_timespan(Duration::from_secs(3600))),
+			edit_tracker: Some(Arc::from(EditTracker::for_timespan(Duration::from_secs(
+				3600,
+			)))),
 			..Default::default()
 		},
 
@@ -119,22 +118,23 @@ async fn main() -> Result<()> {
 	};
 
 	let framework = Framework::builder()
-		.token(token)
-		.intents(intents)
 		.options(options)
 		.setup(|ctx, ready, framework| Box::pin(setup(ctx, ready, framework)))
-		.build()
-		.await
-		.wrap_err_with(|| "Failed to build framework!")?;
+		.build();
 
-	let shard_manager = framework.shard_manager().clone();
+	let mut client = serenity::ClientBuilder::new(token, intents)
+		.framework(framework)
+		.await?;
+
+	let shard_manager = client.shard_manager.clone();
+
 	#[cfg(target_family = "unix")]
 	let mut sigterm = signal(SignalKind::terminate())?;
 	#[cfg(target_family = "windows")]
 	let mut sigterm = ctrl_close()?;
 
 	tokio::select! {
-		result = framework.start() => result.map_err(Report::from),
+		result = client.start() => result.map_err(Report::from),
 		_ = sigterm.recv() => {
 			handle_shutdown(shard_manager, "Received SIGTERM").await;
 			std::process::exit(0);

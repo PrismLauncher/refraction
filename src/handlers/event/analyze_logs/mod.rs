@@ -3,7 +3,9 @@ use crate::Data;
 
 use color_eyre::eyre::Result;
 use log::*;
-use poise::serenity_prelude::{Context, Message};
+use poise::serenity_prelude::{
+	Context, CreateAllowedMentions, CreateEmbed, CreateMessage, Message,
+};
 
 mod issues;
 mod providers;
@@ -17,16 +19,16 @@ pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()>
 	let log = find_log(message).await;
 
 	if log.is_err() {
-		channel
-			.send_message(ctx, |m| {
-				m.reference_message(message)
-					.allowed_mentions(|am| am.replied_user(true))
-					.embed(|e| {
-						e.title("Analyze failed!")
-							.description("Couldn't download log")
-					})
-			})
-			.await?;
+		let embed = CreateEmbed::new()
+			.title("Analyze failed!")
+			.description("Couldn't download log");
+		let allowed_mentions = CreateAllowedMentions::new().replied_user(true);
+		let our_message = CreateMessage::new()
+			.reference_message(message)
+			.allowed_mentions(allowed_mentions)
+			.embed(embed);
+
+		channel.send_message(ctx, our_message).await?;
 
 		return Ok(());
 	}
@@ -38,31 +40,32 @@ pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()>
 
 	let issues = find_issues(&log, data).await?;
 
-	channel
-		.send_message(ctx, |m| {
-			m.reference_message(message)
-				.allowed_mentions(|am| am.replied_user(true))
-				.embed(|e| {
-					e.title("Log analysis");
+	let embed = {
+		let mut e = CreateEmbed::new().title("Log analysis");
 
-					if issues.is_empty() {
-						e.color(COLORS["green"]).field(
-							"Analyze failed!",
-							"No issues found automatically",
-							false,
-						);
-					} else {
-						e.color(COLORS["red"]);
+		if issues.is_empty() {
+			e = e.color(COLORS["green"]).field(
+				"Analyze failed!",
+				"No issues found automatically",
+				false,
+			);
+		} else {
+			e = e.color(COLORS["red"]);
 
-						for (title, description) in issues {
-							e.field(title, description, false);
-						}
-					}
+			for (title, description) in issues {
+				e = e.field(title, description, false);
+			}
+		}
 
-					e
-				})
-		})
-		.await?;
+		e
+	};
+
+	let allowed_mentions = CreateAllowedMentions::new().replied_user(true);
+	let message = CreateMessage::new()
+		.allowed_mentions(allowed_mentions)
+		.embed(embed);
+
+	channel.send_message(ctx, message).await?;
 
 	Ok(())
 }

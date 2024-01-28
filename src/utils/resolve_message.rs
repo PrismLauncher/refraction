@@ -1,7 +1,12 @@
+use std::str::FromStr;
+
 use color_eyre::eyre::{eyre, Context as _, Result};
 use log::*;
 use once_cell::sync::Lazy;
-use poise::serenity_prelude::{ChannelType, Colour, Context, CreateEmbed, Message};
+use poise::serenity_prelude::{
+	ChannelId, ChannelType, Colour, Context, CreateEmbed, CreateEmbedAuthor, CreateEmbedFooter,
+	Message, MessageId,
+};
 use regex::Regex;
 
 static MESSAGE_PATTERN: Lazy<Regex> = Lazy::new(|| {
@@ -21,103 +26,84 @@ pub fn find_first_image(msg: &Message) -> Option<String> {
 }
 
 pub async fn resolve(ctx: &Context, msg: &Message) -> Result<Vec<CreateEmbed>> {
-	let matches = MESSAGE_PATTERN.captures_iter(&msg.content);
+	let matches = MESSAGE_PATTERN
+		.captures_iter(&msg.content)
+		.map(|capture| capture.extract());
+
 	let mut embeds: Vec<CreateEmbed> = vec![];
 
-	for captured in matches.take(3) {
-		// don't leak messages from other servers
-		if let Some(server_id) = captured.get(0) {
-			let other_server: u64 = server_id.as_str().parse().unwrap_or_default();
-			let current_id = msg.guild_id.unwrap_or_default();
+	for (_, [_server_id, channel_id, message_id]) in matches {
+		let channel = ChannelId::from_str(channel_id)
+			.wrap_err_with(|| format!("Couldn't parse channel ID {channel_id}!"))?
+			.to_channel_cached(ctx.as_ref())
+			.ok_or_else(|| eyre!("Couldn't find Guild Channel from {channel_id}!"))?
+			.to_owned();
 
-			if &other_server != current_id.as_u64() {
-				debug!("Not resolving message of other guild.");
-				continue;
-			}
-		} else {
-			warn!("Couldn't find server_id from Discord link! Not resolving message to be safe");
-			continue;
-		}
+		let author_can_view = if channel.kind == ChannelType::PublicThread
+			|| channel.kind == ChannelType::PrivateThread
+		{
+			let thread_members = channel
+				.id
+				.get_thread_members(ctx)
+				.await
+				.wrap_err("Couldn't get members from thread!")?;
 
-		if let Some(channel_id) = captured.get(1) {
-			let parsed: u64 = channel_id.as_str().parse().unwrap_or_default();
-			let req_channel = ctx
-				.cache
-				.channel(parsed)
-				.ok_or_else(|| eyre!("Couldn't get channel_id from Discord regex!"))?
-				.guild()
-				.ok_or_else(|| {
-					eyre!("Couldn't convert to GuildChannel from channel_id {parsed}!")
-				})?;
-
-			if !req_channel.is_text_based() {
-				debug!("Not resolving message is non-text-based channel.");
-				continue;
-			}
-
-			if req_channel.kind == ChannelType::PrivateThread {
-				if let Some(id) = req_channel.parent_id {
-					let parent = ctx.cache.guild_channel(id).ok_or_else(|| {
-						eyre!("Couldn't get parent channel {id} for thread {req_channel}!")
-					})?;
-					let parent_members = parent.members(ctx).await.unwrap_or_default();
-
-					if !parent_members.iter().any(|m| m.user.id == msg.author.id) {
-						debug!("Not resolving message for user not a part of a private thread.");
-						continue;
-					}
-				}
-			} else if req_channel
-				.members(ctx)
-				.await?
+			thread_members
 				.iter()
-				.any(|m| m.user.id == msg.author.id)
-			{
-				debug!("Not resolving for message for user not a part of a channel");
-				continue;
-			}
+				.any(|member| member.user_id == msg.author.id)
+		} else {
+			channel
+				.members(ctx)
+				.wrap_err_with(|| format!("Couldn't get members for channel {channel_id}!"))?
+				.iter()
+				.any(|member| member.user.id == msg.author.id)
+		};
 
-			let message_id: u64 = captured
-				.get(2)
-				.ok_or_else(|| eyre!("Couldn't get message_id from Discord regex!"))?
-				.as_str()
-				.parse()
-				.wrap_err_with(|| {
-					eyre!("Couldn't parse message_id from Discord regex as a MessageId!")
-				})?;
-
-			let original_message = req_channel.message(ctx, message_id).await?;
-			let mut embed = CreateEmbed::default();
-			embed
-				.author(|a| {
-					a.name(original_message.author.tag())
-						.icon_url(original_message.author.default_avatar_url())
-				})
-				.color(Colour::BLITZ_BLUE)
-				.timestamp(original_message.timestamp)
-				.footer(|f| f.text(format!("#{}", req_channel.name)))
-				.description(format!(
-					"{}\n\n[Jump to original message]({})",
-					original_message.content,
-					original_message.link()
-				));
-
-			if !original_message.attachments.is_empty() {
-				embed.fields(original_message.attachments.iter().map(|a| {
-					(
-						"Attachments".to_string(),
-						format!("[{}]({})", a.filename, a.url),
-						false,
-					)
-				}));
-
-				if let Some(image) = find_first_image(msg) {
-					embed.image(image);
-				}
-			}
-
-			embeds.push(embed);
+		if !author_can_view {
+			debug!("Not resolving message for author who can't see it");
 		}
+
+		let original_message = channel
+			.message(
+				ctx,
+				MessageId::from_str(message_id)
+					.wrap_err_with(|| format!("Couldn't parse message ID {message_id}!"))?,
+			)
+			.await
+			.wrap_err_with(|| {
+				format!("Couldn't get message from ID {message_id} in channel {channel_id}!")
+			})?;
+
+		let author = CreateEmbedAuthor::new(original_message.author.tag())
+			.icon_url(original_message.author.default_avatar_url());
+		let footer = CreateEmbedFooter::new(format!("#{}", channel.name));
+
+		let mut embed = CreateEmbed::new()
+			.author(author)
+			.color(Colour::BLITZ_BLUE)
+			.timestamp(original_message.timestamp)
+			.footer(footer)
+			.description(format!(
+				"{}\n\n[Jump to original message]({})",
+				original_message.content,
+				original_message.link()
+			));
+
+		if !original_message.attachments.is_empty() {
+			embed = embed.fields(original_message.attachments.iter().map(|a| {
+				(
+					"Attachments".to_string(),
+					format!("[{}]({})", a.filename, a.url),
+					false,
+				)
+			}));
+
+			if let Some(image) = find_first_image(msg) {
+				embed = embed.image(image);
+			}
+		}
+
+		embeds.push(embed);
 	}
 
 	Ok(embeds)
