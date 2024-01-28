@@ -37,7 +37,7 @@ jobs:
           name: container-${{ matrix.arch }}
           path: ${{ steps.build.outputs.path }}
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 3
 
   push:
     name: Push image
@@ -79,12 +79,12 @@ jobs:
           architectures=("x86_64" "aarch64")
           for arch in "${architectures[@]}"; do
             docker load < images/container-"$arch"/*.tar.gz
-            docker tag refraction:latest-"$arch" ${{ env.TAG }}-"$arch"
+            docker tag refraction:latest-"$arch" "$TAG"-"$arch"
             docker push ${{ env.TAG }}-"$arch"
           done
 
-          docker manifest create ${{ env.TAG }} \
-            --amend ${{ env.TAG }}-x86_64 \
-            --amend ${{ env.TAG }}-aarch64
+          docker manifest create "$TAG" \
+            --amend "$TAG"-x86_64 \
+            --amend "$TAG"-aarch64
 
-          docker manifest push ${{ env.TAG }}
+          docker manifest push "$TAG"

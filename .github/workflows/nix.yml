@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: Build
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -28,6 +29,7 @@ jobs:
         run: nix build -L --fallback
 
   check:
+    name: Check
     runs-on: ubuntu-latest
 
     steps:
