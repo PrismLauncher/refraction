@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use color_eyre::eyre::Result;
-use log::*;
+use log::{debug, info};
 use poise::serenity_prelude::UserId;
 use redis::{AsyncCommands as _, Client, FromRedisValue, ToRedisArgs};
 

@@ -6,7 +6,7 @@ use regex::Regex;
 
 pub type Issue = Option<(String, String)>;
 
-pub async fn find_issues(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
+pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 	let issues = [
 		fabric_internal,
 		flatpak_nvidia,
@@ -24,7 +24,7 @@ pub async fn find_issues(log: &str, data: &Data) -> Result<Vec<(String, String)>
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
 
 	if let Some(issues) = outdated_launcher(log, data).await? {
-		res.push(issues)
+		res.push(issues);
 	}
 
 	Ok(res)

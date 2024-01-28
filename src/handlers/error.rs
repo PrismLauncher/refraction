@@ -2,7 +2,7 @@ use crate::consts::COLORS;
 use crate::Data;
 
 use color_eyre::eyre::Report;
-use log::*;
+use log::error;
 use poise::serenity_prelude::{CreateEmbed, Timestamp};
 use poise::{CreateReply, FrameworkError};
 

@@ -2,7 +2,7 @@ use crate::consts::COLORS;
 use crate::Data;
 
 use color_eyre::eyre::Result;
-use log::*;
+use log::debug;
 use poise::serenity_prelude::{
 	Context, CreateAllowedMentions, CreateEmbed, CreateMessage, Message,
 };
@@ -10,7 +10,6 @@ use poise::serenity_prelude::{
 mod issues;
 mod providers;
 
-use issues::find_issues;
 use providers::find_log;
 
 pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()> {
@@ -38,7 +37,7 @@ pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()>
 		return Ok(());
 	};
 
-	let issues = find_issues(&log, data).await?;
+	let issues = issues::find(&log, data).await?;
 
 	let embed = {
 		let mut e = CreateEmbed::new().title("Log analysis");

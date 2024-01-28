@@ -1,12 +1,12 @@
 use crate::api::REQWEST_CLIENT;
 
 use color_eyre::eyre::{eyre, Context, Result};
-use log::*;
+use log::debug;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct RoryResponse {
+pub struct Response {
 	pub id: u64,
 	pub url: String,
 	pub error: Option<String>,
@@ -15,7 +15,7 @@ pub struct RoryResponse {
 const RORY: &str = "https://rory.cat";
 const ENDPOINT: &str = "/purr";
 
-pub async fn get_rory(id: Option<u64>) -> Result<RoryResponse> {
+pub async fn get(id: Option<u64>) -> Result<Response> {
 	let target = id.map(|id| id.to_string()).unwrap_or_default();
 
 	let req = REQWEST_CLIENT
@@ -33,7 +33,7 @@ pub async fn get_rory(id: Option<u64>) -> Result<RoryResponse> {
 
 	if let StatusCode::OK = status {
 		let data = resp
-			.json::<RoryResponse>()
+			.json::<Response>()
 			.await
 			.wrap_err_with(|| "Couldn't parse the rory response!")?;
 

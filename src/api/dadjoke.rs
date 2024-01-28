@@ -1,7 +1,7 @@
 use crate::api::REQWEST_CLIENT;
 
 use color_eyre::eyre::{eyre, Result};
-use log::*;
+use log::debug;
 use reqwest::StatusCode;
 
 const DADJOKE: &str = "https://icanhazdadjoke.com";

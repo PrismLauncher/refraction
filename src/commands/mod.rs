@@ -5,7 +5,7 @@ use poise::Command;
 
 mod general;
 
-pub fn to_global_commands() -> Vec<Command<Data, Report>> {
+pub fn get() -> Vec<Command<Data, Report>> {
 	vec![
 		general::joke(),
 		general::members(),

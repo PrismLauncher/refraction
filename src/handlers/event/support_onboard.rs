@@ -1,5 +1,5 @@
 use color_eyre::eyre::{eyre, Result};
-use log::*;
+use log::debug;
 use poise::serenity_prelude::{
 	ChannelType, Context, CreateAllowedMentions, CreateMessage, GuildChannel,
 };
@@ -15,7 +15,7 @@ pub async fn handle(ctx: &Context, thread: &GuildChannel) -> Result<()> {
 		.ok_or_else(|| eyre!("Couldn't get parent ID from thread {}!", thread.name))?
 		.name(ctx)
 		.await
-		.unwrap_or("".to_string())
+		.unwrap_or(String::new())
 		!= "support"
 	{
 		debug!("Not posting onboarding message to threads outside of support");

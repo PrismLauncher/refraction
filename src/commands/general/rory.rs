@@ -1,4 +1,4 @@
-use crate::api::rory::get_rory;
+use crate::api::rory;
 use crate::Context;
 
 use color_eyre::eyre::Result;
@@ -11,7 +11,7 @@ pub async fn rory(
 	ctx: Context<'_>,
 	#[description = "specify a Rory ID"] id: Option<u64>,
 ) -> Result<()> {
-	let rory = get_rory(id).await?;
+	let rory = rory::get(id).await?;
 
 	let embed = {
 		let embed = CreateEmbed::new();

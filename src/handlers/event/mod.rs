@@ -1,7 +1,7 @@
 use crate::{api, Data};
 
 use color_eyre::eyre::{Report, Result};
-use log::*;
+use log::{debug, info};
 use poise::serenity_prelude::{ActivityData, Context, FullEvent, OnlineStatus};
 use poise::FrameworkContext;
 
@@ -23,7 +23,7 @@ pub async fn handle(
 			info!("Logged in as {}!", data_about_bot.user.name);
 
 			let latest_minecraft_version = api::prism_meta::get_latest_minecraft_version().await?;
-			let activity = ActivityData::playing(format!("Minecraft {}", latest_minecraft_version));
+			let activity = ActivityData::playing(format!("Minecraft {latest_minecraft_version}"));
 
 			info!("Setting presence to activity {activity:#?}");
 			ctx.set_presence(Some(activity), OnlineStatus::Online);

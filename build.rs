@@ -54,7 +54,7 @@ fn main() {
 		r#"
     #[allow(non_camel_case_types, clippy::upper_case_acronyms)]
     #[derive(Clone, Debug, poise::ChoiceParameter)]
-    pub enum TagChoice {{
+    pub enum Choice {{
     {}
     }}"#,
 		formatted_names.join(",\n")
@@ -62,7 +62,7 @@ fn main() {
 
 	let to_str = format!(
 		r#"
-    impl TagChoice {{
+    impl Choice {{
     fn as_str(&self) -> &str {{
     match &self {{
     {}

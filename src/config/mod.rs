@@ -1,16 +1,15 @@
 mod discord;
-use discord::DiscordConfig;
 
 #[derive(Debug, Clone)]
 pub struct Config {
-	pub discord: DiscordConfig,
+	pub discord: discord::Config,
 	pub redis_url: String,
 }
 
 impl Default for Config {
 	fn default() -> Self {
 		Self {
-			discord: DiscordConfig::default(),
+			discord: discord::Config::default(),
 			redis_url: "redis://localhost:6379".to_string(),
 		}
 	}
@@ -18,7 +17,7 @@ impl Default for Config {
 
 impl Config {
 	pub fn new_from_env() -> Self {
-		let discord = DiscordConfig::new_from_env();
+		let discord = discord::Config::new_from_env();
 
 		Self {
 			discord,

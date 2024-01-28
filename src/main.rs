@@ -1,10 +1,14 @@
+#![warn(clippy::all, clippy::pedantic, clippy::perf)]
+#![allow(clippy::missing_errors_doc)]
+#![forbid(unsafe_code)]
+
 use std::sync::Arc;
 use std::time::Duration;
 
 use color_eyre::eyre::{eyre, Context as _, Report, Result};
 use color_eyre::owo_colors::OwoColorize;
 
-use log::*;
+use log::{info, warn};
 
 use poise::{
 	serenity_prelude as serenity, EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
@@ -78,7 +82,7 @@ async fn setup(
 async fn handle_shutdown(shard_manager: Arc<serenity::ShardManager>, reason: &str) {
 	warn!("{reason}! Shutting down bot...");
 	shard_manager.shutdown_all().await;
-	println!("{}", "Everything is shutdown. Goodbye!".green())
+	println!("{}", "Everything is shutdown. Goodbye!".green());
 }
 
 #[tokio::main]
@@ -94,7 +98,7 @@ async fn main() -> Result<()> {
 		serenity::GatewayIntents::non_privileged() | serenity::GatewayIntents::MESSAGE_CONTENT;
 
 	let options = FrameworkOptions {
-		commands: commands::to_global_commands(),
+		commands: commands::get(),
 
 		on_error: |error| Box::pin(handlers::handle_error(error)),
 

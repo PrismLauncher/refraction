@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use log::*;
+use log::{info, warn};
 use poise::serenity_prelude::ChannelId;
 
 #[derive(Debug, Clone, Default)]
@@ -9,7 +9,7 @@ pub struct RefractionChannels {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct DiscordConfig {
+pub struct Config {
 	pub channels: RefractionChannels,
 }
 
@@ -33,7 +33,7 @@ impl RefractionChannels {
 	}
 }
 
-impl DiscordConfig {
+impl Config {
 	pub fn new_from_env() -> Self {
 		let channels = RefractionChannels::new_from_env();
 

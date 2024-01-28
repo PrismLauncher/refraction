@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use color_eyre::eyre::{eyre, Context as _, Result};
-use log::*;
+use log::debug;
 use once_cell::sync::Lazy;
 use poise::serenity_prelude::{
 	ChannelId, ChannelType, Colour, Context, CreateEmbed, CreateEmbedAuthor, CreateEmbedFooter,
@@ -19,7 +19,7 @@ pub fn find_first_image(msg: &Message) -> Option<String> {
 		.find(|a| {
 			a.content_type
 				.as_ref()
-				.unwrap_or(&"".to_string())
+				.unwrap_or(&String::new())
 				.starts_with("image/")
 		})
 		.map(|res| res.url.clone())
