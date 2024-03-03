@@ -22,7 +22,7 @@ pub async fn say(ctx: Context<'_>, #[description = "Just content?"] content: Str
 	channel.say(ctx, &content).await?;
 	ctx.say("I said what you said!").await?;
 
-	if let Some(channel_id) = ctx.data().config.discord.channels.say_log_channel_id {
+	if let Some(channel_id) = ctx.data().config.discord.channels().say_log_channel_id() {
 		let log_channel = guild
 			.channels
 			.iter()

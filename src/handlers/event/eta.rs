@@ -1,4 +1,5 @@
 use eyre::Result;
+use log::trace;
 use once_cell::sync::Lazy;
 use poise::serenity_prelude::{Context, Message};
 use rand::seq::SliceRandom;
@@ -6,7 +7,7 @@ use regex::Regex;
 
 static ETA_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"\beta\b").unwrap());
 
-pub const ETA_MESSAGES: [&str; 16] = [
+const ETA_MESSAGES: [&str; 16] = [
 	"Sometime",
 	"Some day",
 	"Not far",
@@ -27,6 +28,7 @@ pub const ETA_MESSAGES: [&str; 16] = [
 
 pub async fn handle(ctx: &Context, message: &Message) -> Result<()> {
 	if !ETA_REGEX.is_match(&message.content) {
+		trace!("The message '{}' (probably) doesn't say ETA", message.content);
 		return Ok(());
 	}
 

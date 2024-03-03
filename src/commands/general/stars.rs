@@ -1,12 +1,15 @@
 use crate::{consts, Context};
 
 use eyre::{Context as _, Result};
+use log::trace;
 use poise::serenity_prelude::CreateEmbed;
 use poise::CreateReply;
 
 /// Returns GitHub stargazer count
 #[poise::command(slash_command, prefix_command)]
 pub async fn stars(ctx: Context<'_>) -> Result<()> {
+	trace!("Running stars command");
+
 	let prismlauncher = ctx
 		.data()
 		.octocrab

@@ -1,4 +1,5 @@
 use eyre::{Context as _, Result};
+use log::trace;
 use poise::serenity_prelude::{Context, InteractionType, Reaction};
 
 pub async fn handle(ctx: &Context, reaction: &Reaction) -> Result<()> {
@@ -17,6 +18,7 @@ pub async fn handle(ctx: &Context, reaction: &Reaction) -> Result<()> {
 			&& interaction.user == user
 			&& reaction.emoji.unicode_eq("❌")
 		{
+			trace!("Deleting our own message at the request of {}", user.tag());
 			message.delete(ctx).await?;
 		}
 	}

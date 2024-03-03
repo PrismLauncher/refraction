@@ -2,14 +2,14 @@ use crate::{api, Data};
 use std::time::Duration;
 
 use eyre::Result;
-use log::{debug, trace};
+use log::trace;
 use poise::serenity_prelude::{Context, Message};
 use tokio::time::sleep;
 
 const PK_DELAY_SEC: Duration = Duration::from_secs(1000);
 
 pub async fn is_message_proxied(message: &Message) -> Result<bool> {
-	debug!(
+	trace!(
 		"Waiting on PluralKit API for {} seconds",
 		PK_DELAY_SEC.as_secs()
 	);
@@ -22,7 +22,7 @@ pub async fn is_message_proxied(message: &Message) -> Result<bool> {
 
 pub async fn handle(_: &Context, msg: &Message, data: &Data) -> Result<()> {
 	if msg.webhook_id.is_some() {
-		debug!(
+		trace!(
 			"Message {} has a webhook ID. Checking if it was sent through PluralKit",
 			msg.id
 		);

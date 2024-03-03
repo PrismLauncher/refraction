@@ -3,17 +3,21 @@ use std::str::FromStr;
 use log::{info, warn};
 use poise::serenity_prelude::ChannelId;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct RefractionChannels {
-	pub say_log_channel_id: Option<ChannelId>,
+	say_log_channel_id: Option<ChannelId>,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Config {
-	pub channels: RefractionChannels,
+	channels: RefractionChannels,
 }
 
 impl RefractionChannels {
+	pub fn new(say_log_channel_id: Option<ChannelId>) -> Self {
+		Self { say_log_channel_id }
+	}
+
 	pub fn new_from_env() -> Self {
 		let say_log_channel_id = Self::get_channel_from_env("DISCORD_SAY_LOG_CHANNELID");
 
@@ -23,7 +27,7 @@ impl RefractionChannels {
 			warn!("DISCORD_SAY_LOG_CHANNELID is empty; this will disable logging in your server.");
 		}
 
-		Self { say_log_channel_id }
+		Self::new(say_log_channel_id)
 	}
 
 	fn get_channel_from_env(var: &str) -> Option<ChannelId> {
@@ -31,12 +35,24 @@ impl RefractionChannels {
 			.ok()
 			.and_then(|env_var| ChannelId::from_str(&env_var).ok())
 	}
+
+	pub fn say_log_channel_id(self) -> Option<ChannelId> {
+		self.say_log_channel_id
+	}
 }
 
 impl Config {
+	pub fn new(channels: RefractionChannels) -> Self {
+		Self { channels }
+	}
+
 	pub fn new_from_env() -> Self {
 		let channels = RefractionChannels::new_from_env();
 
-		Self { channels }
+		Self::new(channels)
+	}
+
+	pub fn channels(self) -> RefractionChannels {
+		self.channels
 	}
 }

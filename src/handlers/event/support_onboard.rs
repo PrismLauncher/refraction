@@ -1,12 +1,12 @@
 use eyre::{eyre, OptionExt, Result};
-use log::debug;
+use log::{debug, trace};
 use poise::serenity_prelude::{
 	ChannelType, Context, CreateAllowedMentions, CreateMessage, GuildChannel,
 };
 
 pub async fn handle(ctx: &Context, thread: &GuildChannel) -> Result<()> {
 	if thread.kind != ChannelType::PublicThread {
-		debug!("Not doing support onboard in non-thread channel");
+		trace!("Not doing support onboard in non-public thread channel");
 		return Ok(());
 	}
 
@@ -15,7 +15,7 @@ pub async fn handle(ctx: &Context, thread: &GuildChannel) -> Result<()> {
 		.ok_or_else(|| eyre!("Couldn't get parent ID from thread {}!", thread.name))?
 		.name(ctx)
 		.await
-		.unwrap_or(String::new())
+		.unwrap_or_default()
 		!= "support"
 	{
 		debug!("Not posting onboarding message to threads outside of support");

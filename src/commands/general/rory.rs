@@ -2,6 +2,7 @@ use crate::api::rory;
 use crate::Context;
 
 use eyre::Result;
+use log::trace;
 use poise::serenity_prelude::{CreateEmbed, CreateEmbedFooter};
 use poise::CreateReply;
 
@@ -11,6 +12,7 @@ pub async fn rory(
 	ctx: Context<'_>,
 	#[description = "specify a Rory ID"] id: Option<u64>,
 ) -> Result<()> {
+	trace!("Running rory command");
 	let rory = rory::get(id).await?;
 
 	let embed = {

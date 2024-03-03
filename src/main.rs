@@ -6,7 +6,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use eyre::{eyre, Context as _, Report, Result};
-use log::{info, warn};
+use log::{info, trace, warn};
 
 use octocrab::Octocrab;
 use poise::{
@@ -71,6 +71,7 @@ async fn setup(
 			"Couldn't connect to storage! Is your daemon running?"
 		));
 	}
+	trace!("Redis connection looks good!");
 
 	poise::builtins::register_globally(ctx, &framework.options().commands).await?;
 	info!("Registered global commands!");

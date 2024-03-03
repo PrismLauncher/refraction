@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use eyre::{eyre, Context as _, Result};
-use log::debug;
+use log::{debug, trace};
 use once_cell::sync::Lazy;
 use poise::serenity_prelude::{
 	ChannelId, ChannelType, Colour, Context, CreateEmbed, CreateEmbedAuthor, CreateEmbedFooter,
@@ -32,7 +32,9 @@ pub async fn resolve(ctx: &Context, msg: &Message) -> Result<Vec<CreateEmbed>> {
 
 	let mut embeds: Vec<CreateEmbed> = vec![];
 
-	for (_, [_server_id, channel_id, message_id]) in matches {
+	for (url, [_server_id, channel_id, message_id]) in matches {
+		trace!("Attempting to resolve message {message_id} from URL {url}");
+
 		let channel = ChannelId::from_str(channel_id)
 			.wrap_err_with(|| format!("Couldn't parse channel ID {channel_id}!"))?
 			.to_channel_cached(ctx.as_ref())
