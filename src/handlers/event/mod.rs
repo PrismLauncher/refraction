@@ -15,7 +15,7 @@ mod support_onboard;
 pub async fn handle(
 	ctx: &Context,
 	event: &FullEvent,
-	_: FrameworkContext<'_, Data, Report>,
+	framework: FrameworkContext<'_, Data, Report>,
 	data: &Data,
 ) -> Result<()> {
 	match event {
@@ -57,7 +57,7 @@ pub async fn handle(
 		}
 
 		FullEvent::ThreadCreate { thread } => {
-			support_onboard::handle(ctx, thread).await?;
+			support_onboard::handle(ctx, thread, framework).await?;
 		}
 
 		_ => {}

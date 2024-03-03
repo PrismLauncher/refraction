@@ -28,7 +28,10 @@ const ETA_MESSAGES: [&str; 16] = [
 
 pub async fn handle(ctx: &Context, message: &Message) -> Result<()> {
 	if !ETA_REGEX.is_match(&message.content) {
-		trace!("The message '{}' (probably) doesn't say ETA", message.content);
+		trace!(
+			"The message '{}' (probably) doesn't say ETA",
+			message.content
+		);
 		return Ok(());
 	}
 
