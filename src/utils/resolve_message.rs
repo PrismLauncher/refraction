@@ -13,7 +13,7 @@ static MESSAGE_PATTERN: Lazy<Regex> = Lazy::new(|| {
 	Regex::new(r"/(https?:\/\/)?(?:canary\.|ptb\.)?discord(?:app)?\.com\/channels\/(?<serverId>\d+)\/(?<channelId>\d+)\/(?<messageId>\d+)/g;").unwrap()
 });
 
-pub fn find_first_image(msg: &Message) -> Option<String> {
+fn find_first_image(msg: &Message) -> Option<String> {
 	msg.attachments
 		.iter()
 		.find(|a| {

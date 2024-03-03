@@ -8,6 +8,7 @@ use std::time::Duration;
 use eyre::{eyre, Context as _, Report, Result};
 use log::{info, warn};
 
+use octocrab::Octocrab;
 use poise::{
 	serenity_prelude as serenity, EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
 };
@@ -43,11 +44,7 @@ pub struct Data {
 }
 
 impl Data {
-	pub fn new() -> Result<Self> {
-		let config = Config::new_from_env();
-		let storage = Storage::new(&config.redis_url)?;
-		let octocrab = octocrab::instance();
-
+	pub fn new(config: Config, storage: Storage, octocrab: Arc<Octocrab>) -> Result<Self> {
 		Ok(Self {
 			config,
 			storage,
@@ -58,13 +55,16 @@ impl Data {
 
 async fn setup(
 	ctx: &serenity::Context,
-	_ready: &serenity::Ready,
+	_: &serenity::Ready,
 	framework: &Framework<Data, Report>,
 ) -> Result<Data> {
-	let data = Data::new()?;
+	let config = Config::new_from_env();
+	let storage = Storage::from_url(&config.redis_url)?;
+	let octocrab = octocrab::instance();
+	let data = Data::new(config, storage, octocrab)?;
 
 	// test redis connection
-	let mut client = data.storage.client.clone();
+	let mut client = data.storage.client().clone();
 
 	if !client.check_connection() {
 		return Err(eyre!(

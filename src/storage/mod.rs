@@ -1,110 +1,69 @@
 use std::fmt::Debug;
 
 use eyre::Result;
-use log::{debug, info};
+use log::debug;
 use poise::serenity_prelude::UserId;
-use redis::{AsyncCommands as _, Client, FromRedisValue, ToRedisArgs};
+use redis::{AsyncCommands, Client};
 
 const PK_KEY: &str = "pluralkit-v1";
 const LAUNCHER_VERSION_KEY: &str = "launcher-version-v1";
 
 #[derive(Clone, Debug)]
 pub struct Storage {
-	pub client: Client,
+	client: Client,
 }
 
 impl Storage {
-	pub fn new(redis_url: &str) -> Result<Self> {
+	pub fn new(client: Client) -> Self {
+		Self { client }
+	}
+
+	pub fn from_url(redis_url: &str) -> Result<Self> {
 		let client = Client::open(redis_url)?;
 
-		Ok(Self { client })
+		Ok(Self::new(client))
 	}
 
-	/*
-	  these are mainly light abstractions to avoid the `let mut con`
-	  boilerplate, as well as not require the caller to format the
-	  strings for keys
-	*/
-
-	async fn get_key<T>(&self, key: &str) -> Result<T>
-	where
-		T: FromRedisValue,
-	{
-		debug!("Getting key {key}");
-
-		let mut con = self.client.get_async_connection().await?;
-		let res: T = con.get(key).await?;
-
-		Ok(res)
-	}
-
-	async fn set_key<'a>(
-		&self,
-		key: &str,
-		value: impl ToRedisArgs + Debug + Send + Sync + 'a,
-	) -> Result<()> {
-		debug!("Creating key {key}:\n{value:#?}");
-
-		let mut con = self.client.get_async_connection().await?;
-		con.set(key, value).await?;
-
-		Ok(())
-	}
-
-	async fn key_exists(&self, key: &str) -> Result<bool> {
-		debug!("Checking if key {key} exists");
-
-		let mut con = self.client.get_async_connection().await?;
-		let exists: u64 = con.exists(key).await?;
-
-		Ok(exists > 0)
-	}
-
-	/* we'll probably use this again
-	async fn delete_key(&self, key: &str) -> Result<()> {
-		debug!("Deleting key {key}");
-
-		let mut con = self.client.get_async_connection().await?;
-		con.del(key).await?;
-
-		Ok(())
-	}
-	*/
-
-	async fn expire_key(&self, key: &str, expire_seconds: i64) -> Result<()> {
-		debug!("Expiring key {key} in {expire_seconds}");
-
-		let mut con = self.client.get_async_connection().await?;
-		con.expire(key, expire_seconds).await?;
-
-		Ok(())
+	pub fn client(&self) -> &Client {
+		&self.client
 	}
 
 	pub async fn store_user_plurality(&self, sender: UserId) -> Result<()> {
-		info!("Marking {sender} as a PluralKit user");
+		debug!("Marking {sender} as a PluralKit user");
 		let key = format!("{PK_KEY}:{sender}");
 
+		let mut con = self.client.get_async_connection().await?;
 		// Just store some value. We only care about the presence of this key
-		self.set_key(&key, 0).await?;
-		self.expire_key(&key, 7 * 24 * 60 * 60).await?; // weekly
+		con.set_ex(key, 0, 7 * 24 * 60 * 60).await?; // 1 week
 
 		Ok(())
 	}
 
 	pub async fn is_user_plural(&self, user_id: UserId) -> Result<bool> {
+		debug!("Checking if user {user_id} is plural");
 		let key = format!("{PK_KEY}:{user_id}");
-		self.key_exists(&key).await
+
+		let mut con = self.client.get_async_connection().await?;
+		let exists = con.exists(key).await?;
+
+		Ok(exists)
 	}
 
 	pub async fn cache_launcher_version(&self, version: &str) -> Result<()> {
-		self.set_key(LAUNCHER_VERSION_KEY, version).await?;
-		self.expire_key(LAUNCHER_VERSION_KEY, 24 * 60 * 60).await?; // 1 day
+		debug!("Caching launcher version as {version}");
+
+		let mut con = self.client.get_async_connection().await?;
+		con.set_ex(LAUNCHER_VERSION_KEY, version, 24 * 60 * 60)
+			.await?; // 1 day
 
 		Ok(())
 	}
 
 	pub async fn get_launcher_version(&self) -> Result<String> {
-		let res = self.get_key(LAUNCHER_VERSION_KEY).await?;
+		debug!("Fetching launcher version");
+
+		let mut con = self.client.get_async_connection().await?;
+		let res = con.get(LAUNCHER_VERSION_KEY).await?;
 
 		Ok(res)
 	}
