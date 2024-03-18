@@ -15,6 +15,6 @@ pub struct TagFrontmatter {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Tag {
 	pub content: String,
-	pub file_name: String,
+	pub id: String,
 	pub frontmatter: TagFrontmatter,
 }

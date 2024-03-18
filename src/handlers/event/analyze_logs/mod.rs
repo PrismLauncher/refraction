@@ -19,7 +19,7 @@ pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()>
 
 	if log.is_err() {
 		let embed = CreateEmbed::new()
-			.title("Analyze failed!")
+			.title("Analysis failed!")
 			.description("Couldn't download log");
 		let allowed_mentions = CreateAllowedMentions::new().replied_user(true);
 		let our_message = CreateMessage::new()
@@ -43,11 +43,9 @@ pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()>
 		let mut e = CreateEmbed::new().title("Log analysis");
 
 		if issues.is_empty() {
-			e = e.color(COLORS["green"]).field(
-				"Analyze failed!",
-				"No issues found automatically",
-				false,
-			);
+			e = e
+				.color(COLORS["green"])
+				.description("No issues found automatically");
 		} else {
 			e = e.color(COLORS["red"]);
 
@@ -61,6 +59,7 @@ pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()>
 
 	let allowed_mentions = CreateAllowedMentions::new().replied_user(true);
 	let message = CreateMessage::new()
+		.reference_message(message)
 		.allowed_mentions(allowed_mentions)
 		.embed(embed);
 

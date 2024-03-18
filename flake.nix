@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    parts = {
+    flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
@@ -27,10 +27,15 @@
       url = "github:getchoo/procfile-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = {parts, ...} @ inputs:
-    parts.lib.mkFlake {inherit inputs;} {
+  outputs = {flake-parts, ...} @ inputs:
+    flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [
         ./nix/dev.nix
         ./nix/packages.nix
@@ -38,6 +43,7 @@
 
         inputs.pre-commit-hooks.flakeModule
         inputs.procfile-nix.flakeModule
+        inputs.treefmt-nix.flakeModule
       ];
 
       systems = [

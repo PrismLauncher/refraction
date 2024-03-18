@@ -5,24 +5,9 @@
     config,
     self',
     ...
-  }: {
-    pre-commit.settings.hooks = {
-      actionlint.enable = true;
-      alejandra.enable = true;
-      deadnix.enable = true;
-      rustfmt.enable = true;
-      statix.enable = true;
-      nil.enable = true;
-      prettier = {
-        enable = true;
-        excludes = ["flake.lock"];
-      };
-    };
-
-    procfiles.daemons.processes = {
-      redis = lib.getExe' pkgs.redis "redis-server";
-    };
-
+  }: let
+    enableAll = lib.flip lib.genAttrs (lib.const {enable = true;});
+  in {
     devShells.default = pkgs.mkShell {
       shellHook = ''
         ${config.pre-commit.installationScript}
@@ -31,6 +16,7 @@
       packages = with pkgs; [
         # general
         actionlint
+        nodePackages.prettier
         config.procfiles.daemons.package
 
         # rust
@@ -50,6 +36,38 @@
       RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
     };
 
-    formatter = pkgs.alejandra;
+    treefmt = {
+      projectRootFile = "flake.nix";
+
+      programs = enableAll [
+        "alejandra"
+        "deadnix"
+        "prettier"
+        "rustfmt"
+      ];
+
+      settings.global = {
+        excludes = [
+          "./target"
+          "./flake.lock"
+          "./Cargo.lock"
+        ];
+      };
+    };
+
+    pre-commit.settings = {
+      settings.treefmt.package = config.treefmt.build.wrapper;
+
+      hooks = enableAll [
+        "actionlint"
+        "nil"
+        "statix"
+        "treefmt"
+      ];
+    };
+
+    procfiles.daemons.processes = {
+      redis = lib.getExe' pkgs.redis "redis-server";
+    };
   };
 }

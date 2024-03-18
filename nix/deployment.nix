@@ -1,9 +1,12 @@
 {
   inputs,
-  self,
+  flake-parts-lib,
+  withSystem,
   ...
 }: {
-  flake.nixosModules.default = import ./module.nix self;
+  flake.nixosModules.default = flake-parts-lib.importApply ./module.nix {
+    inherit withSystem;
+  };
 
   perSystem = {
     lib,
@@ -13,8 +16,8 @@
     inputs',
     ...
   }: let
-    crossPkgsFor =
-      {
+    crossPkgs =
+      rec {
         x86_64-linux = {
           x86_64 = pkgs.pkgsStatic;
           aarch64 = pkgs.pkgsCross.aarch64-multiplatform.pkgsStatic;
@@ -30,11 +33,13 @@
           aarch64 = pkgs.pkgsCross.aarch64-multiplatform.pkgsStatic;
         };
 
-        aarch64-darwin = crossPkgsFor.x86_64-darwin;
+        aarch64-darwin = x86_64-darwin;
       }
       .${system};
 
-    exeFor = arch: let
+    refractionFor = arch: let
+      inherit (crossPkgs.${arch}.stdenv) cc;
+
       target = "${arch}-unknown-linux-musl";
       target' = builtins.replaceStrings ["-"] ["_"] target;
       targetUpper = lib.toUpper target';
@@ -52,8 +57,8 @@
       };
 
       refraction = self'.packages.refraction.override {
+        lto = true;
         naersk = naersk';
-        optimizeSize = true;
       };
 
       newAttrs = {
@@ -62,26 +67,26 @@
         "CARGO_TARGET_${targetUpper}_RUSTFLAGS" = "-C target-feature=+crt-static";
         "CARGO_TARGET_${targetUpper}_LINKER" = newAttrs."CC_${target'}";
       };
-
-      inherit (crossPkgsFor.${arch}.stdenv) cc;
     in
-      lib.getExe (
-        refraction.overrideAttrs (lib.const newAttrs)
-      );
+      refraction.overrideAttrs newAttrs;
 
     containerFor = arch:
       pkgs.dockerTools.buildLayeredImage {
         name = "refraction";
         tag = "latest-${arch}";
         contents = [pkgs.dockerTools.caCertificates];
-        config.Cmd = [(exeFor arch)];
+        config.Cmd = [
+          (lib.getExe (refractionFor arch))
+        ];
 
-        architecture = crossPkgsFor.${arch}.go.GOARCH;
+        architecture = crossPkgs.${arch}.go.GOARCH;
       };
-  in {
-    legacyPackages = {
-      container-x86_64 = containerFor "x86_64";
-      container-aarch64 = containerFor "aarch64";
+
+    mkPackagesFor = arch: {
+      "refraction-static-${arch}" = refractionFor arch;
+      "container-${arch}" = containerFor arch;
     };
+  in {
+    legacyPackages = lib.attrsets.mergeAttrsList (map mkPackagesFor ["x86_64" "aarch64"]);
   };
 }

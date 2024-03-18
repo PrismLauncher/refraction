@@ -1,3 +1,4 @@
+mod help;
 mod joke;
 mod members;
 mod ping;
@@ -6,6 +7,7 @@ mod say;
 mod stars;
 mod tag;
 
+pub use help::help;
 pub use joke::joke;
 pub use members::members;
 pub use ping::ping;

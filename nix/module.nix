@@ -1,4 +1,4 @@
-self: {
+{withSystem, ...}: {
   config,
   lib,
   pkgs,
@@ -22,7 +22,9 @@ self: {
 in {
   options.services.refraction = {
     enable = mkEnableOption "refraction";
-    package = mkPackageOption self.packages.${pkgs.stdenv.hostPlatform.system} "refraction" {};
+    package = mkPackageOption (
+      withSystem pkgs.stdenv.hostPlatform.system ({pkgs, ...}: pkgs)
+    ) "refraction" {};
 
     user = mkOption {
       description = mdDoc ''
@@ -102,7 +104,7 @@ in {
 
       serviceConfig = {
         Type = "simple";
-        Restart = "always";
+        Restart = "on-failure";
 
         EnvironmentFile = mkIf (cfg.environmentFile != null) cfg.environmentFile;
 
@@ -122,8 +124,14 @@ in {
         ProtectKernelModules = true;
         ProtectKernelTunables = true;
         ProtectSystem = "strict";
-        RestrictNamespaces = "uts ipc pid user cgroup";
+        RestrictNamespaces = true;
         RestrictSUIDSGID = true;
+        SystemCallArchitectures = "native";
+        SystemCallFilter = [
+          "@system-service"
+          "~@resources"
+          "~@privileged"
+        ];
       };
     };
 

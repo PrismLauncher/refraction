@@ -13,19 +13,24 @@ include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 static TAGS: Lazy<Vec<Tag>> = Lazy::new(|| serde_json::from_str(env!("TAGS")).unwrap());
 
 /// Send a tag
-#[poise::command(slash_command, prefix_command)]
+#[poise::command(
+	slash_command,
+	prefix_command,
+	track_edits = true,
+	help_text_fn = help
+)]
 pub async fn tag(
 	ctx: Context<'_>,
-	#[description = "the copypasta you want to send"] name: Choice,
-	user: Option<User>,
+	#[description = "the tag to send"] name: Choice,
+	#[description = "a user to mention"] user: Option<User>,
 ) -> Result<()> {
 	trace!("Running tag command");
 
-	let tag_file = name.as_str();
+	let tag_id = name.as_str();
 	let tag = TAGS
 		.iter()
-		.find(|t| t.file_name == tag_file)
-		.ok_or_else(|| eyre!("Tried to get non-existent tag: {tag_file}"))?;
+		.find(|t| t.id == tag_id)
+		.ok_or_else(|| eyre!("Tried to get non-existent tag: {tag_id}"))?;
 
 	let frontmatter = &tag.frontmatter;
 
@@ -49,6 +54,9 @@ pub async fn tag(
 			}
 		}
 
+		e = e.title(&frontmatter.title);
+		e = e.description(&tag.content);
+
 		e
 	};
 
@@ -65,4 +73,14 @@ pub async fn tag(
 	ctx.send(reply).await?;
 
 	Ok(())
+}
+
+fn help() -> String {
+	let tag_list = TAGS
+		.iter()
+		.map(|tag| format!("`{}`", tag.id))
+		.collect::<Vec<String>>()
+		.join(", ");
+
+	format!("Available tags: {tag_list}")
 }

@@ -2,8 +2,7 @@
 #![allow(clippy::missing_errors_doc)]
 #![forbid(unsafe_code)]
 
-use std::sync::Arc;
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
 use eyre::{eyre, Context as _, Report, Result};
 use log::{info, trace, warn};
@@ -111,7 +110,7 @@ async fn main() -> Result<()> {
 		},
 
 		prefix_options: PrefixFrameworkOptions {
-			prefix: Some("r".into()),
+			prefix: Some(".".into()),
 			edit_tracker: Some(Arc::from(EditTracker::for_timespan(Duration::from_secs(
 				3600,
 			)))),

@@ -95,7 +95,7 @@ fn intel_hd(log: &str) -> Issue {
         See https://prismlauncher.org/wiki/getting-started/installing-java/#a-note-about-intel-hd-20003000-on-windows-10 for more info".to_string()
     );
 
-	let found = log.contains("java.lang.NoSuchMethodError: sun.security.util.ManifestEntryVerifier.<init>(Ljava/util/jar/Manifest;)V");
+	let found = log.contains("org.lwjgl.LWJGLException: Pixel format not accelerated");
 	found.then_some(issue)
 }
 
@@ -204,7 +204,7 @@ async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 
 	if version_from_log < latest_version {
 		let issue = (
-          "Outdated Prism Launcher".to_string(), 
+          "Outdated Prism Launcher".to_string(),
           format!("Your installed version is {version_from_log}, while the newest version is {latest_version}.\nPlease update, for more info see https://prismlauncher.org/download/")
         );
 

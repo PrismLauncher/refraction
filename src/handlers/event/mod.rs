@@ -15,7 +15,7 @@ mod support_onboard;
 pub async fn handle(
 	ctx: &Context,
 	event: &FullEvent,
-	framework: FrameworkContext<'_, Data, Report>,
+	_framework: FrameworkContext<'_, Data, Report>,
 	data: &Data,
 ) -> Result<()> {
 	match event {
@@ -31,8 +31,10 @@ pub async fn handle(
 
 		FullEvent::Message { new_message } => {
 			// ignore new messages from bots
-			// NOTE: the webhook_id check allows us to still respond to PK users
-			if new_message.author.bot && new_message.webhook_id.is_none() {
+			// note: the webhook_id check allows us to still respond to PK users
+			if (new_message.author.bot && new_message.webhook_id.is_none())
+				|| new_message.is_own(ctx)
+			{
 				trace!("Ignoring message {} from bot", new_message.id);
 				return Ok(());
 			}
@@ -57,7 +59,7 @@ pub async fn handle(
 		}
 
 		FullEvent::ThreadCreate { thread } => {
-			support_onboard::handle(ctx, thread, framework).await?;
+			support_onboard::handle(ctx, thread).await?;
 		}
 
 		_ => {}

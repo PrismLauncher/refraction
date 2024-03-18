@@ -9,18 +9,30 @@ use poise::serenity_prelude::{CreateEmbed, CreateEmbedAuthor, CreateMessage};
 	prefix_command,
 	ephemeral,
 	default_member_permissions = "MODERATE_MEMBERS",
-	required_permissions = "MODERATE_MEMBERS"
+	required_permissions = "MODERATE_MEMBERS",
+	guild_only = true
 )]
-pub async fn say(ctx: Context<'_>, #[description = "Just content?"] content: String) -> Result<()> {
+pub async fn say(
+	ctx: Context<'_>,
+	#[description = "the message content"] content: String,
+) -> Result<()> {
 	let guild = ctx.guild().ok_or_eyre("Couldn't get guild!")?.to_owned();
 	let channel = ctx
 		.guild_channel()
 		.await
 		.ok_or_eyre("Couldn't get channel!")?;
 
+	if let Context::Prefix(prefix) = ctx {
+		// ignore error, we might not have perm
+		let _ = prefix.msg.delete(ctx).await;
+	}
+
 	ctx.defer_ephemeral().await?;
 	channel.say(ctx, &content).await?;
-	ctx.say("I said what you said!").await?;
+
+	if let Context::Application(_) = ctx {
+		ctx.say("I said what you said!").await?;
+	}
 
 	if let Some(channel_id) = ctx.data().config.discord.channels().say_log_channel_id() {
 		let log_channel = guild
@@ -29,8 +41,11 @@ pub async fn say(ctx: Context<'_>, #[description = "Just content?"] content: Str
 			.find(|c| c.0 == &channel_id)
 			.ok_or_eyre("Couldn't get log channel from guild!")?;
 
-		let author = CreateEmbedAuthor::new(ctx.author().tag())
-			.icon_url(ctx.author().avatar_url().unwrap_or("Undefined".to_string()));
+		let author = CreateEmbedAuthor::new(ctx.author().tag()).icon_url(
+			ctx.author()
+				.avatar_url()
+				.unwrap_or_else(|| ctx.author().default_avatar_url()),
+		);
 
 		let embed = CreateEmbed::default()
 			.title("Say command used!")

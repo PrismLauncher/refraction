@@ -14,5 +14,6 @@ pub fn get() -> Vec<Command<Data, Report>> {
 		general::say(),
 		general::stars(),
 		general::tag(),
+		general::help(),
 	]
 }

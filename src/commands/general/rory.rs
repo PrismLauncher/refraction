@@ -7,12 +7,15 @@ use poise::serenity_prelude::{CreateEmbed, CreateEmbedFooter};
 use poise::CreateReply;
 
 /// Gets a Rory photo!
-#[poise::command(slash_command, prefix_command)]
+#[poise::command(slash_command, prefix_command, track_edits = true)]
 pub async fn rory(
 	ctx: Context<'_>,
 	#[description = "specify a Rory ID"] id: Option<u64>,
 ) -> Result<()> {
 	trace!("Running rory command");
+
+	ctx.defer().await?;
+
 	let rory = rory::get(id).await?;
 
 	let embed = {

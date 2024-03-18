@@ -1,26 +1,34 @@
 use crate::{consts, Context};
 
-use eyre::{OptionExt, Result};
+use eyre::{eyre, Context as _, OptionExt, Result};
 use log::trace;
 use poise::serenity_prelude::CreateEmbed;
 use poise::CreateReply;
 
 /// Returns the number of members in the server
-#[poise::command(slash_command, prefix_command)]
+#[poise::command(slash_command, prefix_command, guild_only = true, track_edits = true)]
 pub async fn members(ctx: Context<'_>) -> Result<()> {
 	trace!("Running members command");
-	let guild = ctx.guild().ok_or_eyre("Couldn't fetch guild!")?.to_owned();
 
-	let count = guild.member_count;
-	let online = if let Some(count) = guild.approximate_presence_count {
-		count.to_string()
-	} else {
-		"Undefined".to_string()
-	};
+	ctx.defer().await?;
+
+	let guild_id = ctx.guild_id().ok_or_eyre("Couldn't get guild ID!")?;
+	let guild = ctx
+		.http()
+		.get_guild_with_counts(guild_id)
+		.await
+		.wrap_err_with(|| format!("Couldn't fetch guild {guild_id} with counts!"))?;
+
+	let member_count = guild
+		.approximate_member_count
+		.ok_or_else(|| eyre!("Couldn't get member count for guild {guild_id}!"))?;
+	let online_count = guild
+		.approximate_presence_count
+		.ok_or_else(|| eyre!("Couldn't get online count for guild {guild_id}!"))?;
 
 	let embed = CreateEmbed::new()
-		.title(format!("{count} total members!"))
-		.description(format!("{online} online members"))
+		.title(format!("{member_count} total members!",))
+		.description(format!("{online_count} online members",))
 		.color(consts::COLORS["blue"]);
 	let reply = CreateReply::default().embed(embed);
 
