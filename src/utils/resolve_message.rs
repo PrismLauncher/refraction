@@ -1,3 +1,4 @@
+use crate::api::pluralkit;
 use std::str::FromStr;
 
 use eyre::{eyre, Context as _, Result};
@@ -5,7 +6,7 @@ use log::{debug, trace};
 use once_cell::sync::Lazy;
 use poise::serenity_prelude::{
 	Cache, CacheHttp, ChannelId, ChannelType, Colour, Context, CreateEmbed, CreateEmbedAuthor,
-	CreateEmbedFooter, GuildChannel, Member, Message, MessageId, Permissions,
+	CreateEmbedFooter, GuildChannel, Member, Message, MessageId, Permissions, UserId,
 };
 use regex::Regex;
 
@@ -20,6 +21,14 @@ fn find_first_image(message: &Message) -> Option<String> {
 				.starts_with("image/")
 		})
 		.map(|res| res.url.clone())
+}
+
+async fn find_real_author_id(message: &Message) -> UserId {
+	if let Ok(sender) = pluralkit::get_sender(message.id).await {
+		sender
+	} else {
+		message.author.id
+	}
 }
 
 async fn member_can_view_channel(
@@ -108,7 +117,16 @@ pub async fn from_message(ctx: &Context, msg: &Message) -> Result<Vec<CreateEmbe
 		debug!("Not resolving message in DM");
 		return Ok(Vec::new());
 	};
-	let author = guild_id.member(ctx, msg.author.id).await?;
+
+	// if the message was sent through pluralkit, we'll want
+	// to reference the Member of the unproxied account
+	let author_id = if msg.webhook_id.is_some() {
+		find_real_author_id(msg).await
+	} else {
+		msg.author.id
+	};
+
+	let author = guild_id.member(ctx, author_id).await?;
 
 	let matches = MESSAGE_PATTERN
 		.captures_iter(&msg.content)

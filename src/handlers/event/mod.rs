@@ -15,7 +15,7 @@ mod support_onboard;
 pub async fn handle(
 	ctx: &Context,
 	event: &FullEvent,
-	_framework: FrameworkContext<'_, Data, Report>,
+	_: FrameworkContext<'_, Data, Report>,
 	data: &Data,
 ) -> Result<()> {
 	match event {
