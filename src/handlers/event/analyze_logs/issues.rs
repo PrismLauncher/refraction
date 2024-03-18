@@ -1,12 +1,15 @@
 use crate::Data;
 
 use eyre::Result;
+use log::trace;
 use once_cell::sync::Lazy;
 use regex::Regex;
 
 pub type Issue = Option<(String, String)>;
 
 pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
+	trace!("Checking log for issues");
+
 	let issues = [
 		fabric_internal,
 		flatpak_nvidia,

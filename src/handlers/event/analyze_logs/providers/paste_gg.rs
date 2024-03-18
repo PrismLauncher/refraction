@@ -1,6 +1,7 @@
 use crate::api::REQWEST_CLIENT;
 
 use eyre::{eyre, OptionExt, Result};
+use log::trace;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use reqwest::StatusCode;
@@ -27,6 +28,7 @@ struct PasteResult {
 }
 
 pub async fn find(content: &str) -> Result<Option<String>> {
+	trace!("Checking if {content} is a paste.gg log");
 	let Some(captures) = REGEX.captures(content) else {
 		return Ok(None);
 	};

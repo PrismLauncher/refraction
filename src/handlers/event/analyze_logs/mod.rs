@@ -2,7 +2,7 @@ use crate::consts::COLORS;
 use crate::Data;
 
 use eyre::Result;
-use log::debug;
+use log::{debug, trace};
 use poise::serenity_prelude::{
 	Context, CreateAllowedMentions, CreateEmbed, CreateMessage, Message,
 };
@@ -13,6 +13,11 @@ mod providers;
 use providers::find_log;
 
 pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()> {
+	trace!(
+		"Checking message {} from {} for logs",
+		message.id,
+		message.author.id
+	);
 	let channel = message.channel_id;
 
 	let log = find_log(message).await;

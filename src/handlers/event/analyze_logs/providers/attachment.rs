@@ -1,7 +1,10 @@
 use eyre::Result;
+use log::trace;
 use poise::serenity_prelude::Message;
 
 pub async fn find(message: &Message) -> Result<Option<String>> {
+	trace!("Checking for text attachments in message {}", message.id);
+
 	// find first uploaded text file
 	if let Some(attachment) = message.attachments.iter().find(|a| {
 		a.content_type

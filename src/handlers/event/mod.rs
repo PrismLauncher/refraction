@@ -30,6 +30,8 @@ pub async fn handle(
 		}
 
 		FullEvent::Message { new_message } => {
+			trace!("Recieved message {}", new_message.content);
+
 			// ignore new messages from bots
 			// note: the webhook_id check allows us to still respond to PK users
 			if (new_message.author.bot && new_message.webhook_id.is_none())
@@ -55,10 +57,17 @@ pub async fn handle(
 		}
 
 		FullEvent::ReactionAdd { add_reaction } => {
+			trace!(
+				"Recieved reaction {} on message {} from {}",
+				add_reaction.emoji,
+				add_reaction.message_id.to_string(),
+				add_reaction.user_id.unwrap_or_default().to_string()
+			);
 			delete_on_reaction::handle(ctx, add_reaction).await?;
 		}
 
 		FullEvent::ThreadCreate { thread } => {
+			trace!("Recieved thread {}", thread.id);
 			support_onboard::handle(ctx, thread).await?;
 		}
 
