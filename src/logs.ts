@@ -211,6 +211,15 @@ export async function parseLog(s: string): Promise<EmbedBuilder | null> {
       .setColor(COLORS.red);
     return embed;
   }
+  if (/(https?:\/\/)?9minecraft\.com\/?.*/g.test(s)) {
+    const embed = new EmbedBuilder()
+      .setTitle('9minecraft.com detected')
+      .setDescription(
+        'Please use https://modrinth.com or https://curseforge.com to share and download mods'
+      )
+      .setColor(COLORS.red);
+    return embed;
+  }
 
   let log = '';
   for (const i in providers) {
