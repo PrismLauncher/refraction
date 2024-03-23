@@ -1,8 +1,7 @@
 use crate::api::REQWEST_CLIENT;
 
-use eyre::{eyre, Context, OptionExt, Result};
+use eyre::{OptionExt, Result};
 use log::debug;
-use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -14,33 +13,22 @@ pub struct MinecraftPackageJson {
 	pub uid: String,
 }
 
-const PRISM_META: &str = "https://meta.prismlauncher.org/v1";
-const MINECRAFT_PACKAGEJSON_ENDPOINT: &str = "/net.minecraft/package.json";
+const META: &str = "https://meta.prismlauncher.org/v1";
+const MINECRAFT_PACKAGEJSON: &str = "/net.minecraft/package.json";
 
 pub async fn get_latest_minecraft_version() -> Result<String> {
-	let req = REQWEST_CLIENT
-		.get(format!("{PRISM_META}{MINECRAFT_PACKAGEJSON_ENDPOINT}"))
-		.build()?;
+	let url = format!("{META}{MINECRAFT_PACKAGEJSON}");
 
-	debug!("Making request to {}", req.url());
-	let resp = REQWEST_CLIENT.execute(req).await?;
-	let status = resp.status();
+	debug!("Making request to {url}");
+	let resp = REQWEST_CLIENT.get(url).send().await?;
+	resp.error_for_status_ref()?;
 
-	if let StatusCode::OK = status {
-		let data = resp
-			.json::<MinecraftPackageJson>()
-			.await
-			.wrap_err("Couldn't parse Minecraft versions!")?;
+	let data: MinecraftPackageJson = resp.json().await?;
 
-		let version = data
-			.recommended
-			.first()
-			.ok_or_eyre("Couldn't find latest version of Minecraft!")?;
+	let version = data
+		.recommended
+		.first()
+		.ok_or_eyre("Couldn't find latest version of Minecraft!")?;
 
-		Ok(version.clone())
-	} else {
-		Err(eyre!(
-            "Failed to get latest Minecraft version from {PRISM_META}{MINECRAFT_PACKAGEJSON_ENDPOINT} with {status}",
-        ))
-	}
+	Ok(version.clone())
 }
