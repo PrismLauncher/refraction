@@ -1,28 +1,28 @@
-use crate::api::REQWEST_CLIENT;
+use crate::utils;
 
-use eyre::{eyre, Result};
+use eyre::Result;
 use log::trace;
 use once_cell::sync::Lazy;
+use poise::serenity_prelude::Message;
 use regex::Regex;
-use reqwest::StatusCode;
 
-static REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"https://mclo\.gs/(\w+)").unwrap());
+const MCLOGS: &str = "https://api.mclo.gs/1";
+const RAW: &str = "/raw";
 
-pub async fn find(content: &str) -> Result<Option<String>> {
-	trace!("Checking if {content} is an mclo.gs paste");
+pub struct MCLogs;
 
-	let Some(captures) = REGEX.captures(content) else {
-		return Ok(None);
-	};
+impl super::LogProvider for MCLogs {
+	async fn find_match(&self, message: &Message) -> Option<String> {
+		static REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"https://mclo\.gs/(\w+)").unwrap());
 
-	let url = format!("https://api.mclo.gs/1/raw/{}", &captures[1]);
-	let request = REQWEST_CLIENT.get(&url).build()?;
-	let response = REQWEST_CLIENT.execute(request).await?;
-	let status = response.status();
+		trace!("Checking if message {} is an mclo.gs paste", message.id);
+		super::get_first_capture(&REGEX, &message.content)
+	}
 
-	if let StatusCode::OK = status {
-		Ok(Some(response.text().await?))
-	} else {
-		Err(eyre!("Failed to fetch log from {url} with {status}"))
+	async fn fetch(&self, content: &str) -> Result<String> {
+		let url = format!("{MCLOGS}{RAW}/{content}");
+		let log = utils::text_from_url(&url).await?;
+
+		Ok(log)
 	}
 }

@@ -1,28 +1,29 @@
-use crate::api::REQWEST_CLIENT;
+use crate::utils;
 
-use eyre::{eyre, Result};
+use eyre::Result;
 use log::trace;
 use once_cell::sync::Lazy;
+use poise::serenity_prelude::Message;
 use regex::Regex;
-use reqwest::StatusCode;
 
-static REGEX: Lazy<Regex> =
-	Lazy::new(|| Regex::new(r"https://pastebin\.com(?:/raw)?/(\w+)").unwrap());
+const PASTEBIN: &str = "https://pastebin.com";
+const RAW: &str = "/raw";
 
-pub async fn find(content: &str) -> Result<Option<String>> {
-	trace!("Checking if {content} is a pastebin log");
-	let Some(captures) = REGEX.captures(content) else {
-		return Ok(None);
-	};
+pub struct PasteBin;
 
-	let url = format!("https://pastebin.com/raw/{}", &captures[1]);
-	let request = REQWEST_CLIENT.get(&url).build()?;
-	let response = REQWEST_CLIENT.execute(request).await?;
-	let status = response.status();
+impl super::LogProvider for PasteBin {
+	async fn find_match(&self, message: &Message) -> Option<String> {
+		static REGEX: Lazy<Regex> =
+			Lazy::new(|| Regex::new(r"https://pastebin\.com(?:/raw)?/(\w+)").unwrap());
 
-	if let StatusCode::OK = status {
-		Ok(Some(response.text().await?))
-	} else {
-		Err(eyre!("Failed to fetch paste from {url} with {status}"))
+		trace!("Checking if message {} is a pastebin paste", message.id);
+		super::get_first_capture(&REGEX, &message.content)
+	}
+
+	async fn fetch(&self, content: &str) -> Result<String> {
+		let url = format!("{PASTEBIN}{RAW}/{content}");
+		let log = utils::text_from_url(&url).await?;
+
+		Ok(log)
 	}
 }

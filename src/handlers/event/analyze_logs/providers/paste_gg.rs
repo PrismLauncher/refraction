@@ -1,72 +1,36 @@
-use crate::api::REQWEST_CLIENT;
+use crate::api::paste_gg;
 
-use eyre::{eyre, OptionExt, Result};
+use eyre::{OptionExt, Result};
 use log::trace;
 use once_cell::sync::Lazy;
+use poise::serenity_prelude::Message;
 use regex::Regex;
-use reqwest::StatusCode;
-use serde::{Deserialize, Serialize};
 
-const PASTE_GG: &str = "https://api.paste.gg/v1";
-const PASTES_ENDPOINT: &str = "/pastes";
-static REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"https://paste.gg/p/\w+/(\w+)").unwrap());
+pub struct PasteGG;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-struct PasteResponse {
-	status: String,
-	result: Option<Vec<PasteResult>>,
-	error: Option<String>,
-	message: Option<String>,
-}
+impl super::LogProvider for PasteGG {
+	async fn find_match(&self, message: &Message) -> Option<String> {
+		static REGEX: Lazy<Regex> =
+			Lazy::new(|| Regex::new(r"https://paste.gg/p/\w+/(\w+)").unwrap());
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-struct PasteResult {
-	id: String,
-	name: Option<String>,
-	description: Option<String>,
-	visibility: Option<String>,
-}
-
-pub async fn find(content: &str) -> Result<Option<String>> {
-	trace!("Checking if {content} is a paste.gg log");
-	let Some(captures) = REGEX.captures(content) else {
-		return Ok(None);
-	};
-
-	let paste_id = &captures[1];
-	let files_url = format!("{PASTE_GG}{PASTES_ENDPOINT}/{paste_id}/files");
-
-	let resp = REQWEST_CLIENT
-		.execute(REQWEST_CLIENT.get(&files_url).build()?)
-		.await?;
-	let status = resp.status();
-
-	if resp.status() != StatusCode::OK {
-		return Err(eyre!(
-			"Couldn't get paste {paste_id} from {PASTE_GG} with status {status}!"
-		));
+		trace!("Checking if message {} is a paste.gg paste", message.id);
+		super::get_first_capture(&REGEX, &message.content)
 	}
 
-	let paste_files: PasteResponse = resp.json().await?;
-	let file_id = &paste_files
-		.result
-		.ok_or_eyre("Couldn't find any files associated with paste {paste_id}!")?[0]
-		.id;
+	async fn fetch(&self, content: &str) -> Result<String> {
+		let files = paste_gg::get_files(content).await?;
+		let result = files
+			.result
+			.ok_or_eyre("Got an empty result from paste.gg!")?;
 
-	let raw_url = format!("{PASTE_GG}{PASTES_ENDPOINT}/{paste_id}/files/{file_id}/raw");
+		let file_id = result
+			.iter()
+			.map(|f| f.id.as_str())
+			.nth(0)
+			.ok_or_eyre("Couldn't get file id from empty paste.gg response!")?;
 
-	let resp = REQWEST_CLIENT
-		.execute(REQWEST_CLIENT.get(&raw_url).build()?)
-		.await?;
-	let status = resp.status();
+		let log = paste_gg::get_raw_file(content, file_id).await?;
 
-	if status != StatusCode::OK {
-		return Err(eyre!(
-			"Couldn't get file {file_id} from paste {paste_id} with status {status}!"
-		));
+		Ok(log)
 	}
-
-	let text = resp.text().await?;
-
-	Ok(Some(text))
 }
