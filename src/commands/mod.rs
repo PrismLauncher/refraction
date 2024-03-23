@@ -1,11 +1,12 @@
 use crate::Data;
 
 use eyre::Report;
-use poise::Command;
 
 mod general;
 
-pub fn get() -> Vec<Command<Data, Report>> {
+pub type Command = poise::Command<Data, Report>;
+
+pub fn get() -> Vec<Command> {
 	vec![
 		general::joke(),
 		general::members(),

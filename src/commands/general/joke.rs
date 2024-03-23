@@ -10,9 +10,8 @@ pub async fn joke(ctx: Context<'_>) -> Result<()> {
 	trace!("Running joke command");
 
 	ctx.defer().await?;
-
 	let joke = dadjoke::get_joke().await?;
-
 	ctx.say(joke).await?;
+
 	Ok(())
 }
