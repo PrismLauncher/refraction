@@ -1,7 +1,6 @@
 ---
 title: Does Prism Launcher auto-update?
 color: blue
-aliases: ['updating', 'autoupdate']
 ---
 
 Windows auto-updating is only supported on 8.0+. For Prism 7.2 or below, you will need to download the installer and run it again in order to update. On 8.0 or newer, click the 'Update' button. You will not lose your instances.
