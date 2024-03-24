@@ -5,9 +5,7 @@
     config,
     self',
     ...
-  }: let
-    enableAll = lib.flip lib.genAttrs (lib.const {enable = true;});
-  in {
+  }: {
     devShells.default = pkgs.mkShell {
       shellHook = ''
         ${config.pre-commit.installationScript}
@@ -39,12 +37,12 @@
     treefmt = {
       projectRootFile = "flake.nix";
 
-      programs = enableAll [
-        "alejandra"
-        "deadnix"
-        "prettier"
-        "rustfmt"
-      ];
+      programs = {
+        alejandra.enable = true;
+        deadnix.enable = true;
+        prettier.enable = true;
+        rustfmt.enable = true;
+      };
 
       settings.global = {
         excludes = [
@@ -55,15 +53,14 @@
       };
     };
 
-    pre-commit.settings = {
-      settings.treefmt.package = config.treefmt.build.wrapper;
-
-      hooks = enableAll [
-        "actionlint"
-        "nil"
-        "statix"
-        "treefmt"
-      ];
+    pre-commit.settings.hooks = {
+      actionlint.enable = true;
+      nil.enable = true;
+      statix.enable = true;
+      treefmt = {
+        enable = true;
+        package = config.treefmt.build.wrapper;
+      };
     };
 
     procfiles.daemons.processes = {

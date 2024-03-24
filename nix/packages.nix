@@ -1,19 +1,11 @@
-{
-  self,
-  inputs,
-  ...
-}: {
+{self, ...}: {
   perSystem = {
     pkgs,
-    system,
     self',
     ...
   }: {
     packages = {
-      refraction = pkgs.callPackage ./derivation.nix {
-        version = builtins.substring 0 7 self.rev or "dirty";
-        naersk = inputs.naersk.lib.${system};
-      };
+      refraction = pkgs.callPackage ./derivation.nix {inherit self;};
 
       default = self'.packages.refraction;
     };

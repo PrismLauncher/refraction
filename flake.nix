@@ -8,24 +8,26 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
 
-    naersk = {
-      url = "github:nix-community/naersk";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    fenix = {
-      url = "github:nix-community/fenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     pre-commit-hooks = {
       url = "github:cachix/pre-commit-hooks.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        nixpkgs-stable.follows = "nixpkgs";
+        flake-compat.follows = "";
+      };
     };
 
     procfile-nix = {
       url = "github:getchoo/procfile-nix";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "pre-commit-hooks/flake-utils";
+      };
     };
 
     treefmt-nix = {
@@ -39,7 +41,7 @@
       imports = [
         ./nix/dev.nix
         ./nix/packages.nix
-        ./nix/deployment.nix
+        ./nix/deployment
 
         inputs.pre-commit-hooks.flakeModule
         inputs.procfile-nix.flakeModule

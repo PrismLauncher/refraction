@@ -1,14 +1,18 @@
 {
   lib,
   stdenv,
-  naersk,
+  rustPlatform,
   darwin,
-  version,
+  self,
   lto ? false,
 }:
-naersk.buildPackage {
+rustPlatform.buildRustPackage {
   pname = "refraction";
-  inherit version;
+  version =
+    (lib.importTOML ../Cargo.toml).package.version
+    + "-${self.shortRev or self.dirtyShortRev or "unknown-dirty"}";
+
+  __structuredAttrs = true;
 
   src = lib.fileset.toSource {
     root = ../.;
@@ -21,13 +25,21 @@ naersk.buildPackage {
     ];
   };
 
+  cargoLock = {
+    lockFile = ../Cargo.lock;
+  };
+
   buildInputs = lib.optionals stdenv.hostPlatform.isDarwin (with darwin.apple_sdk.frameworks; [
     CoreFoundation
     Security
     SystemConfiguration
   ]);
 
-  cargoBuildFlags = lib.optionals lto ["-C" "lto=thin" "-C" "embed-bitcode=yes" "-Zdylib-lto"];
+  env = {
+    CARGO_BUILD_RUSTFLAGS = lib.concatStringsSep " " (
+      lib.optionals lto ["-C" "lto=thin" "-C" "embed-bitcode=yes" "-Zdylib-lto"]
+    );
+  };
 
   meta = with lib; {
     mainProgram = "refraction";
