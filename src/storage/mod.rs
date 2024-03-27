@@ -33,7 +33,7 @@ impl Storage {
 		debug!("Marking {sender} as a PluralKit user");
 		let key = format!("{PK_KEY}:{sender}");
 
-		let mut con = self.client.get_async_connection().await?;
+		let mut con = self.client.get_multiplexed_async_connection().await?;
 		// Just store some value. We only care about the presence of this key
 		con.set_ex(key, 0, 7 * 24 * 60 * 60).await?; // 1 week
 
@@ -44,7 +44,7 @@ impl Storage {
 		debug!("Checking if user {user_id} is plural");
 		let key = format!("{PK_KEY}:{user_id}");
 
-		let mut con = self.client.get_async_connection().await?;
+		let mut con = self.client.get_multiplexed_async_connection().await?;
 		let exists = con.exists(key).await?;
 
 		Ok(exists)
@@ -53,7 +53,7 @@ impl Storage {
 	pub async fn cache_launcher_version(&self, version: &str) -> Result<()> {
 		debug!("Caching launcher version as {version}");
 
-		let mut con = self.client.get_async_connection().await?;
+		let mut con = self.client.get_multiplexed_async_connection().await?;
 		con.set_ex(LAUNCHER_VERSION_KEY, version, 24 * 60 * 60)
 			.await?; // 1 day
 
@@ -63,7 +63,7 @@ impl Storage {
 	pub async fn get_launcher_version(&self) -> Result<String> {
 		debug!("Fetching launcher version");
 
-		let mut con = self.client.get_async_connection().await?;
+		let mut con = self.client.get_multiplexed_async_connection().await?;
 		let res = con.get(LAUNCHER_VERSION_KEY).await?;
 
 		Ok(res)
@@ -72,7 +72,7 @@ impl Storage {
 	pub async fn cache_launcher_stargazer_count(&self, stargazers: u32) -> Result<()> {
 		debug!("Caching stargazer count as {stargazers}");
 
-		let mut con = self.client.get_async_connection().await?;
+		let mut con = self.client.get_multiplexed_async_connection().await?;
 		con.set_ex(LAUNCHER_STARGAZER_KEY, stargazers, 60 * 60)
 			.await?;
 
@@ -82,7 +82,7 @@ impl Storage {
 	pub async fn get_launcher_stargazer_count(&self) -> Result<u32> {
 		debug!("Fetching launcher stargazer count");
 
-		let mut con = self.client.get_async_connection().await?;
+		let mut con = self.client.get_multiplexed_async_connection().await?;
 		let res: u32 = con.get(LAUNCHER_STARGAZER_KEY).await?;
 
 		Ok(res)
