@@ -1,6 +1,7 @@
 use once_cell::sync::Lazy;
 
 pub mod dadjoke;
+pub mod github;
 pub mod paste_gg;
 pub mod pluralkit;
 pub mod prism_meta;

@@ -1,6 +1,6 @@
-use crate::{consts, Context};
+use crate::{api, consts, Context};
 
-use eyre::{Context as _, Result};
+use eyre::Result;
 use log::trace;
 use poise::serenity_prelude::CreateEmbed;
 use poise::CreateReply;
@@ -12,18 +12,17 @@ pub async fn stars(ctx: Context<'_>) -> Result<()> {
 
 	ctx.defer().await?;
 
-	let prismlauncher = ctx
-		.data()
-		.octocrab
-		.repos("PrismLauncher", "PrismLauncher")
-		.get()
-		.await
-		.wrap_err("Couldn't get PrismLauncher/PrismLauncher from GitHub!")?;
-
-	let count = if let Some(count) = prismlauncher.stargazers_count {
-		count.to_string()
+	let count = if let Some(storage) = &ctx.data().storage {
+		if let Ok(count) = storage.get_launcher_stargazer_count().await {
+			count
+		} else {
+			let count = api::github::get_prism_stargazers_count().await?;
+			storage.cache_launcher_stargazer_count(count).await?;
+			count
+		}
 	} else {
-		"undefined".to_string()
+		trace!("Not caching launcher stargazer count, as we're running without a storage backend");
+		api::github::get_prism_stargazers_count().await?
 	};
 
 	let embed = CreateEmbed::new()

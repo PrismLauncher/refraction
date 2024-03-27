@@ -1,4 +1,4 @@
-use crate::Data;
+use crate::{api, Data};
 
 use eyre::Result;
 use log::trace;
@@ -189,20 +189,15 @@ async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 
 	let version_from_log = captures[0].replace("Prism Launcher version: ", "");
 
-	let storage = &data.storage;
-	let latest_version = if let Ok(version) = storage.get_launcher_version().await {
-		version
+	let latest_version = if let Some(storage) = &data.storage {
+		if let Ok(version) = storage.get_launcher_version().await {
+			version
+		} else {
+			api::github::get_latest_prism_version().await?
+		}
 	} else {
-		let version = data
-			.octocrab
-			.repos("PrismLauncher", "PrismLauncher")
-			.releases()
-			.get_latest()
-			.await?
-			.tag_name;
-
-		storage.cache_launcher_version(&version).await?;
-		version
+		trace!("Not caching launcher version, as we're running without a storage backend");
+		api::github::get_latest_prism_version().await?
 	};
 
 	if version_from_log < latest_version {

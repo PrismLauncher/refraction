@@ -3,10 +3,11 @@ use std::fmt::Debug;
 use eyre::Result;
 use log::debug;
 use poise::serenity_prelude::UserId;
-use redis::{AsyncCommands, Client};
+use redis::{AsyncCommands, Client, ConnectionLike};
 
 const PK_KEY: &str = "pluralkit-v1";
 const LAUNCHER_VERSION_KEY: &str = "launcher-version-v1";
+const LAUNCHER_STARGAZER_KEY: &str = "launcher-stargazer-v1";
 
 #[derive(Clone, Debug)]
 pub struct Storage {
@@ -24,8 +25,8 @@ impl Storage {
 		Ok(Self::new(client))
 	}
 
-	pub fn client(&self) -> &Client {
-		&self.client
+	pub fn has_connection(mut self) -> bool {
+		self.client.check_connection()
 	}
 
 	pub async fn store_user_plurality(&self, sender: UserId) -> Result<()> {
@@ -64,6 +65,25 @@ impl Storage {
 
 		let mut con = self.client.get_async_connection().await?;
 		let res = con.get(LAUNCHER_VERSION_KEY).await?;
+
+		Ok(res)
+	}
+
+	pub async fn cache_launcher_stargazer_count(&self, stargazers: u32) -> Result<()> {
+		debug!("Caching stargazer count as {stargazers}");
+
+		let mut con = self.client.get_async_connection().await?;
+		con.set_ex(LAUNCHER_STARGAZER_KEY, stargazers, 60 * 60)
+			.await?;
+
+		Ok(())
+	}
+
+	pub async fn get_launcher_stargazer_count(&self) -> Result<u32> {
+		debug!("Fetching launcher stargazer count");
+
+		let mut con = self.client.get_async_connection().await?;
+		let res: u32 = con.get(LAUNCHER_STARGAZER_KEY).await?;
 
 		Ok(res)
 	}

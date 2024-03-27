@@ -4,16 +4,14 @@
 
 use std::{sync::Arc, time::Duration};
 
-use eyre::{eyre, Context as _, Report, Result};
+use eyre::{bail, Context as _, Report, Result};
 use log::{info, trace, warn};
 
-use octocrab::Octocrab;
 use poise::{
 	serenity_prelude as serenity, EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
 };
 
 use owo_colors::OwoColorize;
-use redis::ConnectionLike;
 
 use tokio::signal::ctrl_c;
 #[cfg(target_family = "unix")]
@@ -38,17 +36,13 @@ type Context<'a> = poise::Context<'a, Data, Report>;
 #[derive(Clone)]
 pub struct Data {
 	config: Config,
-	storage: Storage,
-	octocrab: Arc<octocrab::Octocrab>,
+	storage: Option<Storage>,
 }
 
 impl Data {
-	pub fn new(config: Config, storage: Storage, octocrab: Arc<Octocrab>) -> Result<Self> {
-		Ok(Self {
-			config,
-			storage,
-			octocrab,
-		})
+	#[must_use]
+	pub fn new(config: Config, storage: Option<Storage>) -> Self {
+		Self { config, storage }
 	}
 }
 
@@ -58,19 +52,22 @@ async fn setup(
 	framework: &Framework<Data, Report>,
 ) -> Result<Data> {
 	let config = Config::new_from_env();
-	let storage = Storage::from_url(&config.redis_url)?;
-	let octocrab = octocrab::instance();
-	let data = Data::new(config, storage, octocrab)?;
 
-	// test redis connection
-	let mut client = data.storage.client().clone();
+	let storage = if let Some(url) = &config.clone().bot_config().redis_url() {
+		Some(Storage::from_url(url)?)
+	} else {
+		None
+	};
 
-	if !client.check_connection() {
-		return Err(eyre!(
-			"Couldn't connect to storage! Is your daemon running?"
-		));
+	if let Some(storage) = storage.as_ref() {
+		if !storage.clone().has_connection() {
+			bail!("You specified a storage backend but there's no connection! Is it running?")
+		}
+
+		trace!("Redis connection looks good!");
 	}
-	trace!("Redis connection looks good!");
+
+	let data = Data::new(config, storage);
 
 	poise::builtins::register_globally(ctx, &framework.options().commands).await?;
 	info!("Registered global commands!");

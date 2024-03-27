@@ -1,6 +1,7 @@
 use crate::Context;
 
 use eyre::{OptionExt, Result};
+use log::trace;
 use poise::serenity_prelude::{CreateEmbed, CreateEmbedAuthor, CreateMessage};
 
 /// Say something through the bot
@@ -34,7 +35,14 @@ pub async fn say(
 		ctx.say("I said what you said!").await?;
 	}
 
-	if let Some(channel_id) = ctx.data().config.discord.channels().say_log_channel_id() {
+	if let Some(channel_id) = ctx
+		.data()
+		.config
+		.clone()
+		.discord_config()
+		.channels()
+		.say_log_channel_id()
+	{
 		let log_channel = guild
 			.channels
 			.iter()
@@ -54,6 +62,8 @@ pub async fn say(
 
 		let message = CreateMessage::new().embed(embed);
 		log_channel.1.send_message(ctx, message).await?;
+	} else {
+		trace!("Not sending /say log as no channel is set");
 	}
 
 	Ok(())

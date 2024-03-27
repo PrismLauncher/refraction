@@ -41,14 +41,16 @@ pub async fn handle(
 				return Ok(());
 			}
 
-			// detect PK users first to make sure we don't respond to unproxied messages
-			pluralkit::handle(ctx, new_message, data).await?;
+			if let Some(storage) = &data.storage {
+				// detect PK users first to make sure we don't respond to unproxied messages
+				pluralkit::handle(ctx, new_message, storage).await?;
 
-			if data.storage.is_user_plural(new_message.author.id).await?
-				&& pluralkit::is_message_proxied(new_message).await?
-			{
-				debug!("Not replying to unproxied PluralKit message");
-				return Ok(());
+				if storage.is_user_plural(new_message.author.id).await?
+					&& pluralkit::is_message_proxied(new_message).await?
+				{
+					debug!("Not replying to unproxied PluralKit message");
+					return Ok(());
+				}
 			}
 
 			eta::handle(ctx, new_message).await?;

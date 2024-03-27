@@ -8,7 +8,7 @@ pub struct RefractionChannels {
 	say_log_channel_id: Option<ChannelId>,
 }
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Config {
 	channels: RefractionChannels,
 }

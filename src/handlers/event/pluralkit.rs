@@ -1,4 +1,4 @@
-use crate::{api, Data};
+use crate::{api, storage::Storage};
 use std::time::Duration;
 
 use eyre::Result;
@@ -20,7 +20,7 @@ pub async fn is_message_proxied(message: &Message) -> Result<bool> {
 	Ok(proxied)
 }
 
-pub async fn handle(_: &Context, msg: &Message, data: &Data) -> Result<()> {
+pub async fn handle(_: &Context, msg: &Message, storage: &Storage) -> Result<()> {
 	if msg.webhook_id.is_none() {
 		return Ok(());
 	}
@@ -37,7 +37,7 @@ pub async fn handle(_: &Context, msg: &Message, data: &Data) -> Result<()> {
 	sleep(PK_DELAY).await;
 
 	if let Ok(sender) = api::pluralkit::get_sender(msg.id).await {
-		data.storage.store_user_plurality(sender).await?;
+		storage.store_user_plurality(sender).await?;
 	}
 
 	Ok(())
