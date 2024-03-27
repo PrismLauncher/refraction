@@ -96,7 +96,7 @@ in {
       '';
 
       environment = {
-        REDIS_URL =
+        BOT_REDIS_URL =
           if cfg.redisUrl == "local"
           then "unix:${config.services.redis.servers.refraction.unixSocket}"
           else cfg.redisUrl;
