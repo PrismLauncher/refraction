@@ -10,7 +10,7 @@ pub struct _0x0;
 
 impl super::LogProvider for _0x0 {
 	async fn find_match(&self, message: &Message) -> Option<String> {
-		static REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"https://0x0\.st/\w*\.\w*").unwrap());
+		static REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"https://0x0\.st/\w*.\w*").unwrap());
 
 		trace!("Checking if message {} is a 0x0 paste", message.id);
 		REGEX

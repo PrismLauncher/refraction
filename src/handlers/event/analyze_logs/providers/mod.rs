@@ -28,8 +28,7 @@ pub trait LogProvider {
 fn get_first_capture(regex: &Lazy<Regex>, string: &str) -> Option<String> {
 	regex
 		.captures_iter(string)
-		.filter_map(|c| c.get(1).map(|c| c.as_str().to_string()))
-		.nth(1)
+		.find_map(|c| c.get(1).map(|c| c.as_str().to_string()))
 }
 
 #[enum_dispatch(LogProvider)]
@@ -66,5 +65,5 @@ pub async fn find_log(message: &Message) -> Result<Option<String>> {
 		}
 	}
 
-	todo!()
+	Ok(None)
 }
