@@ -2,6 +2,7 @@ use crate::api::REQWEST_CLIENT;
 
 use eyre::Result;
 use log::debug;
+use poise::serenity_prelude::{CreateEmbedAuthor, User};
 use reqwest::Response;
 
 pub mod resolve_message;
@@ -26,4 +27,11 @@ pub async fn bytes_from_url(url: &str) -> Result<Vec<u8>> {
 
 	let bytes = resp.bytes().await?;
 	Ok(bytes.to_vec())
+}
+
+pub fn embed_author_from_user(user: &User) -> CreateEmbedAuthor {
+	CreateEmbedAuthor::new(user.tag()).icon_url(
+		user.avatar_url()
+			.unwrap_or_else(|| user.default_avatar_url()),
+	)
 }

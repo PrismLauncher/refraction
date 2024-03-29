@@ -5,7 +5,8 @@ use poise::serenity_prelude::ChannelId;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct RefractionChannels {
-	say_log_channel_id: Option<ChannelId>,
+	log_channel_id: Option<ChannelId>,
+	welcome_channel_id: Option<ChannelId>,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -14,20 +15,29 @@ pub struct Config {
 }
 
 impl RefractionChannels {
-	pub fn new(say_log_channel_id: Option<ChannelId>) -> Self {
-		Self { say_log_channel_id }
+	pub fn new(log_channel_id: Option<ChannelId>, welcome_channel_id: Option<ChannelId>) -> Self {
+		Self {
+			log_channel_id,
+			welcome_channel_id,
+		}
 	}
 
 	pub fn new_from_env() -> Self {
-		let say_log_channel_id = Self::get_channel_from_env("DISCORD_SAY_LOG_CHANNELID");
-
-		if let Some(channel_id) = say_log_channel_id {
+		let log_channel_id = Self::get_channel_from_env("DISCORD_LOG_CHANNEL_ID");
+		if let Some(channel_id) = log_channel_id {
 			info!("Log channel is {channel_id}");
 		} else {
-			warn!("DISCORD_SAY_LOG_CHANNELID is empty; this will disable logging in your server.");
+			warn!("DISCORD_LOG_CHANNEL_ID is empty; this will disable logging in your server.");
 		}
 
-		Self::new(say_log_channel_id)
+		let welcome_channel_id = Self::get_channel_from_env("DISCORD_WELCOME_CHANNEL_ID");
+		if let Some(channel_id) = welcome_channel_id {
+			info!("Welcome channel is {channel_id}");
+		} else {
+			warn!("DISCORD_WELCOME_CHANNEL_ID is empty; this will disable welcome channel features in your server");
+		}
+
+		Self::new(log_channel_id, welcome_channel_id)
 	}
 
 	fn get_channel_from_env(var: &str) -> Option<ChannelId> {
@@ -36,8 +46,12 @@ impl RefractionChannels {
 			.and_then(|env_var| ChannelId::from_str(&env_var).ok())
 	}
 
-	pub fn say_log_channel_id(self) -> Option<ChannelId> {
-		self.say_log_channel_id
+	pub fn log_channel_id(self) -> Option<ChannelId> {
+		self.log_channel_id
+	}
+
+	pub fn welcome_channel_id(self) -> Option<ChannelId> {
+		self.welcome_channel_id
 	}
 }
 
