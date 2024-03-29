@@ -1,38 +1,24 @@
 use crate::{utils, Context};
 
-use eyre::{OptionExt, Result};
+use eyre::Result;
 use log::trace;
 use poise::serenity_prelude::{CreateEmbed, CreateMessage};
 
 /// Say something through the bot
 #[poise::command(
 	slash_command,
-	prefix_command,
 	ephemeral,
 	default_member_permissions = "MODERATE_MEMBERS",
 	required_permissions = "MODERATE_MEMBERS",
-	guild_only = true
+	guild_only
 )]
 pub async fn say(
 	ctx: Context<'_>,
 	#[description = "the message content"] content: String,
 ) -> Result<()> {
-	let channel = ctx
-		.guild_channel()
-		.await
-		.ok_or_eyre("Couldn't get channel!")?;
-
-	if let Context::Prefix(prefix) = ctx {
-		// ignore error, we might not have perm
-		let _ = prefix.msg.delete(ctx).await;
-	}
-
-	ctx.defer_ephemeral().await?;
+	let channel = ctx.channel_id();
 	channel.say(ctx, &content).await?;
-
-	if let Context::Application(_) = ctx {
-		ctx.say("I said what you said!").await?;
-	}
+	ctx.say("I said what you said!").await?;
 
 	if let Some(channel_id) = ctx
 		.data()
