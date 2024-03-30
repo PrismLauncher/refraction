@@ -115,7 +115,7 @@ pub async fn set_welcome(
 ) -> Result<()> {
 	trace!("Running set_welcome command!");
 
-	let configured_channels = ctx.data().config.clone().discord_config().channels();
+	let configured_channels = ctx.data().config.discord_config().channels();
 	let Some(channel_id) = configured_channels.welcome_channel_id() else {
 		ctx.say("You don't have a welcome channel ID set, so I can't do anything :(")
 			.await?;

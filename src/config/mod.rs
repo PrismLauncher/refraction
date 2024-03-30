@@ -16,17 +16,17 @@ impl Config {
 	}
 
 	pub fn new_from_env() -> Self {
-		let bot = bot::Config::new_from_env();
-		let discord = discord::Config::new_from_env();
+		let bot = bot::Config::from_env();
+		let discord = discord::Config::from_env();
 
 		Self::new(bot, discord)
 	}
 
-	pub fn bot_config(self) -> bot::Config {
-		self.bot
+	pub fn bot_config(&self) -> &bot::Config {
+		&self.bot
 	}
 
-	pub fn discord_config(self) -> discord::Config {
-		self.discord
+	pub fn discord_config(&self) -> &discord::Config {
+		&self.discord
 	}
 }

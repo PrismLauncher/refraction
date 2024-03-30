@@ -195,7 +195,7 @@ async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 	let version_from_log = captures[0].replace("Prism Launcher version: ", "");
 
 	let latest_version = if let Some(storage) = &data.storage {
-		if let Ok(version) = storage.get_launcher_version().await {
+		if let Ok(version) = storage.launcher_version().await {
 			version
 		} else {
 			api::github::get_latest_prism_version().await?

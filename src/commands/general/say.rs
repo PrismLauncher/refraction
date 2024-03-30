@@ -23,7 +23,6 @@ pub async fn say(
 	if let Some(channel_id) = ctx
 		.data()
 		.config
-		.clone()
 		.discord_config()
 		.channels()
 		.log_channel_id()

@@ -53,7 +53,7 @@ async fn setup(
 ) -> Result<Data> {
 	let config = Config::new_from_env();
 
-	let storage = if let Some(url) = &config.clone().bot_config().redis_url() {
+	let storage = if let Some(url) = config.bot_config().redis_url() {
 		Some(Storage::from_url(url)?)
 	} else {
 		None

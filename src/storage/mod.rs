@@ -25,7 +25,7 @@ impl Storage {
 		Ok(Self::new(client))
 	}
 
-	pub fn has_connection(mut self) -> bool {
+	pub fn has_connection(&mut self) -> bool {
 		self.client.check_connection()
 	}
 
@@ -60,7 +60,7 @@ impl Storage {
 		Ok(())
 	}
 
-	pub async fn get_launcher_version(&self) -> Result<String> {
+	pub async fn launcher_version(&self) -> Result<String> {
 		debug!("Fetching launcher version");
 
 		let mut con = self.client.get_multiplexed_async_connection().await?;
@@ -79,7 +79,7 @@ impl Storage {
 		Ok(())
 	}
 
-	pub async fn get_launcher_stargazer_count(&self) -> Result<u32> {
+	pub async fn launcher_stargazer_count(&self) -> Result<u32> {
 		debug!("Fetching launcher stargazer count");
 
 		let mut con = self.client.get_multiplexed_async_connection().await?;

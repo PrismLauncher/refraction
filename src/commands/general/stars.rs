@@ -13,7 +13,7 @@ pub async fn stars(ctx: Context<'_>) -> Result<()> {
 	ctx.defer().await?;
 
 	let count = if let Some(storage) = &ctx.data().storage {
-		if let Ok(count) = storage.get_launcher_stargazer_count().await {
+		if let Ok(count) = storage.launcher_stargazer_count().await {
 			count
 		} else {
 			let count = api::github::get_prism_stargazers_count().await?;

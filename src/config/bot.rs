@@ -10,7 +10,7 @@ impl Config {
 		Self { redis_url }
 	}
 
-	pub fn new_from_env() -> Self {
+	pub fn from_env() -> Self {
 		let redis_url = std::env::var("BOT_REDIS_URL").ok();
 
 		if let Some(url) = &redis_url {
@@ -22,7 +22,7 @@ impl Config {
 		Self::new(redis_url)
 	}
 
-	pub fn redis_url(self) -> Option<String> {
-		self.redis_url
+	pub fn redis_url(&self) -> Option<&str> {
+		self.redis_url.as_deref()
 	}
 }

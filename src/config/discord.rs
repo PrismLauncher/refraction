@@ -46,12 +46,12 @@ impl RefractionChannels {
 			.and_then(|env_var| ChannelId::from_str(&env_var).ok())
 	}
 
-	pub fn log_channel_id(self) -> Option<ChannelId> {
-		self.log_channel_id
+	pub fn log_channel_id(&self) -> Option<&ChannelId> {
+		self.log_channel_id.as_ref()
 	}
 
-	pub fn welcome_channel_id(self) -> Option<ChannelId> {
-		self.welcome_channel_id
+	pub fn welcome_channel_id(&self) -> Option<&ChannelId> {
+		self.welcome_channel_id.as_ref()
 	}
 }
 
@@ -60,13 +60,13 @@ impl Config {
 		Self { channels }
 	}
 
-	pub fn new_from_env() -> Self {
+	pub fn from_env() -> Self {
 		let channels = RefractionChannels::new_from_env();
 
 		Self::new(channels)
 	}
 
-	pub fn channels(self) -> RefractionChannels {
-		self.channels
+	pub fn channels(&self) -> &RefractionChannels {
+		&self.channels
 	}
 }
