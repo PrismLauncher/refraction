@@ -1,9 +1,8 @@
-use std::sync::OnceLock;
+use std::{sync::OnceLock, time::SystemTime};
 
 use eyre::Result;
 use log::trace;
 use poise::serenity_prelude::{Context, Message};
-use rand::seq::SliceRandom;
 use regex::Regex;
 
 fn regex() -> &'static Regex {
@@ -39,13 +38,14 @@ pub async fn handle(ctx: &Context, message: &Message) -> Result<()> {
 		return Ok(());
 	}
 
-	let response = format!(
-		"{} <:pofat:1031701005559144458>",
-		MESSAGES
-			.choose(&mut rand::thread_rng())
-			.unwrap_or(&"sometime")
-	);
+	// no, this isn't actually random. we don't need it to be, though  -getchoo
+	let current_time = SystemTime::now()
+		.duration_since(SystemTime::UNIX_EPOCH)?
+		.as_millis();
+	let random_pos = (current_time % MESSAGES.len() as u128) as usize;
 
+	let response = format!("{} <:pofat:1031701005559144458>", MESSAGES[random_pos]);
 	message.reply(ctx, response).await?;
+
 	Ok(())
 }
