@@ -1,4 +1,4 @@
-use crate::{consts, Context};
+use crate::{consts::Colors, Context};
 
 use eyre::{eyre, Context as _, OptionExt, Result};
 use log::trace;
@@ -29,7 +29,7 @@ pub async fn members(ctx: Context<'_>) -> Result<()> {
 	let embed = CreateEmbed::new()
 		.title(format!("{member_count} total members!",))
 		.description(format!("{online_count} online members",))
-		.color(consts::colors()["blue"]);
+		.color(Colors::BLUE);
 	let reply = CreateReply::default().embed(embed);
 
 	ctx.send(reply).await?;

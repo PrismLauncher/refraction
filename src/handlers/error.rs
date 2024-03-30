@@ -1,5 +1,5 @@
-use crate::consts;
-use crate::Data;
+use crate::{consts::Colors, Data};
+
 use std::fmt::Write;
 
 use eyre::Report;
@@ -34,7 +34,7 @@ pub async fn handle(error: FrameworkError<'_, Data, Report>) {
 				.title("Something went wrong!")
 				.description("oopsie")
 				.timestamp(Timestamp::now())
-				.color(consts::colors()["red"]);
+				.color(Colors::RED);
 
 			let reply = CreateReply::default().embed(embed);
 

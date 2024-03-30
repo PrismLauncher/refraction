@@ -1,6 +1,7 @@
 #![allow(non_camel_case_types, clippy::upper_case_acronyms)]
-use crate::{consts, tags::Tag, Context};
+use crate::{consts::Colors, tags::Tag, Context};
 use std::env;
+use std::str::FromStr;
 use std::sync::OnceLock;
 
 use eyre::{eyre, Result};
@@ -40,9 +41,10 @@ pub async fn tag(
 		let mut e = CreateEmbed::new();
 
 		if let Some(color) = &frontmatter.color {
-			let color = *consts::colors()
-				.get(color.as_str())
-				.unwrap_or(&Color::default());
+			let color = Colors::from_str(color.as_str())
+				.map(Color::from)
+				.unwrap_or_default();
+
 			e = e.color(color);
 		}
 

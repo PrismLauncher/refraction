@@ -1,4 +1,4 @@
-use crate::{api, consts, Context};
+use crate::{api, consts::Colors, Context};
 
 use eyre::Result;
 use log::trace;
@@ -27,7 +27,7 @@ pub async fn stars(ctx: Context<'_>) -> Result<()> {
 
 	let embed = CreateEmbed::new()
 		.title(format!("⭐ {count} total stars!"))
-		.color(consts::colors()["yellow"]);
+		.color(Colors::YELLOW);
 	let reply = CreateReply::default().embed(embed);
 
 	ctx.send(reply).await?;

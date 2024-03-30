@@ -1,17 +1,39 @@
-use std::{collections::HashMap, sync::OnceLock};
+#![allow(clippy::unreadable_literal)]
+use std::str::FromStr;
 
-use poise::serenity_prelude::Color;
+use poise::serenity_prelude::Colour;
 
-pub fn colors() -> &'static HashMap<&'static str, Color> {
-	static COLORS: OnceLock<HashMap<&str, Color>> = OnceLock::new();
-	COLORS.get_or_init(|| {
-		HashMap::from([
-			("red", Color::from((239, 68, 68))),
-			("green", Color::from((34, 197, 94))),
-			("blue", Color::from((96, 165, 250))),
-			("yellow", Color::from((253, 224, 71))),
-			("orange", Color::from((251, 146, 60))),
-			// TODO purple & pink :D
-		])
-	})
+#[derive(Clone, Copy, Debug, Default)]
+pub struct Colors(i32);
+
+impl Colors {
+	pub const RED: i32 = 0xEF4444;
+	pub const GREEN: i32 = 0x22C55E;
+	pub const BLUE: i32 = 0x60A5FA;
+	pub const YELLOW: i32 = 0xFDE047;
+	pub const ORANGE: i32 = 0xFB923C;
+
+	pub fn as_i32(self) -> i32 {
+		self.0
+	}
+}
+
+impl FromStr for Colors {
+	type Err = ();
+	fn from_str(s: &str) -> Result<Self, Self::Err> {
+		match s.to_lowercase().as_str() {
+			"red" => Ok(Colors(Self::RED)),
+			"green" => Ok(Colors(Self::GREEN)),
+			"blue" => Ok(Colors(Self::BLUE)),
+			"yellow" => Ok(Colors(Self::YELLOW)),
+			"orange" => Ok(Colors(Self::ORANGE)),
+			_ => Err(()),
+		}
+	}
+}
+
+impl From<Colors> for Colour {
+	fn from(value: Colors) -> Self {
+		Self::from(value.as_i32())
+	}
 }
