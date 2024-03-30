@@ -34,7 +34,7 @@ pub async fn handle(error: FrameworkError<'_, Data, Report>) {
 				.title("Something went wrong!")
 				.description("oopsie")
 				.timestamp(Timestamp::now())
-				.color(consts::COLORS["red"]);
+				.color(consts::colors()["red"]);
 
 			let reply = CreateReply::default().embed(embed);
 

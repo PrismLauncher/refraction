@@ -1,6 +1,6 @@
 use std::{fmt::Write, str::FromStr};
 
-use crate::{utils, Context};
+use crate::{api, utils, Context};
 
 use eyre::{bail, Result};
 use log::trace;
@@ -144,7 +144,7 @@ pub async fn set_welcome(
 			return Ok(());
 		}
 
-		utils::text_from_url(&url).await?
+		api::text_from_url(&url).await?
 	} else {
 		ctx.say("A text file or URL must be provided!").await?;
 		return Ok(());

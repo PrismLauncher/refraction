@@ -33,7 +33,7 @@ use storage::Storage;
 
 type Context<'a> = poise::Context<'a, Data, Report>;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, Default)]
 pub struct Data {
 	config: Config,
 	storage: Option<Storage>,

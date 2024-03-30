@@ -1,5 +1,3 @@
-use crate::{api::REQWEST_CLIENT, utils};
-
 use eyre::{eyre, OptionExt, Result};
 use log::debug;
 use serde::{Deserialize, Serialize};
@@ -32,7 +30,7 @@ pub struct Files {
 pub async fn get_files(id: &str) -> Result<Response<Files>> {
 	let url = format!("{PASTE_GG}{PASTES}/{id}/files");
 	debug!("Making request to {url}");
-	let resp = REQWEST_CLIENT.get(url).send().await?;
+	let resp = super::client().get(url).send().await?;
 	resp.error_for_status_ref()?;
 	let resp: Response<Files> = resp.json().await?;
 
@@ -49,7 +47,7 @@ pub async fn get_files(id: &str) -> Result<Response<Files>> {
 
 pub async fn get_raw_file(paste_id: &str, file_id: &str) -> eyre::Result<String> {
 	let url = format!("{PASTE_GG}{PASTES}/{paste_id}/files/{file_id}/raw");
-	let text = utils::text_from_url(&url).await?;
+	let text = super::text_from_url(&url).await?;
 
 	Ok(text)
 }

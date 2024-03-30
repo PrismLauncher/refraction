@@ -1,9 +1,9 @@
 use crate::api::pluralkit;
-use std::str::FromStr;
+
+use std::{str::FromStr, sync::OnceLock};
 
 use eyre::{eyre, Context as _, Result};
 use log::{debug, trace};
-use once_cell::sync::Lazy;
 use poise::serenity_prelude::{
 	Cache, CacheHttp, ChannelId, ChannelType, Colour, Context, CreateEmbed, CreateEmbedAuthor,
 	CreateEmbedFooter, GuildChannel, Member, Message, MessageId, Permissions, UserId,
@@ -36,8 +36,9 @@ async fn member_can_view_channel(
 	member: &Member,
 	channel: &GuildChannel,
 ) -> Result<bool> {
-	static REQUIRED_PERMISSIONS: Lazy<Permissions> =
-		Lazy::new(|| Permissions::VIEW_CHANNEL | Permissions::READ_MESSAGE_HISTORY);
+	static REQUIRED_PERMISSIONS: OnceLock<Permissions> = OnceLock::new();
+	let required_permissions = REQUIRED_PERMISSIONS
+		.get_or_init(|| Permissions::VIEW_CHANNEL | Permissions::READ_MESSAGE_HISTORY);
 
 	let guild = ctx.http().get_guild(channel.guild_id).await?;
 
@@ -60,7 +61,7 @@ async fn member_can_view_channel(
 
 	let can_view = guild
 		.user_permissions_in(&channel_to_check, member)
-		.contains(*REQUIRED_PERMISSIONS);
+		.contains(*required_permissions);
 	Ok(can_view)
 }
 
@@ -109,9 +110,8 @@ pub async fn to_embed(
 }
 
 pub async fn from_message(ctx: &Context, msg: &Message) -> Result<Vec<CreateEmbed>> {
-	static MESSAGE_PATTERN: Lazy<Regex> = Lazy::new(|| {
-		Regex::new(r"(?:https?:\/\/)?(?:canary\.|ptb\.)?discord(?:app)?\.com\/channels\/(?<server_id>\d+)\/(?<channel_id>\d+)\/(?<message_id>\d+)").unwrap()
-	});
+	static MESSAGE_PATTERN: OnceLock<Regex> = OnceLock::new();
+	let message_pattern = MESSAGE_PATTERN.get_or_init(|| Regex::new(r"(?:https?:\/\/)?(?:canary\.|ptb\.)?discord(?:app)?\.com\/channels\/(?<server_id>\d+)\/(?<channel_id>\d+)\/(?<message_id>\d+)").unwrap());
 
 	let Some(guild_id) = msg.guild_id else {
 		debug!("Not resolving message in DM");
@@ -128,7 +128,7 @@ pub async fn from_message(ctx: &Context, msg: &Message) -> Result<Vec<CreateEmbe
 
 	let author = guild_id.member(ctx, author_id).await?;
 
-	let matches = MESSAGE_PATTERN
+	let matches = message_pattern
 		.captures_iter(&msg.content)
 		.map(|capture| capture.extract());
 

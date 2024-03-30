@@ -1,5 +1,3 @@
-use crate::api::REQWEST_CLIENT;
-
 use eyre::{Context, Result};
 use log::debug;
 use poise::serenity_prelude::{MessageId, UserId};
@@ -17,7 +15,7 @@ pub async fn get_sender(message_id: MessageId) -> Result<UserId> {
 	let url = format!("{PLURAL_KIT}{MESSAGES}/{message_id}");
 
 	debug!("Making request to {url}");
-	let resp = REQWEST_CLIENT.get(url).send().await?;
+	let resp = super::client().get(url).send().await?;
 	resp.error_for_status_ref()?;
 
 	let data: Message = resp.json().await?;

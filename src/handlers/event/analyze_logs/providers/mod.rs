@@ -2,7 +2,6 @@ use std::slice::Iter;
 
 use enum_dispatch::enum_dispatch;
 use eyre::Result;
-use once_cell::sync::Lazy;
 use poise::serenity_prelude::Message;
 use regex::Regex;
 
@@ -25,7 +24,7 @@ pub trait LogProvider {
 	async fn fetch(&self, content: &str) -> Result<String>;
 }
 
-fn get_first_capture(regex: &Lazy<Regex>, string: &str) -> Option<String> {
+fn get_first_capture(regex: &Regex, string: &str) -> Option<String> {
 	regex
 		.captures_iter(string)
 		.find_map(|c| c.get(1).map(|c| c.as_str().to_string()))

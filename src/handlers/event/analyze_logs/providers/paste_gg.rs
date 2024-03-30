@@ -1,8 +1,9 @@
 use crate::api::paste_gg;
 
+use std::sync::OnceLock;
+
 use eyre::{OptionExt, Result};
 use log::trace;
-use once_cell::sync::Lazy;
 use poise::serenity_prelude::Message;
 use regex::Regex;
 
@@ -10,11 +11,11 @@ pub struct PasteGG;
 
 impl super::LogProvider for PasteGG {
 	async fn find_match(&self, message: &Message) -> Option<String> {
-		static REGEX: Lazy<Regex> =
-			Lazy::new(|| Regex::new(r"https://paste.gg/p/\w+/(\w+)").unwrap());
+		static REGEX: OnceLock<Regex> = OnceLock::new();
+		let regex = REGEX.get_or_init(|| Regex::new(r"https://paste.gg/p/\w+/(\w+)").unwrap());
 
 		trace!("Checking if message {} is a paste.gg paste", message.id);
-		super::get_first_capture(&REGEX, &message.content)
+		super::get_first_capture(regex, &message.content)
 	}
 
 	async fn fetch(&self, content: &str) -> Result<String> {

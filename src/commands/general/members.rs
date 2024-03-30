@@ -29,7 +29,7 @@ pub async fn members(ctx: Context<'_>) -> Result<()> {
 	let embed = CreateEmbed::new()
 		.title(format!("{member_count} total members!",))
 		.description(format!("{online_count} online members",))
-		.color(consts::COLORS["blue"]);
+		.color(consts::colors()["blue"]);
 	let reply = CreateReply::default().embed(embed);
 
 	ctx.send(reply).await?;

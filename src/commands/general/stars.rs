@@ -27,7 +27,7 @@ pub async fn stars(ctx: Context<'_>) -> Result<()> {
 
 	let embed = CreateEmbed::new()
 		.title(format!("⭐ {count} total stars!"))
-		.color(consts::COLORS["yellow"]);
+		.color(consts::colors()["yellow"]);
 	let reply = CreateReply::default().embed(embed);
 
 	ctx.send(reply).await?;

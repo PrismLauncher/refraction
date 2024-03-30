@@ -1,5 +1,4 @@
-use crate::consts::COLORS;
-use crate::Data;
+use crate::{consts, Data};
 
 use eyre::Result;
 use log::{debug, trace};
@@ -49,10 +48,10 @@ pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()>
 
 		if issues.is_empty() {
 			e = e
-				.color(COLORS["green"])
+				.color(consts::colors()["green"])
 				.description("No issues found automatically");
 		} else {
-			e = e.color(COLORS["red"]);
+			e = e.color(consts::colors()["red"]);
 
 			for (title, description) in issues {
 				e = e.field(title, description, false);

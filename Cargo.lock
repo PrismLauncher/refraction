@@ -1497,7 +1497,6 @@ dependencies = [
  "gray_matter",
  "log",
  "octocrab",
- "once_cell",
  "owo-colors 4.0.0",
  "poise",
  "rand",

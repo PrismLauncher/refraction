@@ -1,16 +1,18 @@
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 
 use eyre::{Context, OptionExt, Result};
 use log::debug;
 use octocrab::Octocrab;
-use once_cell::sync::Lazy;
 
-static OCTOCRAB: Lazy<Arc<Octocrab>> = Lazy::new(octocrab::instance);
+fn octocrab() -> &'static Arc<Octocrab> {
+	static OCTOCRAB: OnceLock<Arc<Octocrab>> = OnceLock::new();
+	OCTOCRAB.get_or_init(octocrab::instance)
+}
 
 pub async fn get_latest_prism_version() -> Result<String> {
 	debug!("Fetching the latest version of Prism Launcher");
 
-	let version = OCTOCRAB
+	let version = octocrab()
 		.repos("PrismLauncher", "PrismLauncher")
 		.releases()
 		.get_latest()
@@ -23,7 +25,7 @@ pub async fn get_latest_prism_version() -> Result<String> {
 pub async fn get_prism_stargazers_count() -> Result<u32> {
 	debug!("Fetching Prism Launcher's stargazer count");
 
-	let stargazers_count = OCTOCRAB
+	let stargazers_count = octocrab()
 		.repos("PrismLauncher", "PrismLauncher")
 		.get()
 		.await

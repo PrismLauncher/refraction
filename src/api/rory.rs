@@ -1,5 +1,3 @@
-use crate::api::REQWEST_CLIENT;
-
 use eyre::{Context, Result};
 use log::debug;
 use serde::{Deserialize, Serialize};
@@ -20,10 +18,7 @@ pub async fn get(id: Option<u64>) -> Result<Response> {
 
 	debug!("Making request to {url}");
 
-	let resp = REQWEST_CLIENT
-		.get(format!("{RORY}{PURR}/{target}"))
-		.send()
-		.await?;
+	let resp = super::client().get(url).send().await?;
 	resp.error_for_status_ref()?;
 
 	let data: Response = resp

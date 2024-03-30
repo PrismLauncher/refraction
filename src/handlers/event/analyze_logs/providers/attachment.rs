@@ -2,7 +2,7 @@ use eyre::Result;
 use log::trace;
 use poise::serenity_prelude::Message;
 
-use crate::utils;
+use crate::api;
 
 pub struct Attachment;
 
@@ -22,7 +22,7 @@ impl super::LogProvider for Attachment {
 	}
 
 	async fn fetch(&self, content: &str) -> Result<String> {
-		let attachment = utils::bytes_from_url(content).await?;
+		let attachment = api::bytes_from_url(content).await?;
 		let log = String::from_utf8(attachment)?;
 		Ok(log)
 	}

@@ -1,5 +1,3 @@
-use crate::api::REQWEST_CLIENT;
-
 use eyre::{OptionExt, Result};
 use log::debug;
 use serde::{Deserialize, Serialize};
@@ -20,7 +18,7 @@ pub async fn get_latest_minecraft_version() -> Result<String> {
 	let url = format!("{META}{MINECRAFT_PACKAGEJSON}");
 
 	debug!("Making request to {url}");
-	let resp = REQWEST_CLIENT.get(url).send().await?;
+	let resp = super::client().get(url).send().await?;
 	resp.error_for_status_ref()?;
 
 	let data: MinecraftPackageJson = resp.json().await?;
