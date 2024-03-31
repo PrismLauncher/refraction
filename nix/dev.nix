@@ -18,8 +18,6 @@
         config.procfiles.daemons.package
 
         # rust
-        cargo
-        rustc
         clippy
         rustfmt
         rust-analyzer
@@ -31,7 +29,8 @@
         statix
       ];
 
-      RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
+      inputsFrom = [self'.packages.refraction];
+      RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
     };
 
     treefmt = {
