@@ -19,7 +19,7 @@ impl super::LogProvider for PasteGG {
 	}
 
 	async fn fetch(&self, content: &str) -> Result<String> {
-		let files = paste_gg::get_files(content).await?;
+		let files = paste_gg::files_from(content).await?;
 		let result = files
 			.result
 			.ok_or_eyre("Got an empty result from paste.gg!")?;

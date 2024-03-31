@@ -4,7 +4,7 @@ use poise::serenity_prelude::{Context, CreateAllowedMentions, CreateMessage, Mes
 use crate::utils;
 
 pub async fn handle(ctx: &Context, message: &Message) -> Result<()> {
-	let embeds = utils::resolve_message::from_message(ctx, message).await?;
+	let embeds = utils::messages::from_message(ctx, message).await?;
 
 	if !embeds.is_empty() {
 		let allowed_mentions = CreateAllowedMentions::new().replied_user(false);

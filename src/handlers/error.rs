@@ -1,8 +1,7 @@
-use crate::{consts::Colors, Data};
+use crate::{consts::Colors, Data, Error};
 
 use std::fmt::Write;
 
-use eyre::Report;
 use log::error;
 use poise::serenity_prelude::{CreateEmbed, Timestamp};
 use poise::{CreateReply, FrameworkError};
@@ -16,7 +15,7 @@ macro_rules! writelne {
 	}
 }
 
-pub async fn handle(error: FrameworkError<'_, Data, Report>) {
+pub async fn handle(error: FrameworkError<'_, Data, Error>) {
 	match error {
 		FrameworkError::Setup {
 			error, framework, ..
@@ -34,7 +33,7 @@ pub async fn handle(error: FrameworkError<'_, Data, Report>) {
 				.title("Something went wrong!")
 				.description("oopsie")
 				.timestamp(Timestamp::now())
-				.color(Colors::RED);
+				.color(Colors::Red);
 
 			let reply = CreateReply::default().embed(embed);
 

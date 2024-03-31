@@ -1,12 +1,12 @@
-use std::sync::{Arc, OnceLock};
+use std::sync::OnceLock;
 
 use eyre::{Context, OptionExt, Result};
 use log::debug;
 use octocrab::Octocrab;
 
-fn octocrab() -> &'static Arc<Octocrab> {
-	static OCTOCRAB: OnceLock<Arc<Octocrab>> = OnceLock::new();
-	OCTOCRAB.get_or_init(octocrab::instance)
+fn octocrab() -> &'static Octocrab {
+	static OCTOCRAB: OnceLock<Octocrab> = OnceLock::new();
+	OCTOCRAB.get_or_init(Octocrab::default)
 }
 
 pub async fn get_latest_prism_version() -> Result<String> {

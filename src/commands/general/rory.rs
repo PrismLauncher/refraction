@@ -1,7 +1,5 @@
-use crate::api::rory;
-use crate::Context;
+use crate::{api::rory, Context, Error};
 
-use eyre::Result;
 use log::trace;
 use poise::serenity_prelude::{CreateEmbed, CreateEmbedFooter};
 use poise::CreateReply;
@@ -11,7 +9,7 @@ use poise::CreateReply;
 pub async fn rory(
 	ctx: Context<'_>,
 	#[description = "specify a Rory ID"] id: Option<u64>,
-) -> Result<()> {
+) -> Result<(), Error> {
 	trace!("Running rory command");
 
 	ctx.defer().await?;

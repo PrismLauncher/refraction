@@ -14,7 +14,7 @@ pub struct MinecraftPackageJson {
 const META: &str = "https://meta.prismlauncher.org/v1";
 const MINECRAFT_PACKAGEJSON: &str = "/net.minecraft/package.json";
 
-pub async fn get_latest_minecraft_version() -> Result<String> {
+pub async fn latest_minecraft_version() -> Result<String> {
 	let url = format!("{META}{MINECRAFT_PACKAGEJSON}");
 
 	debug!("Making request to {url}");

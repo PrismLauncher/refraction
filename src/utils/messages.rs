@@ -24,7 +24,7 @@ fn find_first_image(message: &Message) -> Option<String> {
 }
 
 async fn find_real_author_id(message: &Message) -> UserId {
-	if let Ok(sender) = pluralkit::get_sender(message.id).await {
+	if let Ok(sender) = pluralkit::sender_from(message.id).await {
 		sender
 	} else {
 		message.author.id

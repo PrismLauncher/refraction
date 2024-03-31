@@ -1,6 +1,6 @@
 use poise::serenity_prelude::{CreateEmbedAuthor, User};
 
-pub mod resolve_message;
+pub mod messages;
 
 pub fn embed_author_from_user(user: &User) -> CreateEmbedAuthor {
 	CreateEmbedAuthor::new(user.tag()).icon_url(

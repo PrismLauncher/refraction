@@ -1,13 +1,13 @@
-use crate::{consts::Colors, Context};
+use crate::{consts::Colors, Context, Error};
 
-use eyre::{eyre, Context as _, OptionExt, Result};
+use eyre::{eyre, Context as _, OptionExt};
 use log::trace;
 use poise::serenity_prelude::CreateEmbed;
 use poise::CreateReply;
 
 /// Returns the number of members in the server
 #[poise::command(slash_command, prefix_command, guild_only = true, track_edits = true)]
-pub async fn members(ctx: Context<'_>) -> Result<()> {
+pub async fn members(ctx: Context<'_>) -> Result<(), Error> {
 	trace!("Running members command");
 
 	ctx.defer().await?;
@@ -29,7 +29,7 @@ pub async fn members(ctx: Context<'_>) -> Result<()> {
 	let embed = CreateEmbed::new()
 		.title(format!("{member_count} total members!",))
 		.description(format!("{online_count} online members",))
-		.color(Colors::BLUE);
+		.color(Colors::Blue);
 	let reply = CreateReply::default().embed(embed);
 
 	ctx.send(reply).await?;

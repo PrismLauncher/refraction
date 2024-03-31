@@ -1,18 +1,10 @@
-#![warn(clippy::all, clippy::pedantic, clippy::perf)]
-#![allow(clippy::missing_errors_doc)]
-#![forbid(unsafe_code)]
-
 use std::{sync::Arc, time::Duration};
 
-use eyre::{bail, Context as _, Report, Result};
+use eyre::Context as _;
 use log::{info, trace, warn};
-
 use poise::{
 	serenity_prelude as serenity, EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
 };
-
-use owo_colors::OwoColorize;
-
 use tokio::signal::ctrl_c;
 #[cfg(target_family = "unix")]
 use tokio::signal::unix::{signal, SignalKind};
@@ -31,7 +23,8 @@ mod utils;
 use config::Config;
 use storage::Storage;
 
-type Context<'a> = poise::Context<'a, Data, Report>;
+type Error = Box<dyn std::error::Error + Send + Sync>;
+type Context<'a> = poise::Context<'a, Data, Error>;
 
 #[derive(Clone, Debug, Default)]
 pub struct Data {
@@ -39,21 +32,14 @@ pub struct Data {
 	storage: Option<Storage>,
 }
 
-impl Data {
-	#[must_use]
-	pub fn new(config: Config, storage: Option<Storage>) -> Self {
-		Self { config, storage }
-	}
-}
-
 async fn setup(
 	ctx: &serenity::Context,
 	_: &serenity::Ready,
-	framework: &Framework<Data, Report>,
-) -> Result<Data> {
+	framework: &Framework<Data, Error>,
+) -> Result<Data, Error> {
 	let config = Config::new_from_env();
 
-	let storage = if let Some(url) = config.bot_config().redis_url() {
+	let storage = if let Some(url) = &config.bot.redis_url {
 		Some(Storage::from_url(url)?)
 	} else {
 		None
@@ -61,13 +47,15 @@ async fn setup(
 
 	if let Some(storage) = storage.as_ref() {
 		if !storage.clone().has_connection() {
-			bail!("You specified a storage backend but there's no connection! Is it running?")
+			return Err(
+				"You specified a storage backend but there's no connection! Is it running?".into(),
+			);
 		}
 
 		trace!("Redis connection looks good!");
 	}
 
-	let data = Data::new(config, storage);
+	let data = Data { config, storage };
 
 	poise::builtins::register_globally(ctx, &framework.options().commands).await?;
 	info!("Registered global commands!");
@@ -78,11 +66,11 @@ async fn setup(
 async fn handle_shutdown(shard_manager: Arc<serenity::ShardManager>, reason: &str) {
 	warn!("{reason}! Shutting down bot...");
 	shard_manager.shutdown_all().await;
-	println!("{}", "Everything is shutdown. Goodbye!".green());
+	println!("Everything is shutdown. Goodbye!");
 }
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() -> eyre::Result<()> {
 	dotenvy::dotenv().ok();
 	color_eyre::install()?;
 	env_logger::init();
@@ -134,7 +122,7 @@ async fn main() -> Result<()> {
 	let mut sigterm = ctrl_close()?;
 
 	tokio::select! {
-		result = client.start() => result.map_err(Report::from),
+		result = client.start() => result.map_err(eyre::Report::from),
 		_ = sigterm.recv() => {
 			handle_shutdown(shard_manager, "Received SIGTERM").await;
 			std::process::exit(0);

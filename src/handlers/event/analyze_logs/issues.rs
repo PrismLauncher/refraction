@@ -198,7 +198,9 @@ async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 		if let Ok(version) = storage.launcher_version().await {
 			version
 		} else {
-			api::github::get_latest_prism_version().await?
+			let version = api::github::get_latest_prism_version().await?;
+			storage.cache_launcher_version(&version).await?;
+			version
 		}
 	} else {
 		trace!("Not caching launcher version, as we're running without a storage backend");

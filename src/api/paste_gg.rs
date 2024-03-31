@@ -6,7 +6,7 @@ const PASTE_GG: &str = "https://api.paste.gg/v1";
 const PASTES: &str = "/pastes";
 
 #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord, Deserialize, Serialize)]
-enum Status {
+pub enum Status {
 	#[serde(rename = "success")]
 	Success,
 	#[serde(rename = "error")]
@@ -15,10 +15,10 @@ enum Status {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Response<T> {
-	status: Status,
+	pub status: Status,
 	pub result: Option<Vec<T>>,
-	error: Option<String>,
-	message: Option<String>,
+	pub error: Option<String>,
+	pub message: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -27,12 +27,11 @@ pub struct Files {
 	pub name: Option<String>,
 }
 
-pub async fn get_files(id: &str) -> Result<Response<Files>> {
+pub async fn files_from(id: &str) -> Result<Response<Files>> {
 	let url = format!("{PASTE_GG}{PASTES}/{id}/files");
 	debug!("Making request to {url}");
-	let resp = super::client().get(url).send().await?;
-	resp.error_for_status_ref()?;
-	let resp: Response<Files> = resp.json().await?;
+
+	let resp: Response<Files> = super::json_from_url(&url).await?;
 
 	if resp.status == Status::Error {
 		let message = resp

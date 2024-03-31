@@ -3,8 +3,8 @@ mod discord;
 
 #[derive(Debug, Clone, Default)]
 pub struct Config {
-	bot: bot::Config,
-	discord: discord::Config,
+	pub bot: bot::Config,
+	pub discord: discord::Config,
 }
 
 impl Config {
@@ -20,13 +20,5 @@ impl Config {
 		let discord = discord::Config::from_env();
 
 		Self::new(bot, discord)
-	}
-
-	pub fn bot_config(&self) -> &bot::Config {
-		&self.bot
-	}
-
-	pub fn discord_config(&self) -> &discord::Config {
-		&self.discord
 	}
 }

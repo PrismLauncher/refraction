@@ -1,6 +1,5 @@
-use crate::Context;
+use crate::{Context, Error};
 
-use eyre::Result;
 use log::trace;
 use poise::samples::HelpConfiguration;
 
@@ -9,7 +8,7 @@ use poise::samples::HelpConfiguration;
 pub async fn help(
 	ctx: Context<'_>,
 	#[description = "Provide information about a specific command"] command: Option<String>,
-) -> Result<()> {
+) -> Result<(), Error> {
 	trace!("Running help command");
 
 	let configuration = HelpConfiguration {

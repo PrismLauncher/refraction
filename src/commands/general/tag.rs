@@ -1,10 +1,10 @@
 #![allow(non_camel_case_types, clippy::upper_case_acronyms)]
-use crate::{consts::Colors, tags::Tag, Context};
+use crate::{consts::Colors, tags::Tag, Context, Error};
 use std::env;
 use std::str::FromStr;
 use std::sync::OnceLock;
 
-use eyre::{eyre, Result};
+use eyre::eyre;
 use log::trace;
 use poise::serenity_prelude::{Color, CreateEmbed, User};
 use poise::CreateReply;
@@ -26,7 +26,7 @@ pub async fn tag(
 	ctx: Context<'_>,
 	#[description = "the tag to send"] name: Choice,
 	#[description = "a user to mention"] user: Option<User>,
-) -> Result<()> {
+) -> Result<(), Error> {
 	trace!("Running tag command");
 
 	let tag_id = name.as_str();

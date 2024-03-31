@@ -1,6 +1,5 @@
-use crate::{utils, Context};
+use crate::{utils, Context, Error};
 
-use eyre::Result;
 use log::trace;
 use poise::serenity_prelude::{CreateEmbed, CreateMessage};
 
@@ -15,18 +14,12 @@ use poise::serenity_prelude::{CreateEmbed, CreateMessage};
 pub async fn say(
 	ctx: Context<'_>,
 	#[description = "the message content"] content: String,
-) -> Result<()> {
+) -> Result<(), Error> {
 	let channel = ctx.channel_id();
 	channel.say(ctx, &content).await?;
 	ctx.say("I said what you said!").await?;
 
-	if let Some(channel_id) = ctx
-		.data()
-		.config
-		.discord_config()
-		.channels()
-		.log_channel_id()
-	{
+	if let Some(channel_id) = ctx.data().config.discord.channels.log_channel_id {
 		let author = utils::embed_author_from_user(ctx.author());
 
 		let embed = CreateEmbed::default()

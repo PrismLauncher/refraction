@@ -1,13 +1,12 @@
-use crate::{api, consts::Colors, Context};
+use crate::{api, consts::Colors, Context, Error};
 
-use eyre::Result;
 use log::trace;
 use poise::serenity_prelude::CreateEmbed;
 use poise::CreateReply;
 
 /// Returns GitHub stargazer count
 #[poise::command(slash_command, prefix_command, track_edits = true)]
-pub async fn stars(ctx: Context<'_>) -> Result<()> {
+pub async fn stars(ctx: Context<'_>) -> Result<(), Error> {
 	trace!("Running stars command");
 
 	ctx.defer().await?;
@@ -27,7 +26,7 @@ pub async fn stars(ctx: Context<'_>) -> Result<()> {
 
 	let embed = CreateEmbed::new()
 		.title(format!("⭐ {count} total stars!"))
-		.color(Colors::YELLOW);
+		.color(Colors::Yellow);
 	let reply = CreateReply::default().embed(embed);
 
 	ctx.send(reply).await?;

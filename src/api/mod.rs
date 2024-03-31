@@ -3,6 +3,7 @@ use std::sync::OnceLock;
 use eyre::Result;
 use log::debug;
 use reqwest::{Client, Response};
+use serde::de::DeserializeOwned;
 
 pub mod dadjoke;
 pub mod github;
@@ -43,4 +44,11 @@ pub async fn bytes_from_url(url: &str) -> Result<Vec<u8>> {
 
 	let bytes = resp.bytes().await?;
 	Ok(bytes.to_vec())
+}
+
+pub async fn json_from_url<T: DeserializeOwned>(url: &str) -> Result<T> {
+	let resp = get_url(url).await?;
+
+	let json = resp.json().await?;
+	Ok(json)
 }

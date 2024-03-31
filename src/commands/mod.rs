@@ -1,6 +1,4 @@
-use crate::Data;
-
-use eyre::Report;
+use crate::{Data, Error};
 
 mod general;
 mod moderation;
@@ -32,7 +30,7 @@ macro_rules! module_macro {
 module_macro!(general);
 module_macro!(moderation);
 
-pub type Command = poise::Command<Data, Report>;
+pub type Command = poise::Command<Data, Error>;
 
 pub fn get() -> Vec<Command> {
 	vec![

@@ -2,7 +2,7 @@ use log::{info, warn};
 
 #[derive(Clone, Debug, Default)]
 pub struct Config {
-	redis_url: Option<String>,
+	pub redis_url: Option<String>,
 }
 
 impl Config {
@@ -20,9 +20,5 @@ impl Config {
 		}
 
 		Self::new(redis_url)
-	}
-
-	pub fn redis_url(&self) -> Option<&str> {
-		self.redis_url.as_deref()
 	}
 }

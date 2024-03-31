@@ -15,7 +15,7 @@ pub async fn is_message_proxied(message: &Message) -> Result<bool> {
 	);
 	sleep(PK_DELAY).await;
 
-	let proxied = api::pluralkit::get_sender(message.id).await.is_ok();
+	let proxied = api::pluralkit::sender_from(message.id).await.is_ok();
 
 	Ok(proxied)
 }
@@ -36,7 +36,7 @@ pub async fn handle(_: &Context, msg: &Message, storage: &Storage) -> Result<()>
 	);
 	sleep(PK_DELAY).await;
 
-	if let Ok(sender) = api::pluralkit::get_sender(msg.id).await {
+	if let Ok(sender) = api::pluralkit::sender_from(msg.id).await {
 		storage.store_user_plurality(sender).await?;
 	}
 

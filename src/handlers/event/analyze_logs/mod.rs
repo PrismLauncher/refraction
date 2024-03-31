@@ -48,10 +48,10 @@ pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()>
 
 		if issues.is_empty() {
 			e = e
-				.color(Colors::GREEN)
+				.color(Colors::Green)
 				.description("No issues found automatically");
 		} else {
-			e = e.color(Colors::RED);
+			e = e.color(Colors::Red);
 
 			for (title, description) in issues {
 				e = e.field(title, description, false);

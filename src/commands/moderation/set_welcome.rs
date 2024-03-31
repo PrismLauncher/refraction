@@ -1,24 +1,23 @@
 use std::{fmt::Write, str::FromStr};
 
-use crate::{api, utils, Context};
+use crate::{api, utils, Context, Error};
 
-use eyre::{bail, Result};
+use eyre::Result;
 use log::trace;
 use poise::serenity_prelude::{
 	futures::TryStreamExt, Attachment, CreateActionRow, CreateButton, CreateEmbed, CreateMessage,
 	Mentionable, Message, ReactionType,
 };
 use serde::{Deserialize, Serialize};
-use url::Url;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct WelcomeEmbed {
 	title: String,
 	description: Option<String>,
-	url: Option<Url>,
+	url: Option<String>,
 	hex_color: Option<String>,
-	image: Option<Url>,
+	image: Option<String>,
 }
 
 impl From<WelcomeEmbed> for CreateMessage {
@@ -112,11 +111,11 @@ pub async fn set_welcome(
 	ctx: Context<'_>,
 	#[description = "A file to use"] file: Option<Attachment>,
 	#[description = "A URL for a file to use"] url: Option<String>,
-) -> Result<()> {
+) -> Result<(), Error> {
 	trace!("Running set_welcome command!");
 
-	let configured_channels = ctx.data().config.discord_config().channels();
-	let Some(channel_id) = configured_channels.welcome_channel_id() else {
+	let configured_channels = ctx.data().config.discord.channels;
+	let Some(channel_id) = configured_channels.welcome_channel_id else {
 		ctx.say("You don't have a welcome channel ID set, so I can't do anything :(")
 			.await?;
 		return Ok(());
@@ -127,7 +126,7 @@ pub async fn set_welcome(
 	// download attachment from discord or URL
 	let file = if let Some(attachment) = file {
 		let Some(content_type) = &attachment.content_type else {
-			bail!("Welcome channel attachment was sent without a content type!");
+			return Err("Welcome channel attachment was sent without a content type!".into());
 		};
 
 		if !content_type.starts_with("application/json;") {
@@ -139,11 +138,6 @@ pub async fn set_welcome(
 		let downloaded = attachment.download().await?;
 		String::from_utf8(downloaded)?
 	} else if let Some(url) = url {
-		if Url::parse(&url).is_err() {
-			ctx.say("Invalid url!").await?;
-			return Ok(());
-		}
-
 		api::text_from_url(&url).await?
 	} else {
 		ctx.say("A text file or URL must be provided!").await?;
@@ -180,7 +174,7 @@ pub async fn set_welcome(
 		channel_id.say(ctx, message).await?;
 	}
 
-	if let Some(log_channel) = configured_channels.log_channel_id() {
+	if let Some(log_channel) = configured_channels.log_channel_id {
 		let author = utils::embed_author_from_user(ctx.author());
 		let embed = CreateEmbed::new()
 			.title("set_welcome command used!")

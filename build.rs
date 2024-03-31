@@ -6,7 +6,7 @@ use gray_matter::{engine, Matter};
 
 include!("src/tags.rs");
 
-/// generate the ChoiceParameter enum and tag data we will use in the `tag` command
+/// generate the `ChoiceParameter` enum and tag data we will use in the `tag` command
 #[allow(dead_code)]
 fn main() {
 	let out_dir = env::var_os("OUT_DIR").unwrap();

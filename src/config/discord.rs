@@ -5,13 +5,13 @@ use poise::serenity_prelude::ChannelId;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct RefractionChannels {
-	log_channel_id: Option<ChannelId>,
-	welcome_channel_id: Option<ChannelId>,
+	pub log_channel_id: Option<ChannelId>,
+	pub welcome_channel_id: Option<ChannelId>,
 }
 
 #[derive(Clone, Debug, Default)]
 pub struct Config {
-	channels: RefractionChannels,
+	pub channels: RefractionChannels,
 }
 
 impl RefractionChannels {
@@ -45,14 +45,6 @@ impl RefractionChannels {
 			.ok()
 			.and_then(|env_var| ChannelId::from_str(&env_var).ok())
 	}
-
-	pub fn log_channel_id(&self) -> Option<&ChannelId> {
-		self.log_channel_id.as_ref()
-	}
-
-	pub fn welcome_channel_id(&self) -> Option<&ChannelId> {
-		self.welcome_channel_id.as_ref()
-	}
 }
 
 impl Config {
@@ -64,9 +56,5 @@ impl Config {
 		let channels = RefractionChannels::new_from_env();
 
 		Self::new(channels)
-	}
-
-	pub fn channels(&self) -> &RefractionChannels {
-		&self.channels
 	}
 }

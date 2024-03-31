@@ -3,18 +3,31 @@ use std::str::FromStr;
 
 use poise::serenity_prelude::Colour;
 
+const BLUE: u32 = 0x60A5FA;
+const GREEN: u32 = 0x22C55E;
+const ORANGE: u32 = 0xFB923C;
+const RED: u32 = 0xEF4444;
+const YELLOW: u32 = 0xFDE047;
+
 #[derive(Clone, Copy, Debug, Default)]
-pub struct Colors(i32);
+pub enum Colors {
+	Blue,
+	#[default]
+	Green,
+	Orange,
+	Red,
+	Yellow,
+}
 
-impl Colors {
-	pub const RED: i32 = 0xEF4444;
-	pub const GREEN: i32 = 0x22C55E;
-	pub const BLUE: i32 = 0x60A5FA;
-	pub const YELLOW: i32 = 0xFDE047;
-	pub const ORANGE: i32 = 0xFB923C;
-
-	pub fn as_i32(self) -> i32 {
-		self.0
+impl From<Colors> for Colour {
+	fn from(value: Colors) -> Self {
+		Self::from(match &value {
+			Colors::Blue => BLUE,
+			Colors::Green => GREEN,
+			Colors::Orange => ORANGE,
+			Colors::Red => RED,
+			Colors::Yellow => YELLOW,
+		})
 	}
 }
 
@@ -22,18 +35,12 @@ impl FromStr for Colors {
 	type Err = ();
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		match s.to_lowercase().as_str() {
-			"red" => Ok(Colors(Self::RED)),
-			"green" => Ok(Colors(Self::GREEN)),
-			"blue" => Ok(Colors(Self::BLUE)),
-			"yellow" => Ok(Colors(Self::YELLOW)),
-			"orange" => Ok(Colors(Self::ORANGE)),
+			"blue" => Ok(Self::Blue),
+			"green" => Ok(Self::Green),
+			"orange" => Ok(Self::Orange),
+			"red" => Ok(Self::Red),
+			"yellow" => Ok(Self::Yellow),
 			_ => Err(()),
 		}
-	}
-}
-
-impl From<Colors> for Colour {
-	fn from(value: Colors) -> Self {
-		Self::from(value.as_i32())
 	}
 }

@@ -1,6 +1,5 @@
-use crate::{api, Data};
+use crate::{api, Data, Error};
 
-use eyre::{Report, Result};
 use log::{debug, info, trace};
 use poise::serenity_prelude::{ActivityData, Context, FullEvent, OnlineStatus};
 use poise::FrameworkContext;
@@ -10,20 +9,20 @@ mod delete_on_reaction;
 mod eta;
 mod expand_link;
 mod give_role;
-pub mod pluralkit;
+mod pluralkit;
 mod support_onboard;
 
 pub async fn handle(
 	ctx: &Context,
 	event: &FullEvent,
-	_: FrameworkContext<'_, Data, Report>,
+	_: FrameworkContext<'_, Data, Error>,
 	data: &Data,
-) -> Result<()> {
+) -> Result<(), Error> {
 	match event {
 		FullEvent::Ready { data_about_bot } => {
 			info!("Logged in as {}!", data_about_bot.user.name);
 
-			let latest_minecraft_version = api::prism_meta::get_latest_minecraft_version().await?;
+			let latest_minecraft_version = api::prism_meta::latest_minecraft_version().await?;
 			let activity = ActivityData::playing(format!("Minecraft {latest_minecraft_version}"));
 
 			info!("Setting presence to activity {activity:#?}");
