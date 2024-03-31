@@ -5,8 +5,8 @@ use crate::{api, utils, Context};
 use eyre::{bail, Result};
 use log::trace;
 use poise::serenity_prelude::{
-	futures::StreamExt, Attachment, CreateActionRow, CreateButton, CreateEmbed, CreateMessage,
-	Mentionable, ReactionType,
+	futures::TryStreamExt, Attachment, CreateActionRow, CreateButton, CreateEmbed, CreateMessage,
+	Mentionable, Message, ReactionType,
 };
 use serde::{Deserialize, Serialize};
 use url::Url;
@@ -164,12 +164,8 @@ pub async fn set_welcome(
 		.collect();
 
 	// clear previous messages
-	let mut prev_messages = channel_id.messages_iter(ctx).boxed();
-	while let Some(prev_message) = prev_messages.next().await {
-		if let Ok(message) = prev_message {
-			message.delete(ctx).await?;
-		}
-	}
+	let prev_messages: Vec<Message> = channel_id.messages_iter(ctx).try_collect().await?;
+	channel_id.delete_messages(ctx, prev_messages).await?;
 
 	// send our new ones
 	for embed in embed_messages {
