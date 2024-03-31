@@ -9,6 +9,7 @@ mod analyze_logs;
 mod delete_on_reaction;
 mod eta;
 mod expand_link;
+mod give_role;
 pub mod pluralkit;
 mod support_onboard;
 
@@ -27,6 +28,12 @@ pub async fn handle(
 
 			info!("Setting presence to activity {activity:#?}");
 			ctx.set_presence(Some(activity), OnlineStatus::Online);
+		}
+
+		FullEvent::InteractionCreate { interaction } => {
+			if let Some(component_interaction) = interaction.as_message_component() {
+				give_role::handle(ctx, component_interaction).await?;
+			}
 		}
 
 		FullEvent::Message { new_message } => {
