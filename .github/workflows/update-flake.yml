@@ -18,11 +18,11 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v26
+        uses: nixbuild/nix-quick-install-action@v27
 
       - name: Update and create PR
-        uses: DeterminateSystems/update-flake-lock@v20
+        uses: DeterminateSystems/update-flake-lock@v21
         with:
-          commit-msg: 'nix: update inputs'
-          pr-title: 'nix: update inputs'
+          commit-msg: 'nix: update flake.lock'
+          pr-title: 'nix: update flake.lock'
           token: ${{ github.token }}

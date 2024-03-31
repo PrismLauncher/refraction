@@ -19,17 +19,17 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v9
+        uses: DeterminateSystems/nix-installer-action@v10
 
       - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v2
+        uses: DeterminateSystems/magic-nix-cache-action@v4
 
       - name: Build Docker image
         id: build
         run: |
-          nix build -L --accept-flake-config .#container-${{ matrix.arch }}
+          nix build --print-build-logs .#container-${{ matrix.arch }}
           [ ! -L result ] && exit 1
-          echo "path=$(realpath result)" >> "$GITHUB_OUTPUT"
+          echo "path=$(readlink -f result)" >> "$GITHUB_OUTPUT"
 
       - name: Upload image
         uses: actions/upload-artifact@v4
