@@ -28,7 +28,7 @@
     buildWith = rustPlatform:
       self'.packages.refraction.override {
         inherit rustPlatform;
-        lto = true;
+        optimizeSize = true;
       };
   in {
     packages =

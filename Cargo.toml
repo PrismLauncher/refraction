@@ -47,9 +47,3 @@ pedantic = "warn"
 perf = "warn"
 style = "warn"
 suspicious = "deny"
-
-[profile.release]
-codegen-units = 1
-opt-level = "s"
-panic = "abort"
-strip = "symbols"
