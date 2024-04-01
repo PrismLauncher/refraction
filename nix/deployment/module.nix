@@ -23,7 +23,7 @@ in {
   options.services.refraction = {
     enable = mkEnableOption "refraction";
     package = mkPackageOption (
-      withSystem pkgs.stdenv.hostPlatform.system ({pkgs, ...}: pkgs)
+      withSystem pkgs.stdenv.hostPlatform.system ({self', ...}: self'.packages)
     ) "refraction" {};
 
     user = mkOption {
