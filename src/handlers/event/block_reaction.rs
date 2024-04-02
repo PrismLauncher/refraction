@@ -1,9 +1,45 @@
-use crate::Data;
+use crate::{config::Config, consts::Colors, Data};
 
 use chrono::Duration;
 use eyre::{Context as _, Result};
 use log::{debug, trace};
-use poise::serenity_prelude::{Context, Reaction, Timestamp};
+use poise::serenity_prelude::{
+	Context, CreateEmbed, CreateMessage, Mentionable, Message, Reaction, Timestamp, UserId,
+};
+
+async fn log_old_react(
+	ctx: &Context,
+	config: &Config,
+	reactor: &Option<UserId>,
+	message: &Message,
+) -> Result<()> {
+	let Some(log_channel) = config.discord.channels.log_channel_id else {
+		debug!("Not logging old reaction; no log channel is set!");
+		return Ok(());
+	};
+
+	let mut embed = CreateEmbed::new()
+		.title("Old message reaction!")
+		.color(Colors::Red);
+
+	if let Some(reactor) = reactor {
+		embed = embed.description(format!(
+			"{} just reacted to {}!",
+			reactor.mention(),
+			message.link()
+		));
+	} else {
+		embed = embed.description(format!(
+			"Someone (or something...) just reacted to {}!",
+			message.link()
+		));
+	}
+
+	let message = CreateMessage::new().embed(embed);
+	log_channel.send_message(ctx, message).await?;
+
+	Ok(())
+}
 
 pub async fn handle(ctx: &Context, reaction: &Reaction, data: &Data) -> Result<()> {
 	let reaction_type = reaction.emoji.clone();
@@ -28,6 +64,8 @@ pub async fn handle(ctx: &Context, reaction: &Reaction, data: &Data) -> Result<(
 			message.id
 		);
 		message.delete_reaction(ctx, reactor, reaction_type).await?;
+
+		log_old_react(ctx, &data.config, &reactor, &message).await?;
 	} else {
 		trace!(
 			"Keeping reaction {reaction_type} for message {}",
