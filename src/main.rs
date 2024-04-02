@@ -37,7 +37,7 @@ async fn setup(
 	_: &serenity::Ready,
 	framework: &Framework<Data, Error>,
 ) -> Result<Data, Error> {
-	let config = Config::new_from_env();
+	let config = Config::from_env()?;
 
 	let storage = if let Some(url) = &config.bot.redis_url {
 		Some(Storage::from_url(url)?)
