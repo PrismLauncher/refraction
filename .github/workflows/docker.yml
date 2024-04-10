@@ -27,7 +27,7 @@ jobs:
       - name: Build Docker image
         id: build
         run: |
-          nix build --print-build-logs .#container-${{ matrix.arch }}
+          nix build --print-build-logs ./nix/dev#container-${{ matrix.arch }}
           [ ! -L result ] && exit 1
           echo "path=$(readlink -f result)" >> "$GITHUB_OUTPUT"
 

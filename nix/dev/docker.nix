@@ -1,14 +1,4 @@
-{
-  flake-parts-lib,
-  withSystem,
-  ...
-}: {
-  imports = [./static.nix];
-
-  flake.nixosModules.default = flake-parts-lib.importApply ./module.nix {
-    inherit withSystem;
-  };
-
+{withSystem, ...}: {
   perSystem = {
     lib,
     pkgs,

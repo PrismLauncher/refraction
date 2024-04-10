@@ -48,4 +48,6 @@ jobs:
         uses: DeterminateSystems/magic-nix-cache-action@v4
 
       - name: Run checks
-        run: nix flake check --print-build-logs --show-trace
+        run: |
+          cd ./nix/dev
+          nix flake check --print-build-logs --show-trace

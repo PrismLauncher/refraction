@@ -3,7 +3,7 @@
     lib,
     pkgs,
     inputs',
-    self',
+    refraction',
     ...
   }: let
     targets = with pkgs.pkgsCross; {
@@ -26,7 +26,7 @@
       targets;
 
     buildWith = rustPlatform:
-      self'.packages.refraction.override {
+      refraction'.packages.refraction.override {
         inherit rustPlatform;
         optimizeSize = true;
       };

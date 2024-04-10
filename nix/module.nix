@@ -1,4 +1,4 @@
-{withSystem, ...}: {
+self: {
   config,
   lib,
   pkgs,
@@ -22,9 +22,7 @@
 in {
   options.services.refraction = {
     enable = mkEnableOption "refraction";
-    package = mkPackageOption (
-      withSystem pkgs.stdenv.hostPlatform.system ({self', ...}: self'.packages)
-    ) "refraction" {};
+    package = mkPackageOption self.packages.${pkgs.stdenv.hostPlatform.system} "refraction" {};
 
     user = mkOption {
       description = mdDoc ''
