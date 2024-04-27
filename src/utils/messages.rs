@@ -1,4 +1,4 @@
-use crate::api::pluralkit;
+use crate::api::{pluralkit, HttpClient};
 
 use std::{str::FromStr, sync::OnceLock};
 
@@ -23,8 +23,8 @@ fn find_first_image(message: &Message) -> Option<String> {
 		.map(|res| res.url.clone())
 }
 
-async fn find_real_author_id(message: &Message) -> UserId {
-	if let Ok(sender) = pluralkit::sender_from(message.id).await {
+async fn find_real_author_id(http: &HttpClient, message: &Message) -> UserId {
+	if let Ok(sender) = pluralkit::sender_from(http, message.id).await {
 		sender
 	} else {
 		message.author.id
@@ -109,7 +109,11 @@ pub async fn to_embed(
 	Ok(embed)
 }
 
-pub async fn from_message(ctx: &Context, msg: &Message) -> Result<Vec<CreateEmbed>> {
+pub async fn from_message(
+	ctx: &Context,
+	http: &HttpClient,
+	msg: &Message,
+) -> Result<Vec<CreateEmbed>> {
 	static MESSAGE_PATTERN: OnceLock<Regex> = OnceLock::new();
 	let message_pattern = MESSAGE_PATTERN.get_or_init(|| Regex::new(r"(?:https?:\/\/)?(?:canary\.|ptb\.)?discord(?:app)?\.com\/channels\/(?<server_id>\d+)\/(?<channel_id>\d+)\/(?<message_id>\d+)").unwrap());
 
@@ -121,7 +125,7 @@ pub async fn from_message(ctx: &Context, msg: &Message) -> Result<Vec<CreateEmbe
 	// if the message was sent through pluralkit, we'll want
 	// to reference the Member of the unproxied account
 	let author_id = if msg.webhook_id.is_some() {
-		find_real_author_id(msg).await
+		find_real_author_id(http, msg).await
 	} else {
 		msg.author.id
 	};

@@ -8,6 +8,7 @@ use poise::CreateReply;
 #[poise::command(slash_command, prefix_command, track_edits = true)]
 pub async fn stars(ctx: Context<'_>) -> Result<(), Error> {
 	trace!("Running stars command");
+	let octocrab = &ctx.data().octocrab;
 
 	ctx.defer().await?;
 
@@ -15,13 +16,13 @@ pub async fn stars(ctx: Context<'_>) -> Result<(), Error> {
 		if let Ok(count) = storage.launcher_stargazer_count().await {
 			count
 		} else {
-			let count = api::github::get_prism_stargazers_count().await?;
+			let count = api::github::get_prism_stargazers_count(octocrab).await?;
 			storage.cache_launcher_stargazer_count(count).await?;
 			count
 		}
 	} else {
 		trace!("Not caching launcher stargazer count, as we're running without a storage backend");
-		api::github::get_prism_stargazers_count().await?
+		api::github::get_prism_stargazers_count(octocrab).await?
 	};
 
 	let embed = CreateEmbed::new()

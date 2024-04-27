@@ -19,7 +19,7 @@ pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()>
 	);
 	let channel = message.channel_id;
 
-	let log = find_log(message).await;
+	let log = find_log(&data.http_client, message).await;
 
 	if log.is_err() {
 		let embed = CreateEmbed::new()

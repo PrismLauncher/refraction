@@ -9,7 +9,7 @@ pub async fn joke(ctx: Context<'_>) -> Result<(), Error> {
 	trace!("Running joke command");
 
 	ctx.defer().await?;
-	let joke = dadjoke::get_joke().await?;
+	let joke = dadjoke::get_joke(&ctx.data().http_client).await?;
 	ctx.say(joke).await?;
 
 	Ok(())

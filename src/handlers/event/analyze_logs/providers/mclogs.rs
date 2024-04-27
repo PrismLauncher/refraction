@@ -1,4 +1,4 @@
-use crate::api;
+use crate::api::{HttpClient, HttpClientExt};
 
 use std::sync::OnceLock;
 
@@ -21,9 +21,9 @@ impl super::LogProvider for MCLogs {
 		super::get_first_capture(regex, &message.content)
 	}
 
-	async fn fetch(&self, content: &str) -> Result<String> {
+	async fn fetch(&self, http: &HttpClient, content: &str) -> Result<String> {
 		let url = format!("{MCLOGS}{RAW}/{content}");
-		let log = api::text_from_url(&url).await?;
+		let log = http.get_request(&url).await?.text().await?;
 
 		Ok(log)
 	}

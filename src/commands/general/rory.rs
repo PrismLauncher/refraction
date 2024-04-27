@@ -14,7 +14,7 @@ pub async fn rory(
 
 	ctx.defer().await?;
 
-	let rory = rory::get(id).await?;
+	let rory = rory::get(&ctx.data().http_client, id).await?;
 
 	let embed = {
 		let embed = CreateEmbed::new();

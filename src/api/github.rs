@@ -1,18 +1,11 @@
-use std::sync::OnceLock;
-
-use eyre::{Context, OptionExt, Result};
+use eyre::{OptionExt, Result, WrapErr};
 use log::debug;
 use octocrab::Octocrab;
 
-fn octocrab() -> &'static Octocrab {
-	static OCTOCRAB: OnceLock<Octocrab> = OnceLock::new();
-	OCTOCRAB.get_or_init(Octocrab::default)
-}
-
-pub async fn get_latest_prism_version() -> Result<String> {
+pub async fn get_latest_prism_version(octocrab: &Octocrab) -> Result<String> {
 	debug!("Fetching the latest version of Prism Launcher");
 
-	let version = octocrab()
+	let version = octocrab
 		.repos("PrismLauncher", "PrismLauncher")
 		.releases()
 		.get_latest()
@@ -22,10 +15,10 @@ pub async fn get_latest_prism_version() -> Result<String> {
 	Ok(version)
 }
 
-pub async fn get_prism_stargazers_count() -> Result<u32> {
+pub async fn get_prism_stargazers_count(octocrab: &Octocrab) -> Result<u32> {
 	debug!("Fetching Prism Launcher's stargazer count");
 
-	let stargazers_count = octocrab()
+	let stargazers_count = octocrab
 		.repos("PrismLauncher", "PrismLauncher")
 		.get()
 		.await

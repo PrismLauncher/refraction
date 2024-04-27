@@ -30,6 +30,8 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 pub struct Data {
 	config: Config,
 	storage: Option<Storage>,
+	http_client: api::HttpClient,
+	octocrab: Arc<octocrab::Octocrab>,
 }
 
 async fn setup(
@@ -55,7 +57,15 @@ async fn setup(
 		trace!("Redis connection looks good!");
 	}
 
-	let data = Data { config, storage };
+	let http_client = api::HttpClient::default();
+	let octocrab = octocrab::instance();
+
+	let data = Data {
+		config,
+		storage,
+		http_client,
+		octocrab,
+	};
 
 	poise::builtins::register_globally(ctx, &framework.options().commands).await?;
 	info!("Registered global commands!");
@@ -82,7 +92,7 @@ async fn main() -> eyre::Result<()> {
 		serenity::GatewayIntents::non_privileged() | serenity::GatewayIntents::MESSAGE_CONTENT;
 
 	let options = FrameworkOptions {
-		commands: commands::get(),
+		commands: commands::all(),
 
 		on_error: |error| Box::pin(handlers::handle_error(error)),
 

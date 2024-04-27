@@ -1,5 +1,6 @@
+use super::{HttpClient, HttpClientExt};
+
 use eyre::{OptionExt, Result};
-use log::debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -14,14 +15,9 @@ pub struct MinecraftPackageJson {
 const META: &str = "https://meta.prismlauncher.org/v1";
 const MINECRAFT_PACKAGEJSON: &str = "/net.minecraft/package.json";
 
-pub async fn latest_minecraft_version() -> Result<String> {
+pub async fn latest_minecraft_version(http: &HttpClient) -> Result<String> {
 	let url = format!("{META}{MINECRAFT_PACKAGEJSON}");
-
-	debug!("Making request to {url}");
-	let resp = super::client().get(url).send().await?;
-	resp.error_for_status_ref()?;
-
-	let data: MinecraftPackageJson = resp.json().await?;
+	let data: MinecraftPackageJson = http.get_request(&url).await?.json().await?;
 
 	let version = data
 		.recommended

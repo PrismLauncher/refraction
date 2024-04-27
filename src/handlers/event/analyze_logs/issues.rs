@@ -192,19 +192,20 @@ async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 		return Ok(None);
 	};
 
+	let octocrab = &data.octocrab;
 	let version_from_log = captures[0].replace("Prism Launcher version: ", "");
 
 	let latest_version = if let Some(storage) = &data.storage {
 		if let Ok(version) = storage.launcher_version().await {
 			version
 		} else {
-			let version = api::github::get_latest_prism_version().await?;
+			let version = api::github::get_latest_prism_version(octocrab).await?;
 			storage.cache_launcher_version(&version).await?;
 			version
 		}
 	} else {
 		trace!("Not caching launcher version, as we're running without a storage backend");
-		api::github::get_latest_prism_version().await?
+		api::github::get_latest_prism_version(octocrab).await?
 	};
 
 	if version_from_log < latest_version {

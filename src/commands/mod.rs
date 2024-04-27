@@ -32,7 +32,7 @@ module_macro!(moderation);
 
 pub type Command = poise::Command<Data, Error>;
 
-pub fn get() -> Vec<Command> {
+pub fn all() -> Vec<Command> {
 	vec![
 		general!(help),
 		general!(joke),

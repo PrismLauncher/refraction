@@ -1,5 +1,6 @@
+use super::{HttpClient, HttpClientExt};
+
 use eyre::{eyre, OptionExt, Result};
-use log::debug;
 use serde::{Deserialize, Serialize};
 
 const PASTE_GG: &str = "https://api.paste.gg/v1";
@@ -27,11 +28,9 @@ pub struct Files {
 	pub name: Option<String>,
 }
 
-pub async fn files_from(id: &str) -> Result<Response<Files>> {
+pub async fn files_from(http: &HttpClient, id: &str) -> Result<Response<Files>> {
 	let url = format!("{PASTE_GG}{PASTES}/{id}/files");
-	debug!("Making request to {url}");
-
-	let resp: Response<Files> = super::json_from_url(&url).await?;
+	let resp: Response<Files> = http.get_request(&url).await?.json().await?;
 
 	if resp.status == Status::Error {
 		let message = resp
@@ -44,9 +43,13 @@ pub async fn files_from(id: &str) -> Result<Response<Files>> {
 	}
 }
 
-pub async fn get_raw_file(paste_id: &str, file_id: &str) -> eyre::Result<String> {
+pub async fn get_raw_file(
+	http: &HttpClient,
+	paste_id: &str,
+	file_id: &str,
+) -> eyre::Result<String> {
 	let url = format!("{PASTE_GG}{PASTES}/{paste_id}/files/{file_id}/raw");
-	let text = super::text_from_url(&url).await?;
+	let text = http.get_request(&url).await?.text().await?;
 
 	Ok(text)
 }

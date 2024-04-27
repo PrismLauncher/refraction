@@ -1,5 +1,6 @@
+use super::{HttpClient, HttpClientExt};
+
 use eyre::{Context, Result};
-use log::debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -12,16 +13,13 @@ pub struct Response {
 const RORY: &str = "https://rory.cat";
 const PURR: &str = "/purr";
 
-pub async fn get(id: Option<u64>) -> Result<Response> {
+pub async fn get(http: &HttpClient, id: Option<u64>) -> Result<Response> {
 	let target = id.map(|id| id.to_string()).unwrap_or_default();
 	let url = format!("{RORY}{PURR}/{target}");
 
-	debug!("Making request to {url}");
-
-	let resp = super::client().get(url).send().await?;
-	resp.error_for_status_ref()?;
-
-	let data: Response = resp
+	let data: Response = http
+		.get_request(&url)
+		.await?
 		.json()
 		.await
 		.wrap_err("Couldn't parse the rory response!")?;

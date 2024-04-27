@@ -1,4 +1,4 @@
-use crate::api;
+use crate::api::{HttpClient, HttpClientExt};
 
 use std::sync::OnceLock;
 
@@ -21,8 +21,8 @@ impl super::LogProvider for _0x0 {
 			.nth(0)
 	}
 
-	async fn fetch(&self, content: &str) -> Result<String> {
-		let log = api::text_from_url(content).await?;
+	async fn fetch(&self, http: &HttpClient, content: &str) -> Result<String> {
+		let log = http.get_request(content).await?.text().await?;
 
 		Ok(log)
 	}

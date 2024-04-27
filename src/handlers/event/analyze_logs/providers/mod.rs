@@ -1,3 +1,5 @@
+use crate::api::HttpClient;
+
 use std::slice::Iter;
 
 use enum_dispatch::enum_dispatch;
@@ -21,7 +23,7 @@ mod pastebin;
 #[enum_dispatch]
 pub trait LogProvider {
 	async fn find_match(&self, message: &Message) -> Option<String>;
-	async fn fetch(&self, content: &str) -> Result<String>;
+	async fn fetch(&self, http: &HttpClient, content: &str) -> Result<String>;
 }
 
 fn get_first_capture(regex: &Regex, string: &str) -> Option<String> {
@@ -41,7 +43,7 @@ enum Provider {
 }
 
 impl Provider {
-	pub fn interator() -> Iter<'static, Provider> {
+	pub fn iterator() -> Iter<'static, Provider> {
 		static PROVIDERS: [Provider; 6] = [
 			Provider::_0x0st(_0x0st),
 			Provider::Attachment(Attachment),
@@ -54,12 +56,12 @@ impl Provider {
 	}
 }
 
-pub async fn find_log(message: &Message) -> Result<Option<String>> {
-	let providers = Provider::interator();
+pub async fn find_log(http: &HttpClient, message: &Message) -> Result<Option<String>> {
+	let providers = Provider::iterator();
 
 	for provider in providers {
 		if let Some(found) = provider.find_match(message).await {
-			let log = provider.fetch(&found).await?;
+			let log = provider.fetch(http, &found).await?;
 			return Ok(Some(log));
 		}
 	}

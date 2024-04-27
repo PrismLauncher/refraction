@@ -1,10 +1,10 @@
+use crate::{api::HttpClient, utils};
+
 use eyre::Result;
 use poise::serenity_prelude::{Context, CreateAllowedMentions, CreateMessage, Message};
 
-use crate::utils;
-
-pub async fn handle(ctx: &Context, message: &Message) -> Result<()> {
-	let embeds = utils::messages::from_message(ctx, message).await?;
+pub async fn handle(ctx: &Context, http: &HttpClient, message: &Message) -> Result<()> {
+	let embeds = utils::messages::from_message(ctx, http, message).await?;
 
 	if !embeds.is_empty() {
 		let allowed_mentions = CreateAllowedMentions::new().replied_user(false);

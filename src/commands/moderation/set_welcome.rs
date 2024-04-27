@@ -1,6 +1,6 @@
 use std::{fmt::Write, str::FromStr};
 
-use crate::{api, utils, Context, Error};
+use crate::{api::HttpClientExt, utils, Context, Error};
 
 use eyre::Result;
 use log::trace;
@@ -138,7 +138,12 @@ pub async fn set_welcome(
 		let downloaded = attachment.download().await?;
 		String::from_utf8(downloaded)?
 	} else if let Some(url) = url {
-		api::text_from_url(&url).await?
+		ctx.data()
+			.http_client
+			.get_request(&url)
+			.await?
+			.text()
+			.await?
 	} else {
 		ctx.say("A text file or URL must be provided!").await?;
 		return Ok(());

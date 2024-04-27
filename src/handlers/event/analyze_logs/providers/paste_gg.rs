@@ -1,4 +1,4 @@
-use crate::api::paste_gg;
+use crate::api::{paste_gg, HttpClient};
 
 use std::sync::OnceLock;
 
@@ -18,8 +18,8 @@ impl super::LogProvider for PasteGG {
 		super::get_first_capture(regex, &message.content)
 	}
 
-	async fn fetch(&self, content: &str) -> Result<String> {
-		let files = paste_gg::files_from(content).await?;
+	async fn fetch(&self, http: &HttpClient, content: &str) -> Result<String> {
+		let files = paste_gg::files_from(http, content).await?;
 		let result = files
 			.result
 			.ok_or_eyre("Got an empty result from paste.gg!")?;
@@ -30,7 +30,7 @@ impl super::LogProvider for PasteGG {
 			.nth(0)
 			.ok_or_eyre("Couldn't get file id from empty paste.gg response!")?;
 
-		let log = paste_gg::get_raw_file(content, file_id).await?;
+		let log = paste_gg::get_raw_file(http, content, file_id).await?;
 
 		Ok(log)
 	}

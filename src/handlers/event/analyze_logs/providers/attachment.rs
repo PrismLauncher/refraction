@@ -1,8 +1,8 @@
+use crate::api::{HttpClient, HttpClientExt};
+
 use eyre::Result;
 use log::trace;
 use poise::serenity_prelude::Message;
-
-use crate::api;
 
 pub struct Attachment;
 
@@ -21,9 +21,10 @@ impl super::LogProvider for Attachment {
 			.nth(0)
 	}
 
-	async fn fetch(&self, content: &str) -> Result<String> {
-		let attachment = api::bytes_from_url(content).await?;
+	async fn fetch(&self, http: &HttpClient, content: &str) -> Result<String> {
+		let attachment = http.get_request(content).await?.bytes().await?.to_vec();
 		let log = String::from_utf8(attachment)?;
+
 		Ok(log)
 	}
 }

@@ -1,4 +1,8 @@
-use crate::{api, storage::Storage};
+use crate::{
+	api::{self, HttpClient},
+	storage::Storage,
+};
+
 use std::time::Duration;
 
 use eyre::Result;
@@ -8,19 +12,24 @@ use tokio::time::sleep;
 
 const PK_DELAY: Duration = Duration::from_secs(1);
 
-pub async fn is_message_proxied(message: &Message) -> Result<bool> {
+pub async fn is_message_proxied(http: &HttpClient, message: &Message) -> Result<bool> {
 	trace!(
 		"Waiting on PluralKit API for {} seconds",
 		PK_DELAY.as_secs()
 	);
 	sleep(PK_DELAY).await;
 
-	let proxied = api::pluralkit::sender_from(message.id).await.is_ok();
+	let proxied = api::pluralkit::sender_from(http, message.id).await.is_ok();
 
 	Ok(proxied)
 }
 
-pub async fn handle(_: &Context, msg: &Message, storage: &Storage) -> Result<()> {
+pub async fn handle(
+	_: &Context,
+	http: &HttpClient,
+	storage: &Storage,
+	msg: &Message,
+) -> Result<()> {
 	if msg.webhook_id.is_none() {
 		return Ok(());
 	}
@@ -36,7 +45,7 @@ pub async fn handle(_: &Context, msg: &Message, storage: &Storage) -> Result<()>
 	);
 	sleep(PK_DELAY).await;
 
-	if let Ok(sender) = api::pluralkit::sender_from(msg.id).await {
+	if let Ok(sender) = api::pluralkit::sender_from(http, msg.id).await {
 		storage.store_user_plurality(sender).await?;
 	}
 
