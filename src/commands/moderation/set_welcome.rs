@@ -171,12 +171,12 @@ pub async fn set_welcome(
 		channel_id.send_message(ctx, embed).await?;
 	}
 
-	for message in roles_messages {
-		channel_id.send_message(ctx, message).await?;
-	}
-
 	for message in welcome_layout.messages {
 		channel_id.say(ctx, message).await?;
+	}
+
+	for message in roles_messages {
+		channel_id.send_message(ctx, message).await?;
 	}
 
 	if let Some(log_channel) = configured_channels.log_channel_id {
