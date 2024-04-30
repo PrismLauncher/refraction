@@ -1,4 +1,4 @@
-use super::{HttpClient, HttpClientExt};
+use super::HttpClient;
 
 use eyre::Result;
 
