@@ -51,12 +51,17 @@ jobs:
     env:
       REGISTRY: ghcr.io
       USERNAME: ${{ github.actor }}
-      IMAGE_NAME: ${{ github.repository }}
 
     if: github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Determine image name
+        run: |
+          echo "IMAGE_NAME=${REPOSITORY,,}" >> "$GITHUB_ENV"
+        env:
+          REPOSITORY: '${{ github.repository }}'
 
       - name: Download images
         uses: actions/download-artifact@v4

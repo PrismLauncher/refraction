@@ -30,11 +30,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: Create new branch
-        id: branch
-        run: |
-          git switch -c "$PR_BRANCH"
-
       - name: Update flake inputs
         run: |
           pushd nix/dev
@@ -47,26 +42,19 @@ jobs:
             --commit-lock-file \
             --commit-lockfile-summary "nix: update flake.lock"
 
-      - name: Make PR if needed
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          if ! git diff --color=always --exit-code origin/main; then
-            git fetch origin "$PR_BRANCH" || true
-            git push --force-with-lease -u origin "$PR_BRANCH"
+      - name: Create PR
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          base: 'main'
+          branch: 'update-locks'
+          delete-branch: true
+          title: 'chore(nix): update lockfiles'
+          body: 'Automated pull request to update flake locks'
 
-            open_prs="$(gh pr list --base main --head "$PR_BRANCH" | wc -l)"
-            if [ "$open_prs" -eq 0 ]; then
-              gh pr create \
-                --base main \
-                --head "$PR_BRANCH" \
-                --title "chore: update lockfiles" \
-                --fill
-            fi
-          fi
-
-      - name: Enable auto-merge
-        shell: bash
-        run: gh pr merge --auto --squash
-        env:
-          GH_TOKEN: ${{ secrets.MERGE_TOKEN }}
+      - name: Enable Pull Request Automerge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: rebase
