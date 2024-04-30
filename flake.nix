@@ -1,52 +1,31 @@
 {
   description = "Discord bot for Prism Launcher";
 
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    pre-commit-hooks = {
-      url = "github:cachix/pre-commit-hooks.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
   outputs = {
-    flake-parts,
-    pre-commit-hooks,
+    self,
+    nixpkgs,
     ...
-  } @ inputs:
-    flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [
-        pre-commit-hooks.flakeModule
-      ];
+  }: let
+    systems = [
+      "x86_64-linux"
+      "aarch64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
 
-      perSystem = {
-        config,
-        lib,
-        pkgs,
-        ...
-      }: {
-        pre-commit.settings.hooks = {
-          alejandra.enable = true;
-          prettier = {
-            enable = true;
-            excludes = ["flake.lock" "pnpm-lock.yaml"];
-          };
-        };
-        devShells.default = pkgs.mkShell {
-          shellHook = ''
-            ${config.pre-commit.installationScript}
-          '';
-          packages = with pkgs; [nodePackages.pnpm redis];
-        };
-        formatter = pkgs.alejandra;
-      };
+    forAllSystems = fn: nixpkgs.lib.genAttrs systems (system: fn nixpkgs.legacyPackages.${system});
+  in {
+    nixosModules.default = import ./nix/module.nix self;
 
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
+    packages = forAllSystems (pkgs: rec {
+      refraction = pkgs.callPackage ./nix/derivation.nix {inherit self;};
+      default = refraction;
+    });
+
+    overlays.default = _: prev: {
+      refraction = prev.callPackage ./nix/derivation.nix {inherit self;};
     };
+  };
 }

@@ -1,7 +1,6 @@
 ---
 title: Data directories
 color: blue
-aliases: ['dirs', 'locate']
 
 fields:
   - name: Portable (Windows / Linux)
