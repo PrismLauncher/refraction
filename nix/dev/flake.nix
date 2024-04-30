@@ -8,7 +8,7 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
 
-    get-flake.url = "github:ursi/get-flake";
+    get-flake.url = "github:ursi/get-flake/ac54750e3b95dab6ec0726d77f440efe6045bec1";
 
     pre-commit-hooks = {
       url = "github:cachix/pre-commit-hooks.nix";
