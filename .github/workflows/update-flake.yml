@@ -32,12 +32,6 @@ jobs:
 
       - name: Update flake inputs
         run: |
-          pushd nix/dev
-          nix flake update \
-            --commit-lock-file \
-            --commit-lockfile-summary "nix: update dev flake.lock"
-          popd
-
           nix flake update \
             --commit-lock-file \
             --commit-lockfile-summary "nix: update flake.lock"

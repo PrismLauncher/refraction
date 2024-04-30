@@ -53,8 +53,6 @@ jobs:
       - name: Run Clippy
         continue-on-error: true
         run: |
-          set -euo pipefail
-
           cargo clippy \
             --all-features \
             --all-targets \
