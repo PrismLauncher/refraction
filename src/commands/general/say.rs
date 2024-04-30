@@ -16,7 +16,7 @@ pub async fn say(
 	#[description = "the message content"] content: String,
 ) -> Result<(), Error> {
 	let channel = ctx.channel_id();
-	channel.say(ctx, &content).await?;
+	let message = channel.say(ctx, &content).await?;
 	ctx.say("I said what you said!").await?;
 
 	if let Some(channel_id) = ctx.data().config.discord.channels.log_channel_id {
@@ -24,7 +24,11 @@ pub async fn say(
 
 		let embed = CreateEmbed::default()
 			.title("Say command used!")
-			.description(content)
+			.description(format!(
+				"{}\n\n[Jump to message]({})",
+				content,
+				message.link()
+			))
 			.author(author);
 
 		let message = CreateMessage::new().embed(embed);
