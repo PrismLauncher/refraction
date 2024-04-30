@@ -5,7 +5,6 @@ use poise::serenity_prelude::{ActivityData, Context, FullEvent, OnlineStatus};
 use poise::FrameworkContext;
 
 mod analyze_logs;
-mod block_reaction;
 mod delete_on_reaction;
 mod eta;
 mod expand_link;
@@ -74,8 +73,6 @@ pub async fn handle(
 				add_reaction.message_id.to_string(),
 				add_reaction.user_id.unwrap_or_default().to_string()
 			);
-
-			block_reaction::handle(ctx, add_reaction, data).await?;
 			delete_on_reaction::handle(ctx, add_reaction).await?;
 		}
 

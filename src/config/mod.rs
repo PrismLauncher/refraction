@@ -1,5 +1,3 @@
-use eyre::Result;
-
 mod bot;
 mod discord;
 
@@ -17,10 +15,10 @@ impl Config {
 		}
 	}
 
-	pub fn from_env() -> Result<Self> {
+	pub fn new_from_env() -> Self {
 		let bot = bot::Config::from_env();
-		let discord = discord::Config::from_env()?;
+		let discord = discord::Config::from_env();
 
-		Ok(Self::new(bot, discord))
+		Self::new(bot, discord)
 	}
 }

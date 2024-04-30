@@ -1,6 +1,5 @@
 use std::str::FromStr;
 
-use eyre::{Context, Result};
 use log::{info, warn};
 use poise::serenity_prelude::ChannelId;
 
@@ -13,7 +12,6 @@ pub struct RefractionChannels {
 #[derive(Clone, Debug, Default)]
 pub struct Config {
 	pub channels: RefractionChannels,
-	pub days_to_delete_reaction: i64,
 }
 
 impl RefractionChannels {
@@ -24,15 +22,15 @@ impl RefractionChannels {
 		}
 	}
 
-	pub fn from_env() -> Self {
-		let log_channel_id = Self::channel_from_env("DISCORD_LOG_CHANNEL_ID");
+	pub fn new_from_env() -> Self {
+		let log_channel_id = Self::get_channel_from_env("DISCORD_LOG_CHANNEL_ID");
 		if let Some(channel_id) = log_channel_id {
 			info!("Log channel is {channel_id}");
 		} else {
 			warn!("DISCORD_LOG_CHANNEL_ID is empty; this will disable logging in your server.");
 		}
 
-		let welcome_channel_id = Self::channel_from_env("DISCORD_WELCOME_CHANNEL_ID");
+		let welcome_channel_id = Self::get_channel_from_env("DISCORD_WELCOME_CHANNEL_ID");
 		if let Some(channel_id) = welcome_channel_id {
 			info!("Welcome channel is {channel_id}");
 		} else {
@@ -42,7 +40,7 @@ impl RefractionChannels {
 		Self::new(log_channel_id, welcome_channel_id)
 	}
 
-	fn channel_from_env(var: &str) -> Option<ChannelId> {
+	fn get_channel_from_env(var: &str) -> Option<ChannelId> {
 		std::env::var(var)
 			.ok()
 			.and_then(|env_var| ChannelId::from_str(&env_var).ok())
@@ -50,22 +48,13 @@ impl RefractionChannels {
 }
 
 impl Config {
-	pub fn new(channels: RefractionChannels, days_to_delete_reaction: i64) -> Self {
-		Self {
-			channels,
-			days_to_delete_reaction,
-		}
+	pub fn new(channels: RefractionChannels) -> Self {
+		Self { channels }
 	}
 
-	pub fn from_env() -> Result<Self> {
-		let channels = RefractionChannels::from_env();
-		let days_to_delete_reaction = std::env::var("DISCORD_DAYS_TO_DELETE_REACTION")
-			.wrap_err("DISCORD_DAYS_TO_DELETE_REACTION is empty! This variable is required.")?
-			.parse()
-			.wrap_err("DISCORD_DAYS_TO_DELETE_REACTION is not a number!")?;
+	pub fn from_env() -> Self {
+		let channels = RefractionChannels::new_from_env();
 
-		info!("Reactions will be deleted on messages older than {days_to_delete_reaction} days");
-
-		Ok(Self::new(channels, days_to_delete_reaction))
+		Self::new(channels)
 	}
 }
