@@ -1,6 +1,7 @@
 {
   lib,
   stdenv,
+  go,
   rustPlatform,
   darwin,
   self,
@@ -52,6 +53,9 @@ rustPlatform.buildRustPackage {
       panic = "abort";
       strip = "symbols";
     });
+
+  # useful for container images
+  passthru.architecture = go.GOARCH;
 
   meta = with lib; {
     mainProgram = "refraction";
