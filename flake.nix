@@ -83,12 +83,13 @@
         rust-overlay = rust-overlay.packages.${system};
       };
 
-      mkContainerFor = refraction: pkgs.dockerTools.buildLayeredImage {
-        name = "refraction";
-        tag = "latest-${refraction.stdenv.hostPlatform.qemuArch}";
-        config.Cmd = [(lib.getExe refraction)];
-        inherit (refraction) architecture;
-      };
+      mkContainerFor = refraction:
+        pkgs.dockerTools.buildLayeredImage {
+          name = "refraction";
+          tag = "latest-${refraction.stdenv.hostPlatform.qemuArch}";
+          config.Cmd = [(lib.getExe refraction)];
+          inherit (refraction) architecture;
+        };
     in {
       refraction = pkgs.callPackage ./nix/derivation.nix {inherit self;};
 
