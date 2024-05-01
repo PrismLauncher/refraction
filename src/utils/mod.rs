@@ -12,7 +12,6 @@ pub fn embed_author_from_user(user: &User) -> CreateEmbedAuthor {
 pub fn semver_split(version: &str) -> Vec<u32> {
 	version
 		.split('.')
-		.map(|s| s.parse().ok())
-		.flatten()
+		.filter_map(|s| s.parse().ok())
 		.collect::<Vec<u32>>()
 }

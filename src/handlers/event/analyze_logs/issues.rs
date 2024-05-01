@@ -195,7 +195,7 @@ async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 
 	let octocrab = &data.octocrab;
 	let log_version = &captures[1];
-	let log_version_parts = semver_split(&log_version);
+	let log_version_parts = semver_split(log_version);
 
 	let latest_version = if let Some(storage) = &data.storage {
 		if let Ok(version) = storage.launcher_version().await {
