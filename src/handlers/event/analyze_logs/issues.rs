@@ -1,4 +1,4 @@
-use crate::{api, Data};
+use crate::{api, utils::semver_split, Data};
 
 use std::sync::OnceLock;
 
@@ -185,15 +185,17 @@ fn optinotfine(log: &str) -> Issue {
 
 async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 	static OUTDATED_LAUNCHER_REGEX: OnceLock<Regex> = OnceLock::new();
-	let outdated_launcher = OUTDATED_LAUNCHER_REGEX
-		.get_or_init(|| Regex::new("Prism Launcher version: [0-9].[0-9].[0-9]").unwrap());
+	let outdated_launcher = OUTDATED_LAUNCHER_REGEX.get_or_init(|| {
+		Regex::new("Prism Launcher version: ((?:([0-9]+)\\.)?([0-9]+)\\.([0-9]+))").unwrap()
+	});
 
 	let Some(captures) = outdated_launcher.captures(log) else {
 		return Ok(None);
 	};
 
 	let octocrab = &data.octocrab;
-	let version_from_log = captures[0].replace("Prism Launcher version: ", "");
+	let log_version = &captures[1];
+	let log_version_parts = semver_split(&log_version);
 
 	let latest_version = if let Some(storage) = &data.storage {
 		if let Ok(version) = storage.launcher_version().await {
@@ -207,11 +209,16 @@ async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 		trace!("Not caching launcher version, as we're running without a storage backend");
 		api::github::get_latest_prism_version(octocrab).await?
 	};
+	let latest_version_parts = semver_split(&latest_version);
 
-	if version_from_log < latest_version {
+	if log_version_parts.len() != 2
+		|| log_version_parts[0] < latest_version_parts[0]
+		|| (log_version_parts[0] == latest_version_parts[0]
+			&& log_version_parts[1] < latest_version_parts[1])
+	{
 		let issue = (
-          "Outdated Prism Launcher".to_string(),
-          format!("Your installed version is {version_from_log}, while the newest version is {latest_version}.\nPlease update, for more info see https://prismlauncher.org/download/")
+        	"Outdated Prism Launcher".to_string(),
+        	format!("Your installed version is {log_version}, while the newest version is {latest_version}.\nPlease update; for more info see https://prismlauncher.org/download/")
         );
 
 		Ok(Some(issue))
