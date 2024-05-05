@@ -16,12 +16,7 @@ fn tags() -> &'static Vec<Tag> {
 }
 
 /// Send a tag
-#[poise::command(
-	slash_command,
-	prefix_command,
-	track_edits = true,
-	help_text_fn = help
-)]
+#[poise::command(slash_command)]
 pub async fn tag(
 	ctx: Context<'_>,
 	#[description = "the tag to send"] name: Choice,
@@ -77,14 +72,4 @@ pub async fn tag(
 	ctx.send(reply).await?;
 
 	Ok(())
-}
-
-fn help() -> String {
-	let tag_list = tags()
-		.iter()
-		.map(|tag| format!("`{}`", tag.id))
-		.collect::<Vec<String>>()
-		.join(", ");
-
-	format!("Available tags: {tag_list}")
 }

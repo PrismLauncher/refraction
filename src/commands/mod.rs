@@ -34,7 +34,7 @@ pub type Command = poise::Command<Data, Error>;
 
 pub fn all() -> Vec<Command> {
 	vec![
-		general!(help),
+		general!(delete_interaction),
 		general!(joke),
 		general!(members),
 		general!(ping),
