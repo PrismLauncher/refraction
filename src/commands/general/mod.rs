@@ -1,3 +1,4 @@
+pub mod delete_interaction;
 pub mod joke;
 pub mod members;
 pub mod ping;
