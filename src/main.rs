@@ -3,7 +3,8 @@ use std::{sync::Arc, time::Duration};
 use eyre::Context as _;
 use log::{info, trace, warn};
 use poise::{
-	serenity_prelude as serenity, EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
+	serenity_prelude::{self as serenity, CreateAllowedMentions},
+	EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
 };
 use tokio::signal::ctrl_c;
 #[cfg(target_family = "unix")]
@@ -111,6 +112,8 @@ async fn main() -> eyre::Result<()> {
 			)))),
 			..Default::default()
 		},
+
+		allowed_mentions: Some(CreateAllowedMentions::new()),
 
 		..Default::default()
 	};

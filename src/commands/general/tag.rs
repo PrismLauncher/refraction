@@ -6,7 +6,7 @@ use std::sync::OnceLock;
 
 use eyre::eyre;
 use log::trace;
-use poise::serenity_prelude::{Color, CreateEmbed, User};
+use poise::serenity_prelude::{Color, CreateAllowedMentions, CreateEmbed, User};
 use poise::CreateReply;
 
 include!(concat!(env!("OUT_DIR"), "/generated.rs"));
@@ -69,6 +69,7 @@ pub async fn tag(
 
 		if let Some(user) = user {
 			r = r.content(format!("<@{}>", user.id));
+			r = r.allowed_mentions(CreateAllowedMentions::new().users(vec![user.id]));
 		}
 
 		r.embed(embed)
