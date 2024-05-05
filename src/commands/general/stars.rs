@@ -5,7 +5,7 @@ use poise::serenity_prelude::CreateEmbed;
 use poise::CreateReply;
 
 /// Returns GitHub stargazer count
-#[poise::command(slash_command, prefix_command, track_edits = true)]
+#[poise::command(slash_command)]
 pub async fn stars(ctx: Context<'_>) -> Result<(), Error> {
 	trace!("Running stars command");
 	let octocrab = &ctx.data().octocrab;

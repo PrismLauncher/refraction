@@ -1,4 +1,3 @@
-pub mod help;
 pub mod joke;
 pub mod members;
 pub mod ping;
