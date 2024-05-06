@@ -17,14 +17,14 @@ pub async fn delete_interaction(ctx: Context<'_>, message: Message) -> Result<()
 		return Ok(());
 	}
 
-	if !(interaction.user.id == ctx.author().id
-		|| interaction
-			.member
-			.as_ref()
-			.and_then(|m| m.permissions)
-			.map(|p| p.contains(Permissions::MANAGE_MESSAGES))
-			.unwrap_or(false))
-	{
+	let can_manage = interaction
+		.member
+		.as_ref()
+		.and_then(|m| m.permissions)
+		.and_then(|p| p.contains(Permissions::MANAGE_MESSAGES).then_some(true))
+		.is_some();
+
+	if !(interaction.user.id == ctx.author().id || can_manage) {
 		ctx.say("❌ You cannot delete commands run by other users")
 			.await?;
 		return Ok(());
