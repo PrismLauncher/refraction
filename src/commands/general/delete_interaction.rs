@@ -1,4 +1,3 @@
-use eyre::Result;
 use poise::serenity_prelude::{InteractionType, Message, Permissions};
 
 use crate::{Context, Error};
