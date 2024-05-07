@@ -24,7 +24,7 @@ pub async fn delete_interaction(ctx: Context<'_>, message: Message) -> Result<()
 		.and_then(|p| p.contains(Permissions::MANAGE_MESSAGES).then_some(true))
 		.is_some();
 
-	if !(interaction.user.id == ctx.author().id || can_manage) {
+	if interaction.user.id != ctx.author().id && !can_manage {
 		ctx.say("❌ You cannot delete commands run by other users")
 			.await?;
 		return Ok(());
