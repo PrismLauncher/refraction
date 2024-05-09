@@ -22,7 +22,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v10
 
       - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v4
+        uses: DeterminateSystems/magic-nix-cache-action@v5
 
       - name: Build Docker image
         id: build
