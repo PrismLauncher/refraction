@@ -23,7 +23,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v10
 
       - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v4
+        uses: DeterminateSystems/magic-nix-cache-action@v6
 
       - name: Build refraction
         run: nix build --fallback --print-build-logs
@@ -45,7 +45,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v10
 
       - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v4
+        uses: DeterminateSystems/magic-nix-cache-action@v6
 
       - name: Run checks
         run: |
