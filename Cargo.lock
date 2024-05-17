@@ -701,9 +701,9 @@ checksum = "d2fabcfbdc87f4758337ca535fb41a6d701b65693ce38287d856d1674551ec9b"
 
 [[package]]
 name = "gray_matter"
-version = "0.2.6"
+version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1cf2fb99fac0b821a4e61c61abff076324bb0e5c3b4a83815bbc3518a38971ad"
+checksum = "7188a951c53316d94711b3d944c28cf79968685d295cbe782494e8811fc75554"
 dependencies = [
  "serde",
  "serde_json",
