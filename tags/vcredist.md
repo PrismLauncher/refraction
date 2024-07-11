@@ -1,5 +1,5 @@
 ---
-title: vcredist is required for Prism to run Windows
+title: vcredist is required to run Prism on Windows
 color: pink
 ---
 
