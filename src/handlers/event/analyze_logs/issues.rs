@@ -28,6 +28,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		locked_jar,
 		offline_launch,
 		frapi,
+		no_disk_space,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -334,5 +335,16 @@ fn frapi(log: &str) -> Issue {
     );
 
 	let found = log.contains("Cannot invoke \"net.fabricmc.fabric.api.renderer.v1.Renderer.meshBuilder()\"");
+	found.then_some(issue)
+}
+
+fn no_disk_space(log: &str) -> Issue {
+	let issue = (
+        "Out of disk space".to_string(),
+        "You ran out of disk space. You should free up some space on it."
+            .to_string(),
+    );
+
+	let found = log.contains("There is not enough space on the disk");
 	found.then_some(issue)
 }
