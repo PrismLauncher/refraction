@@ -29,6 +29,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		offline_launch,
 		frapi,
 		no_disk_space,
+		java_32_bit,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -346,5 +347,17 @@ fn no_disk_space(log: &str) -> Issue {
     );
 
 	let found = log.contains("There is not enough space on the disk");
+	found.then_some(issue)
+}
+
+fn java_32_bit(log: &str) -> Issue {
+	let issue = (
+        "32 bit Java crash".to_string(),
+        "You are using a 32 bit Java version. Please select 64 bit Java instead.
+		Check `/tag java` for more information."
+            .to_string(),
+    );
+
+	let found = log.contains("Could not reserve enough space for ") || log.contains("Invalid maximum heap size: ");
 	found.then_some(issue)
 }
