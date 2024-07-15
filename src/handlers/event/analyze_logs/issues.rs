@@ -23,6 +23,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		optinotfine,
 		pre_1_12_native_transport_java_9,
 		wrong_java,
+		forge_missing_dependencies,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -270,4 +271,16 @@ fn wrong_java(log: &str) -> Issue {
 
 	log.contains("Java major version is incompatible. Things might break.")
 		.then_some(issue)
+}
+
+fn forge_missing_dependencies(log: &str) -> Issue {
+	let issue = (
+        "Missing mod dependencies".to_string(),
+        "You seem to be missing mod dependencies.
+        Search for `mandatory dependencies` in your log."
+            .to_string(),
+    );
+
+	let found = log.contains("Missing or unsupported mandatory dependencies");
+	found.then_some(issue)
 }
