@@ -30,6 +30,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		frapi,
 		no_disk_space,
 		java_32_bit,
+		intermediary_mappings,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -359,5 +360,17 @@ fn java_32_bit(log: &str) -> Issue {
     );
 
 	let found = log.contains("Could not reserve enough space for ") || log.contains("Invalid maximum heap size: ");
+	found.then_some(issue)
+}
+
+fn intermediary_mappings(log: &str) -> Issue {
+	let issue = (
+        "Wrong Intermediary Mappings version".to_string(),
+        "You are using Intermediary Mappings for the wrong Minecraft version.
+		Please select the right version in `Edit > Version`."
+            .to_string(),
+    );
+
+	let found = log.contains("Mapping source name conflicts detected:");
 	found.then_some(issue)
 }
