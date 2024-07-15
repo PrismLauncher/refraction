@@ -25,6 +25,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		wrong_java,
 		forge_missing_dependencies,
 		legacyjavafixer,
+		locked_jar,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -295,5 +296,17 @@ fn legacyjavafixer(log: &str) -> Issue {
     );
 
 	let found = log.contains("[SEVERE] [ForgeModLoader] Unable to launch\njava.util.ConcurrentModificationException");
+	found.then_some(issue)
+}
+
+fn locked_jar(log: &str) -> Issue {
+	let issue = (
+        "Locked Jars".to_string(),
+        "Something is locking your library jars.
+		To fix this, try rebooting your PC."
+            .to_string(),
+    );
+
+	let found = log.contains("Couldn't extract native jar");
 	found.then_some(issue)
 }
