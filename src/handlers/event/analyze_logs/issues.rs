@@ -166,7 +166,7 @@ fn oom(log: &str) -> Issue {
 		"Allocating more RAM to your instance could help prevent this crash.".to_string(),
 	);
 
-	let found = log.contains("java.lang.OutOfMemoryError") || log.contains("-805306369");
+	let found = log.contains("java.lang.OutOfMemoryError");
 	found.then_some(issue)
 }
 
