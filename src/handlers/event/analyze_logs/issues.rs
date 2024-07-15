@@ -24,6 +24,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		pre_1_12_native_transport_java_9,
 		wrong_java,
 		forge_missing_dependencies,
+		legacyjavafixer,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -282,5 +283,17 @@ fn forge_missing_dependencies(log: &str) -> Issue {
     );
 
 	let found = log.contains("Missing or unsupported mandatory dependencies");
+	found.then_some(issue)
+}
+
+fn legacyjavafixer(log: &str) -> Issue {
+	let issue = (
+        "LegacyJavaFixer".to_string(),
+        "You are using a modern Java version with an old Forge version, which is causing this crash.
+		MinecraftForge provides a coremod to fix this issue, download it [here](https://dist.creeper.host/FTB2/maven/net/minecraftforge/lex/legacyjavafixer/1.0/legacyjavafixer-1.0.jar)."
+            .to_string(),
+    );
+
+	let found = log.contains("[SEVERE] [ForgeModLoader] Unable to launch\njava.util.ConcurrentModificationException");
 	found.then_some(issue)
 }
