@@ -27,6 +27,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		legacyjavafixer,
 		locked_jar,
 		offline_launch,
+		frapi,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -321,5 +322,17 @@ fn offline_launch(log: &str) -> Issue {
     );
 
 	let found = log.contains("(missing)\n");
+	found.then_some(issue)
+}
+
+fn frapi(log: &str) -> Issue {
+	let issue = (
+        "Fabric Rendering API".to_string(),
+        "You are using a mod that needs Indium.
+		Please install it by going to `Edit > Mods > Download Mods`."
+            .to_string(),
+    );
+
+	let found = log.contains("Cannot invoke \"net.fabricmc.fabric.api.renderer.v1.Renderer.meshBuilder()\"");
 	found.then_some(issue)
 }
