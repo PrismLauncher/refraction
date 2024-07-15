@@ -26,6 +26,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		forge_missing_dependencies,
 		legacyjavafixer,
 		locked_jar,
+		offline_launch,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -308,5 +309,17 @@ fn locked_jar(log: &str) -> Issue {
     );
 
 	let found = log.contains("Couldn't extract native jar");
+	found.then_some(issue)
+}
+
+fn offline_launch(log: &str) -> Issue {
+	let issue = (
+        "Missing Libraries".to_string(),
+        "You seem to be missing libraries.
+		To fix this, try doing `Edit > Version > Download All` and then launching your instance again."
+            .to_string(),
+    );
+
+	let found = log.contains("(missing)\n");
 	found.then_some(issue)
 }
