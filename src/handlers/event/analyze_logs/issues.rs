@@ -31,6 +31,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		no_disk_space,
 		java_32_bit,
 		intermediary_mappings,
+		old_forge_new_java,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -372,5 +373,17 @@ fn intermediary_mappings(log: &str) -> Issue {
     );
 
 	let found = log.contains("Mapping source name conflicts detected:");
+	found.then_some(issue)
+}
+
+fn old_forge_new_java(log: &str) -> Issue {
+	let issue = (
+        "Forge on old Minecraft versions".to_string(),
+        "This crash is caused by using an old Forge version with a modern Java version.
+		To fix it, add the flag `-Dfml.ignoreInvalidMinecraftCertificates=true` to `Edit > Settings > Java arguments`."
+            .to_string(),
+    );
+
+	let found = log.contains("add the flag -Dfml.ignoreInvalidMinecraftCertificates=true to the 'JVM settings'");
 	found.then_some(issue)
 }
