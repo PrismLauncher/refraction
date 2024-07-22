@@ -283,11 +283,11 @@ fn wrong_java(log: &str) -> Issue {
 
 fn forge_missing_dependencies(log: &str) -> Issue {
 	let issue = (
-        "Missing mod dependencies".to_string(),
-        "You seem to be missing mod dependencies.
-        Search for `mandatory dependencies` in your log."
-            .to_string(),
-    );
+		"Missing mod dependencies".to_string(),
+		"You seem to be missing mod dependencies.
+		Search for `mandatory dependencies` in your log."
+			.to_string(),
+	);
 
 	let found = log.contains("Missing or unsupported mandatory dependencies");
 	found.then_some(issue)
@@ -295,23 +295,25 @@ fn forge_missing_dependencies(log: &str) -> Issue {
 
 fn legacyjavafixer(log: &str) -> Issue {
 	let issue = (
-        "LegacyJavaFixer".to_string(),
-        "You are using a modern Java version with an old Forge version, which is causing this crash.
+		"LegacyJavaFixer".to_string(),
+		"You are using a modern Java version with an old Forge version, which is causing this crash.
 		MinecraftForge provides a coremod to fix this issue, download it [here](https://dist.creeper.host/FTB2/maven/net/minecraftforge/lex/legacyjavafixer/1.0/legacyjavafixer-1.0.jar)."
-            .to_string(),
+			.to_string(),
     );
 
-	let found = log.contains("[SEVERE] [ForgeModLoader] Unable to launch\njava.util.ConcurrentModificationException");
+	let found = log.contains(
+		"[SEVERE] [ForgeModLoader] Unable to launch\njava.util.ConcurrentModificationException",
+	);
 	found.then_some(issue)
 }
 
 fn locked_jar(log: &str) -> Issue {
 	let issue = (
-        "Locked Jars".to_string(),
-        "Something is locking your library jars.
+		"Locked Jars".to_string(),
+		"Something is locking your library jars.
 		To fix this, try rebooting your PC."
-            .to_string(),
-    );
+			.to_string(),
+	);
 
 	let found = log.contains("Couldn't extract native jar");
 	found.then_some(issue)
@@ -319,11 +321,11 @@ fn locked_jar(log: &str) -> Issue {
 
 fn offline_launch(log: &str) -> Issue {
 	let issue = (
-        "Missing Libraries".to_string(),
-        "You seem to be missing libraries.
+		"Missing Libraries".to_string(),
+		"You seem to be missing libraries.
 		To fix this, try doing `Edit > Version > Download All` and then launching your instance again."
-            .to_string(),
-    );
+			.to_string(),
+	);
 
 	let found = log.contains("(missing)\n");
 	found.then_some(issue)
@@ -331,22 +333,22 @@ fn offline_launch(log: &str) -> Issue {
 
 fn frapi(log: &str) -> Issue {
 	let issue = (
-        "Fabric Rendering API".to_string(),
-        "You are using a mod that needs Indium.
+		"Fabric Rendering API".to_string(),
+		"You are using a mod that needs Indium.
 		Please install it by going to `Edit > Mods > Download Mods`."
-            .to_string(),
-    );
+			.to_string(),
+	);
 
-	let found = log.contains("Cannot invoke \"net.fabricmc.fabric.api.renderer.v1.Renderer.meshBuilder()\"");
+	let found = log
+		.contains("Cannot invoke \"net.fabricmc.fabric.api.renderer.v1.Renderer.meshBuilder()\"");
 	found.then_some(issue)
 }
 
 fn no_disk_space(log: &str) -> Issue {
 	let issue = (
-        "Out of disk space".to_string(),
-        "You ran out of disk space. You should free up some space on it."
-            .to_string(),
-    );
+		"Out of disk space".to_string(),
+		"You ran out of disk space. You should free up some space on it.".to_string(),
+	);
 
 	let found = log.contains("There is not enough space on the disk");
 	found.then_some(issue)
@@ -354,23 +356,24 @@ fn no_disk_space(log: &str) -> Issue {
 
 fn java_32_bit(log: &str) -> Issue {
 	let issue = (
-        "32 bit Java crash".to_string(),
-        "You are using a 32 bit Java version. Please select 64 bit Java instead.
+		"32 bit Java crash".to_string(),
+		"You are using a 32 bit Java version. Please select 64 bit Java instead.
 		Check `/tag java` for more information."
-            .to_string(),
-    );
+			.to_string(),
+	);
 
-	let found = log.contains("Could not reserve enough space for ") || log.contains("Invalid maximum heap size: ");
+	let found = log.contains("Could not reserve enough space for ")
+		|| log.contains("Invalid maximum heap size: ");
 	found.then_some(issue)
 }
 
 fn intermediary_mappings(log: &str) -> Issue {
 	let issue = (
-        "Wrong Intermediary Mappings version".to_string(),
-        "You are using Intermediary Mappings for the wrong Minecraft version.
+		"Wrong Intermediary Mappings version".to_string(),
+		"You are using Intermediary Mappings for the wrong Minecraft version.
 		Please select the right version in `Edit > Version`."
-            .to_string(),
-    );
+			.to_string(),
+	);
 
 	let found = log.contains("Mapping source name conflicts detected:");
 	found.then_some(issue)
@@ -384,6 +387,8 @@ fn old_forge_new_java(log: &str) -> Issue {
             .to_string(),
     );
 
-	let found = log.contains("add the flag -Dfml.ignoreInvalidMinecraftCertificates=true to the 'JVM settings'");
+	let found = log.contains(
+		"add the flag -Dfml.ignoreInvalidMinecraftCertificates=true to the 'JVM settings'",
+	);
 	found.then_some(issue)
 }
