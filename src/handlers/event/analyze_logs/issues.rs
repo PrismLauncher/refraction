@@ -235,7 +235,7 @@ async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 		} else {
 			let issue = (
 				"Outdated Prism Launcher".to_string(),
-				format!("Your installed version is {log_version}, while the newest version is {latest_version}.\nPlease update by pressing the `Update` button in Prism.")
+				format!("Your installed version is {log_version}, while the newest version is {latest_version}.\nPlease update by pressing the `Update` button in the launcher or using your package manager.")
 			);
 
 			Ok(Some(issue))
@@ -331,8 +331,8 @@ fn locked_jar(log: &str) -> Issue {
 fn offline_launch(log: &str) -> Issue {
 	let issue = (
 		"Missing Libraries".to_string(),
-		"You seem to be missing libraries.
-		To fix this, try doing `Edit > Version > Download All` and then launching your instance again."
+		"You seem to be missing libraries. This is usually caused by launching offline before they can be downloaded.
+		To fix this, first ensure you are connected to the internet. Then, try selecting `Edit > Version > Download All` and launching your instance again."
 			.to_string(),
 	);
 
@@ -342,7 +342,7 @@ fn offline_launch(log: &str) -> Issue {
 
 fn frapi(log: &str) -> Issue {
 	let issue = (
-		"Fabric Rendering API".to_string(),
+		"Missing Indium".to_string(),
 		"You are using a mod that needs Indium.
 		Please install it by going to `Edit > Mods > Download Mods`."
 			.to_string(),
