@@ -294,7 +294,7 @@ fn forge_missing_dependencies(log: &str) -> Issue {
 	let issue = (
 		"Missing mod dependencies".to_string(),
 		"You seem to be missing mod dependencies.
-		Search for `mandatory dependencies` in your log."
+		Search for \"mandatory dependencies\" in your log."
 			.to_string(),
 	);
 
@@ -332,7 +332,7 @@ fn offline_launch(log: &str) -> Issue {
 	let issue = (
 		"Missing Libraries".to_string(),
 		"You seem to be missing libraries. This is usually caused by launching offline before they can be downloaded.
-		To fix this, first ensure you are connected to the internet. Then, try selecting `Edit > Version > Download All` and launching your instance again."
+		To fix this, first ensure you are connected to the internet. Then, try selecting Edit > Version > Download All and launching your instance again."
 			.to_string(),
 	);
 
@@ -344,7 +344,7 @@ fn frapi(log: &str) -> Issue {
 	let issue = (
 		"Missing Indium".to_string(),
 		"You are using a mod that needs Indium.
-		Please install it by going to `Edit > Mods > Download Mods`."
+		Please install it by going to Edit > Mods > Download Mods."
 			.to_string(),
 	);
 
@@ -380,7 +380,7 @@ fn intermediary_mappings(log: &str) -> Issue {
 	let issue = (
 		"Wrong Intermediary Mappings version".to_string(),
 		"You are using Intermediary Mappings for the wrong Minecraft version.
-		Please select Change Version while it is selected in `Edit > Version`."
+		Please select Change Version while it is selected in Edit > Version."
 			.to_string(),
 	);
 
@@ -392,7 +392,7 @@ fn old_forge_new_java(log: &str) -> Issue {
 	let issue = (
         "Forge on old Minecraft versions".to_string(),
         "This crash is caused by using an old Forge version with a modern Java version.
-		To fix it, add the flag `-Dfml.ignoreInvalidMinecraftCertificates=true` to `Edit > Settings > Java arguments`."
+		To fix it, add the flag `-Dfml.ignoreInvalidMinecraftCertificates=true` to Edit > Settings > Java arguments."
             .to_string(),
     );
 
