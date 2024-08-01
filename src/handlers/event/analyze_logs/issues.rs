@@ -380,7 +380,7 @@ fn intermediary_mappings(log: &str) -> Issue {
 	let issue = (
 		"Wrong Intermediary Mappings version".to_string(),
 		"You are using Intermediary Mappings for the wrong Minecraft version.
-		Please select the right version in `Edit > Version`."
+		Please select Change Version while it is selected in `Edit > Version`."
 			.to_string(),
 	);
 
