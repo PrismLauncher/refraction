@@ -25,30 +25,15 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v13
 
-      - name: Set Git user info
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-
-      - name: Update flake inputs
-        run: |
-          nix flake update \
-            --commit-lock-file \
-            --commit-lockfile-summary "nix: update flake.lock"
-
-      - name: Create PR
-        id: cpr
-        uses: peter-evans/create-pull-request@v6
+      - name: Update flake.lock
+        id: update
+        uses: DeterminateSystems/update-flake-lock@main
         with:
-          base: 'main'
-          branch: 'update-locks'
-          delete-branch: true
-          title: 'chore(nix): update lockfiles'
-          body: 'Automated pull request to update flake locks'
+          pr-title: "nix: update flake.lock"
 
       - name: Enable Pull Request Automerge
         if: steps.cpr.outputs.pull-request-operation == 'created'
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          pull-request-number: ${{ steps.update.outputs.pull-request-number }}
           merge-method: rebase
