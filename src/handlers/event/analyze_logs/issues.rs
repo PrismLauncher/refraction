@@ -225,21 +225,20 @@ async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 		|| (log_version_parts[0] == latest_version_parts[0]
 			&& log_version_parts[1] < latest_version_parts[1])
 	{
-		if log_version_parts[0] < 8 {
-			let issue = (
+		let issue = if log_version_parts[0] < 8 {
+			(
 				"Outdated Prism Launcher".to_string(),
 				format!("Your installed version is {log_version}, while the newest version is {latest_version}.\nPlease update; for more info see https://prismlauncher.org/download/")
-			);
+			)
 
-			Ok(Some(issue))
 		} else {
-			let issue = (
+			(
 				"Outdated Prism Launcher".to_string(),
 				format!("Your installed version is {log_version}, while the newest version is {latest_version}.\nPlease update by pressing the `Update` button in the launcher or using your package manager.")
-			);
-
-			Ok(Some(issue))
-		}
+			)
+		};
+		
+        Ok(Some(issue))
 	} else {
 		Ok(None)
 	}
