@@ -49,7 +49,7 @@ pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()>
 		if issues.is_empty() {
 			e = e
 				.color(Colors::Green)
-				.description("The automatic check didn't reveal any issues, but it's possible that some issues went unnoticed. Please wait for a volunteer to assist you.");
+				.description("The automatic check didn't reveal any issues, but it's possible that some issues went undetected. Please wait for a volunteer to assist you.");
 		} else {
 			e = e.color(Colors::Red);
 
