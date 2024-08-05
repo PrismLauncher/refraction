@@ -230,15 +230,14 @@ async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 				"Outdated Prism Launcher".to_string(),
 				format!("Your installed version is {log_version}, while the newest version is {latest_version}.\nPlease update; for more info see https://prismlauncher.org/download/")
 			)
-
 		} else {
 			(
 				"Outdated Prism Launcher".to_string(),
 				format!("Your installed version is {log_version}, while the newest version is {latest_version}.\nPlease update by pressing the `Update` button in the launcher or using your package manager.")
 			)
 		};
-		
-        Ok(Some(issue))
+
+		Ok(Some(issue))
 	} else {
 		Ok(None)
 	}
