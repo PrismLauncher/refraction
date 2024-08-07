@@ -3,18 +3,12 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
     {
       self,
       nixpkgs,
-      rust-overlay,
     }:
     let
       inherit (nixpkgs) lib;
@@ -70,19 +64,8 @@
           pkgs = nixpkgsFor.${system};
           packages' = self.packages.${system};
 
-          mkStatic = pkgs.callPackage ./nix/static.nix {
-            inherit (packages') refraction;
-            rust-overlay = rust-overlay.packages.${system};
-          };
-
-          containerize =
-            refraction:
-            pkgs.dockerTools.buildLayeredImage {
-              name = "refraction";
-              tag = "latest-${refraction.passthru.architecture}";
-              config.Cmd = [ (lib.getExe refraction) ];
-              inherit (refraction.passthru) architecture;
-            };
+          mkStatic = pkgs.callPackage ./nix/static.nix { };
+          containerize = pkgs.callPackage ./nix/containerize.nix { };
         in
         {
           refraction = pkgs.callPackage ./nix/package.nix { };
