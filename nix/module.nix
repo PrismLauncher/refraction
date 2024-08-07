@@ -12,7 +12,6 @@ let
   inherit (lib)
     getExe
     literalExpression
-    mdDoc
     mkEnableOption
     mkIf
     mkOption
@@ -27,7 +26,7 @@ in
     package = mkPackageOption self.packages.${pkgs.stdenv.hostPlatform.system} "refraction" { };
 
     user = mkOption {
-      description = mdDoc ''
+      description = ''
         User under which the service should run. If this is the default value,
         the user will be created, with the specified group as the primary
         group.
@@ -40,7 +39,7 @@ in
     };
 
     group = mkOption {
-      description = mdDoc ''
+      description = ''
         Group under which the service should run. If this is the default value,
         the group will be created.
       '';
@@ -52,7 +51,7 @@ in
     };
 
     redisUrl = mkOption {
-      description = mdDoc ''
+      description = ''
         Connection to a redis server. If this needs to include credentials
         that shouldn't be world-readable in the Nix store, set environmentFile
         and override the `REDIS_URL` entry.
@@ -66,7 +65,7 @@ in
     };
 
     environmentFile = mkOption {
-      description = mdDoc ''
+      description = ''
         Environment file as defined in {manpage}`systemd.exec(5)`
       '';
       type = types.nullOr types.path;
