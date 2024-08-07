@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -81,7 +81,7 @@ jobs:
   # Make sure all above jobs finished successfully
   release-gate:
     name: CI Release gate
-    needs: [ build, format, nix ]
+    needs: [build, format, nix]
 
     if: ${{ always() }}
 

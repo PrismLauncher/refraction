@@ -2,7 +2,7 @@ name: Clippy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'Cargo.toml'
       - 'Cargo.lock'
