@@ -44,6 +44,20 @@ jobs:
           if-no-files-found: error
           retention-days: 3
 
+  # Make sure all above jobs finished successfully
+  release-gate:
+    name: Docker Release gate
+    needs: [ build ]
+
+    if: ${{ always() }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Exit with error
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
+
   push:
     name: Push image
     needs: build
