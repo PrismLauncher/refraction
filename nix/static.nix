@@ -4,30 +4,34 @@
   rust-overlay,
   pkgsCross,
 }:
-{ arch }:
 let
-  targets = with pkgsCross; {
+  crossPlatformFor = with pkgsCross; {
     x86_64 = musl64.pkgsStatic;
     aarch64 = aarch64-multiplatform.pkgsStatic;
   };
 
-  getRustcTarget = pkgs: pkgs.stdenv.hostPlatform.rust.rustcTarget;
   toolchain = rust-overlay.rust.minimal.override {
     extensions = [ "rust-std" ];
-    targets = lib.mapAttrsToList (lib.const getRustcTarget) targets;
+    targets = lib.mapAttrsToList (_: pkgs: pkgs.stdenv.hostPlatform.rust.rustcTarget) crossPlatformFor;
   };
 
-  mkRustPlatformWith =
-    pkgs:
+  rustPlatformFor = lib.mapAttrs (
+    _: pkgs:
     pkgs.makeRustPlatform (
       lib.genAttrs [
         "cargo"
         "rustc"
-      ] (lib.const toolchain)
-    );
-  rustPlatforms = lib.mapAttrs (lib.const mkRustPlatformWith) targets;
+      ] (_: toolchain)
+    )
+  ) crossPlatformFor;
 in
-refraction.override {
-  rustPlatform = rustPlatforms.${arch};
+{ arch }:
+(refraction.override {
+  rustPlatform = rustPlatformFor.${arch};
   optimizeSize = true;
-}
+}).overrideAttrs
+  (old: {
+    passthru = old.passthru or { } // {
+      inherit toolchain;
+    };
+  })
