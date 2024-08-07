@@ -85,7 +85,7 @@
             };
         in
         {
-          refraction = pkgs.callPackage ./nix/derivation.nix { inherit self; };
+          refraction = pkgs.callPackage ./nix/package.nix { };
 
           static-x86_64 = mkStatic { arch = "x86_64"; };
           static-aarch64 = mkStatic { arch = "aarch64"; };
@@ -97,7 +97,7 @@
       );
 
       overlays.default = _: prev: {
-        refraction = prev.callPackage ./nix/derivation.nix { inherit self; };
+        refraction = prev.callPackage ./nix/package.nix { };
       };
     };
 }
