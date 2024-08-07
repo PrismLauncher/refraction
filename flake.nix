@@ -8,6 +8,11 @@
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -15,6 +20,7 @@
       self,
       nixpkgs,
       rust-overlay,
+      treefmt-nix,
     }:
     let
       inherit (nixpkgs) lib;
@@ -27,8 +33,13 @@
 
       forAllSystems = lib.genAttrs systems;
       nixpkgsFor = forAllSystems (system: nixpkgs.legacyPackages.${system});
+      treefmtFor = forAllSystems (system: treefmt-nix.lib.evalModule nixpkgsFor.${system} ./treefmt.nix);
     in
     {
+      checks = forAllSystems (system: {
+        treefmt = treefmtFor.${system}.config.build.check self;
+      });
+
       devShells = forAllSystems (
         system:
         let
@@ -38,6 +49,7 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               redis
+              self.formatter.${system}
 
               # linters & formatters
               actionlint
@@ -49,7 +61,7 @@
               rust-analyzer
 
               # nix tools
-              self.formatter.${system}
+              nixfmt-rfc-style
               nil
               statix
             ];
@@ -60,7 +72,7 @@
         }
       );
 
-      formatter = forAllSystems (system: nixpkgsFor.${system}.nixfmt-rfc-style);
+      formatter = forAllSystems (system: treefmtFor.${system}.config.build.wrapper);
 
       nixosModules.default = import ./nix/module.nix self;
 
