@@ -4,15 +4,12 @@
   go,
   rustPlatform,
   darwin,
-  self,
   lto ? true,
   optimizeSize ? false,
 }:
 rustPlatform.buildRustPackage {
   pname = "refraction";
-  version =
-    (lib.importTOML ../Cargo.toml).package.version
-    + "-${self.shortRev or self.dirtyShortRev or "unknown-dirty"}";
+  inherit ((lib.importTOML ../Cargo.toml).package) version;
 
   __structuredAttrs = true;
 
