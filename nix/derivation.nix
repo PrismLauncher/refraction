@@ -11,8 +11,6 @@ rustPlatform.buildRustPackage {
   pname = "refraction";
   inherit ((lib.importTOML ../Cargo.toml).package) version;
 
-  __structuredAttrs = true;
-
   src = lib.fileset.toSource {
     root = ../.;
     fileset = lib.fileset.unions [
@@ -59,14 +57,14 @@ rustPlatform.buildRustPackage {
   # useful for container images
   passthru.architecture = go.GOARCH;
 
-  meta = with lib; {
-    mainProgram = "refraction";
+  meta = {
     description = "Discord bot for Prism Launcher";
     homepage = "https://github.com/PrismLauncher/refraction";
-    license = licenses.gpl3Plus;
-    maintainers = with maintainers; [
+    license = lib.licenses.gpl3Plus;
+    maintainers = with lib.maintainers; [
       getchoo
       Scrumplex
     ];
+    mainProgram = "refraction";
   };
 }
