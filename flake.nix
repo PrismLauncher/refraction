@@ -89,8 +89,8 @@
 
           static-x86_64 = mkStatic { arch = "x86_64"; };
           static-aarch64 = mkStatic { arch = "aarch64"; };
-          container-x86_64 = containerize packages'.static-x86_64;
-          container-aarch64 = containerize packages'.static-aarch64;
+          container-amd64 = containerize packages'.static-x86_64;
+          container-arm64 = containerize packages'.static-aarch64;
 
           default = packages'.refraction;
         }
