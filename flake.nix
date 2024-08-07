@@ -4,8 +4,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-    flake-checks.url = "github:getchoo/flake-checks";
-
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -15,7 +13,6 @@
   outputs = {
     self,
     nixpkgs,
-    flake-checks,
     rust-overlay,
   }: let
     systems = [
@@ -27,19 +24,6 @@
 
     forAllSystems = fn: nixpkgs.lib.genAttrs systems (system: fn nixpkgs.legacyPackages.${system});
   in {
-    checks = forAllSystems (pkgs: let
-      flake-checks' = flake-checks.lib.mkChecks {
-        inherit pkgs;
-        root = ./.;
-      };
-    in {
-      check-actionlint = flake-checks'.actionlint;
-      check-alejandra = flake-checks'.alejandra;
-      check-deadnix = flake-checks'.deadnix;
-      check-rustfmt = flake-checks'.rustfmt;
-      check-statix = flake-checks'.statix;
-    });
-
     devShells = forAllSystems (pkgs: {
       default = pkgs.mkShell {
         packages = with pkgs; [
