@@ -58,6 +58,24 @@
 
       nixosModules.default = import ./nix/module.nix self;
 
+      # For CI
+      legacyPackages = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgsFor.${system};
+        in
+        {
+          clippy-report = pkgs.callPackage ./nix/clippy.nix { inherit (self.packages.${system}) refraction; };
+
+          refraction-debug = (self.packages.${system}.refraction.override { lto = false; }).overrideAttrs (
+            finalAttrs: _: {
+              cargoBuildType = "debug";
+              cargoCheckType = finalAttrs.cargoBuildType;
+            }
+          );
+        }
+      );
+
       packages = forAllSystems (
         system:
         let

@@ -2,7 +2,7 @@ name: Docker
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [ amd64, arm64 ]
+        arch: [amd64, arm64]
 
     runs-on: ubuntu-latest
 
@@ -44,11 +44,25 @@ jobs:
           if-no-files-found: error
           retention-days: 3
 
+  # Make sure all above jobs finished successfully
+  release-gate:
+    name: Docker Release gate
+    needs: [build]
+
+    if: ${{ always() }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Exit with error
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: exit 1
+
   push:
     name: Push image
     needs: build
 
-    if: github.event_name == 'push'
+    if: ${{ github.event_name == 'push' }}
 
     runs-on: ubuntu-latest
 
