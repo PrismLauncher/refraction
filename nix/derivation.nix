@@ -31,19 +31,24 @@ rustPlatform.buildRustPackage {
     lockFile = ../Cargo.lock;
   };
 
-  buildInputs = lib.optionals stdenv.hostPlatform.isDarwin (with darwin.apple_sdk.frameworks; [
-    CoreFoundation
-    Security
-    SystemConfiguration
-  ]);
+  buildInputs = lib.optionals stdenv.hostPlatform.isDarwin (
+    with darwin.apple_sdk.frameworks;
+    [
+      CoreFoundation
+      Security
+      SystemConfiguration
+    ]
+  );
 
-  env = let
-    toRustFlags = lib.mapAttrs' (
-      name:
-        lib.nameValuePair
-        "CARGO_PROFILE_RELEASE_${lib.toUpper (builtins.replaceStrings ["-"] ["_"] name)}"
-    );
-  in
+  env =
+    let
+      toRustFlags = lib.mapAttrs' (
+        name:
+        lib.nameValuePair "CARGO_PROFILE_RELEASE_${
+          lib.toUpper (builtins.replaceStrings [ "-" ] [ "_" ] name)
+        }"
+      );
+    in
     lib.optionalAttrs lto (toRustFlags {
       lto = "thin";
     })
@@ -62,6 +67,9 @@ rustPlatform.buildRustPackage {
     description = "Discord bot for Prism Launcher";
     homepage = "https://github.com/PrismLauncher/refraction";
     license = licenses.gpl3Plus;
-    maintainers = with maintainers; [getchoo Scrumplex];
+    maintainers = with maintainers; [
+      getchoo
+      Scrumplex
+    ];
   };
 }

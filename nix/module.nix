@@ -1,14 +1,15 @@
-self: {
+self:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.services.refraction;
   defaultUser = "refraction";
 
-  inherit
-    (lib)
+  inherit (lib)
     getExe
     literalExpression
     mdDoc
@@ -19,10 +20,11 @@ self: {
     optionals
     types
     ;
-in {
+in
+{
   options.services.refraction = {
     enable = mkEnableOption "refraction";
-    package = mkPackageOption self.packages.${pkgs.stdenv.hostPlatform.system} "refraction" {};
+    package = mkPackageOption self.packages.${pkgs.stdenv.hostPlatform.system} "refraction" { };
 
     user = mkOption {
       description = mdDoc ''
@@ -84,10 +86,8 @@ in {
 
     systemd.services."refraction" = {
       enable = true;
-      wantedBy = ["multi-user.target"];
-      after =
-        ["network.target"]
-        ++ optionals (cfg.redisUrl == "local") ["redis-refraction.service"];
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network.target" ] ++ optionals (cfg.redisUrl == "local") [ "redis-refraction.service" ];
 
       script = ''
         ${getExe cfg.package}
@@ -95,9 +95,10 @@ in {
 
       environment = {
         BOT_REDIS_URL =
-          if cfg.redisUrl == "local"
-          then "unix:${config.services.redis.servers.refraction.unixSocket}"
-          else cfg.redisUrl;
+          if cfg.redisUrl == "local" then
+            "unix:${config.services.redis.servers.refraction.unixSocket}"
+          else
+            cfg.redisUrl;
       };
 
       serviceConfig = {
@@ -141,9 +142,7 @@ in {
         };
       };
 
-      groups = mkIf (cfg.group == defaultUser) {
-        ${defaultUser} = {};
-      };
+      groups = mkIf (cfg.group == defaultUser) { ${defaultUser} = { }; };
     };
   };
 }
