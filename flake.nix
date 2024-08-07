@@ -71,17 +71,17 @@
           packages' = self.packages.${system};
 
           mkStatic = pkgs.callPackage ./nix/static.nix {
-            inherit (self.packages.${pkgs.system}) refraction;
+            inherit (packages') refraction;
             rust-overlay = rust-overlay.packages.${system};
           };
 
-          mkContainerFor =
+          containerize =
             refraction:
             pkgs.dockerTools.buildLayeredImage {
               name = "refraction";
-              tag = "latest-${refraction.stdenv.hostPlatform.qemuArch}";
+              tag = "latest-${refraction.passthru.architecture}";
               config.Cmd = [ (lib.getExe refraction) ];
-              inherit (refraction) architecture;
+              inherit (refraction.passthru) architecture;
             };
         in
         {
@@ -89,8 +89,8 @@
 
           static-x86_64 = mkStatic { arch = "x86_64"; };
           static-aarch64 = mkStatic { arch = "aarch64"; };
-          container-x86_64 = mkContainerFor packages'.static-x86_64;
-          container-aarch64 = mkContainerFor packages'.static-aarch64;
+          container-x86_64 = containerize packages'.static-x86_64;
+          container-aarch64 = containerize packages'.static-aarch64;
 
           default = packages'.refraction;
         }
