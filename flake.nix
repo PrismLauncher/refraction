@@ -17,6 +17,7 @@
       rust-overlay,
     }:
     let
+      inherit (nixpkgs) lib;
       systems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -24,47 +25,49 @@
         "aarch64-darwin"
       ];
 
-      forAllSystems = fn: nixpkgs.lib.genAttrs systems (system: fn nixpkgs.legacyPackages.${system});
+      forAllSystems = lib.genAttrs systems;
+      nixpkgsFor = nixpkgs.legacyPackages;
     in
     {
-      devShells = forAllSystems (pkgs: {
-        default = pkgs.mkShell {
-          packages = with pkgs; [
-            redis
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgsFor.${system};
+        in
+        {
+          default = pkgs.mkShell {
+            packages = with pkgs; [
+              redis
 
-            # linters & formatters
-            actionlint
-            nodePackages.prettier
+              # linters & formatters
+              actionlint
+              nodePackages.prettier
 
-            # rust tools
-            clippy
-            rustfmt
-            rust-analyzer
+              # rust tools
+              clippy
+              rustfmt
+              rust-analyzer
 
-            # nix tools
-            self.formatter.${system}
-            deadnix
-            nil
-            statix
-          ];
+              # nix tools
+              self.formatter.${system}
+              nil
+              statix
+            ];
 
-          inputsFrom = [ self.packages.${pkgs.system}.refraction ];
-          RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
-        };
-      });
+            inputsFrom = [ self.packages.${pkgs.system}.refraction ];
+            RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
+          };
+        }
+      );
 
-      formatter = forAllSystems (pkgs: pkgs.nixfmt-rfc-style);
+      formatter = forAllSystems (system: nixpkgsFor.${system}.nixfmt-rfc-style);
 
       nixosModules.default = import ./nix/module.nix self;
 
       packages = forAllSystems (
-        {
-          lib,
-          pkgs,
-          system,
-          ...
-        }:
+        system:
         let
+          pkgs = nixpkgsFor.${system};
           packages' = self.packages.${system};
 
           mkStatic = pkgs.callPackage ./nix/static.nix {
