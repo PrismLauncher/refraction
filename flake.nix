@@ -30,9 +30,41 @@
       treefmtFor = forAllSystems (system: treefmt-nix.lib.evalModule nixpkgsFor.${system} ./treefmt.nix);
     in
     {
-      checks = forAllSystems (system: {
-        treefmt = treefmtFor.${system}.config.build.check self;
-      });
+      checks = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgsFor.${system};
+          inherit (self.packages.${system}) refraction;
+        in
+        {
+          treefmt = treefmtFor.${system}.config.build.check self;
+          clippy = pkgs.stdenv.mkDerivation {
+            pname = "check-clippy";
+            inherit (refraction)
+              version
+              src
+              cargoDeps
+              buildInputs
+              ;
+
+            nativeBuildInputs = [
+              pkgs.cargo
+              pkgs.clippy
+              pkgs.clippy-sarif
+              pkgs.sarif-fmt
+            ];
+
+            buildPhase = ''
+              cargo clippy \
+                --all-features \
+                --all-targets \
+                --tests \
+                --message-format=json \
+              | clippy-sarif | tee $out | sarif fmt
+            '';
+          };
+        }
+      );
 
       devShells = forAllSystems (
         system:
@@ -89,6 +121,7 @@
 
           default = packages'.refraction;
         }
+        // lib.mapAttrs' (name: lib.nameValuePair "check-${name}") self.checks.${system}
       );
 
       overlays.default = _: prev: {

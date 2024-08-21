@@ -61,12 +61,13 @@ jobs:
       - name: Setup Nix cache
         uses: DeterminateSystems/magic-nix-cache-action@v7
 
-      - name: Run checks
+      - name: Run treefmt
         run: |
-          nix flake check \
-            --all-systems \
-            --print-build-logs \
-            --show-trace
+          nix build --print-build-logs .#check-treefmt
+
+      - name: Build package
+        run: |
+          nix build --print-build-logs .#refraction
 
   # Make sure all above jobs finished successfully
   release-gate:
