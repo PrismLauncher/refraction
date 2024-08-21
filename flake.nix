@@ -2,7 +2,10 @@
   description = "Discord bot for Prism Launcher";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
+    # Inputs below this are optional
+    # You may remove them with `inputs.<name>.follows = ""`
 
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
