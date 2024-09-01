@@ -7,7 +7,7 @@ use regex::Regex;
 
 fn regex() -> &'static Regex {
 	static REGEX: OnceLock<Regex> = OnceLock::new();
-	REGEX.get_or_init(|| Regex::new(r"\beta\b").unwrap())
+	REGEX.get_or_init(|| Regex::new(r"(?i)\beta\b").unwrap())
 }
 
 const MESSAGES: [&str; 16] = [
