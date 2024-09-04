@@ -22,6 +22,12 @@ pub async fn handle(ctx: &Context, thread: &GuildChannel) -> Result<()> {
 		.await
 		.unwrap_or_default()
 		!= "launcher-support"
+		&& thread
+		.parent_id
+		.ok_or_else(|| eyre!("Couldn't get parent ID from thread {}!", thread.name))?
+		.name(ctx)
+		.await
+		.unwrap_or_default()
 		!= "mod-support"
 	{
 		debug!("Not posting onboarding message to threads outside of support");
