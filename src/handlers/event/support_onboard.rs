@@ -21,7 +21,8 @@ pub async fn handle(ctx: &Context, thread: &GuildChannel) -> Result<()> {
 		.name(ctx)
 		.await
 		.unwrap_or_default()
-		!= "support"
+		!= "launcher-support"
+		!= "mod-support
 	{
 		debug!("Not posting onboarding message to threads outside of support");
 		return Ok(());
