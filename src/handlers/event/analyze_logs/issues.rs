@@ -334,7 +334,7 @@ fn offline_launch(log: &str) -> Issue {
 			.to_string(),
 	);
 
-	let found = log.contains("(missing)\n") || log.contains("(missing)\r\n");
+	let found = log.contains("(missing)\n");
 	found.then_some(issue)
 }
 
