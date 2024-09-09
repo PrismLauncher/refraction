@@ -55,14 +55,14 @@ jobs:
 
     steps:
       - name: Exit with error
-        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
         run: exit 1
 
   push:
     name: Push image
     needs: build
 
-    if: github.event_name == 'push'
+    if: ${{ github.event_name == 'push' }}
 
     runs-on: ubuntu-latest
 

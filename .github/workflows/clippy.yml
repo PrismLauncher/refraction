@@ -35,8 +35,9 @@ jobs:
 
       - name: Run clippy
         id: clippy-run
-        run: nix build --print-build-logs .#check-clippy
-          [ -L result ] || ext1
+        run: |
+          nix build --print-build-logs .#check-clippy
+          [ -L result ] || exit 1
           echo "sarif-file=$(readlink -f result)" >> "$GITHUB_OUTPUT"
 
       - name: Upload results
