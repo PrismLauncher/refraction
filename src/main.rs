@@ -58,7 +58,7 @@ async fn setup(
 		trace!("Redis connection looks good!");
 	}
 
-	let http_client = api::HttpClient::default();
+	let http_client = <api::HttpClient as api::HttpClientExt>::default();
 	let octocrab = octocrab::instance();
 
 	let data = Data {
