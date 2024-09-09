@@ -37,35 +37,33 @@
         system:
         let
           pkgs = nixpkgsFor.${system};
-          inherit (self.packages.${system}) refraction;
         in
         {
           treefmt = treefmtFor.${system}.config.build.check self;
-          clippy = pkgs.stdenv.mkDerivation {
-            pname = "check-clippy";
-            inherit (refraction)
-              version
-              src
-              cargoDeps
-              buildInputs
-              ;
 
-            nativeBuildInputs = [
-              pkgs.cargo
+          clippy = self.packages.${system}.refraction.overrideAttrs (oldAttrs: {
+            pname = "check-clippy";
+
+            nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [
               pkgs.clippy
               pkgs.clippy-sarif
               pkgs.sarif-fmt
             ];
 
+            dontInstall = true;
+            doCheck = false;
+            dontFixup = true;
+
             buildPhase = ''
+              runHook preBuild
               cargo clippy \
                 --all-features \
                 --all-targets \
                 --tests \
                 --message-format=json \
-              | clippy-sarif | tee $out | sarif fmt
+              | clippy-sarif | tee $out | sarif-fmt
             '';
-          };
+          });
         }
       );
 
@@ -95,8 +93,8 @@
               statix
             ];
 
-            inputsFrom = [ self.packages.${pkgs.system}.refraction ];
-            RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
+            inputsFrom = [ self.packages.${system}.refraction ];
+            RUST_SRC_PATH = toString pkgs.rustPlatform.rustLibSrc;
           };
         }
       );
@@ -127,8 +125,8 @@
         // lib.mapAttrs' (name: lib.nameValuePair "check-${name}") self.checks.${system}
       );
 
-      overlays.default = _: prev: {
-        refraction = prev.callPackage ./nix/derivation.nix { inherit self; };
+      overlays.default = final: _: {
+        refraction = final.callPackage ./nix/derivation.nix { inherit self; };
       };
     };
 }
