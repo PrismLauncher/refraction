@@ -123,9 +123,9 @@ fn java_option(log: &str) -> Issue {
 
 	if let Some(captures) = vm_option.captures(log) {
 		let title = if &captures[1] == "UseShenandoahGC" {
-			"Wrong Java Arguments"
-		} else {
 			"Java 8 and below don't support ShenandoahGC"
+		} else {
+			"Wrong Java Arguments"
 		};
 		return Some((
 			title.to_string(),
