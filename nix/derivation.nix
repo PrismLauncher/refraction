@@ -4,17 +4,12 @@
   go,
   rustPlatform,
   darwin,
-  self,
   lto ? true,
   optimizeSize ? false,
 }:
 rustPlatform.buildRustPackage {
   pname = "refraction";
-  version =
-    (lib.importTOML ../Cargo.toml).package.version
-    + "-${self.shortRev or self.dirtyShortRev or "unknown-dirty"}";
-
-  __structuredAttrs = true;
+  inherit ((lib.importTOML ../Cargo.toml).package) version;
 
   src = lib.fileset.toSource {
     root = ../.;
@@ -31,19 +26,24 @@ rustPlatform.buildRustPackage {
     lockFile = ../Cargo.lock;
   };
 
-  buildInputs = lib.optionals stdenv.hostPlatform.isDarwin (with darwin.apple_sdk.frameworks; [
-    CoreFoundation
-    Security
-    SystemConfiguration
-  ]);
+  buildInputs = lib.optionals stdenv.hostPlatform.isDarwin (
+    with darwin.apple_sdk.frameworks;
+    [
+      CoreFoundation
+      Security
+      SystemConfiguration
+    ]
+  );
 
-  env = let
-    toRustFlags = lib.mapAttrs' (
-      name:
-        lib.nameValuePair
-        "CARGO_PROFILE_RELEASE_${lib.toUpper (builtins.replaceStrings ["-"] ["_"] name)}"
-    );
-  in
+  env =
+    let
+      toRustFlags = lib.mapAttrs' (
+        name:
+        lib.nameValuePair "CARGO_PROFILE_RELEASE_${
+          lib.toUpper (builtins.replaceStrings [ "-" ] [ "_" ] name)
+        }"
+      );
+    in
     lib.optionalAttrs lto (toRustFlags {
       lto = "thin";
     })
@@ -57,11 +57,14 @@ rustPlatform.buildRustPackage {
   # useful for container images
   passthru.architecture = go.GOARCH;
 
-  meta = with lib; {
-    mainProgram = "refraction";
+  meta = {
     description = "Discord bot for Prism Launcher";
     homepage = "https://github.com/PrismLauncher/refraction";
-    license = licenses.gpl3Plus;
-    maintainers = with maintainers; [getchoo Scrumplex];
+    license = lib.licenses.gpl3Plus;
+    maintainers = with lib.maintainers; [
+      getchoo
+      Scrumplex
+    ];
+    mainProgram = "refraction";
   };
 }

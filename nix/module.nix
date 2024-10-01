@@ -1,17 +1,17 @@
-self: {
+self:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.services.refraction;
   defaultUser = "refraction";
 
-  inherit
-    (lib)
+  inherit (lib)
     getExe
     literalExpression
-    mdDoc
     mkEnableOption
     mkIf
     mkOption
@@ -19,13 +19,14 @@ self: {
     optionals
     types
     ;
-in {
+in
+{
   options.services.refraction = {
     enable = mkEnableOption "refraction";
-    package = mkPackageOption self.packages.${pkgs.stdenv.hostPlatform.system} "refraction" {};
+    package = mkPackageOption self.packages.${pkgs.stdenv.hostPlatform.system} "refraction" { };
 
     user = mkOption {
-      description = mdDoc ''
+      description = ''
         User under which the service should run. If this is the default value,
         the user will be created, with the specified group as the primary
         group.
@@ -38,7 +39,7 @@ in {
     };
 
     group = mkOption {
-      description = mdDoc ''
+      description = ''
         Group under which the service should run. If this is the default value,
         the group will be created.
       '';
@@ -50,7 +51,7 @@ in {
     };
 
     redisUrl = mkOption {
-      description = mdDoc ''
+      description = ''
         Connection to a redis server. If this needs to include credentials
         that shouldn't be world-readable in the Nix store, set environmentFile
         and override the `REDIS_URL` entry.
@@ -64,7 +65,7 @@ in {
     };
 
     environmentFile = mkOption {
-      description = mdDoc ''
+      description = ''
         Environment file as defined in {manpage}`systemd.exec(5)`
       '';
       type = types.nullOr types.path;
@@ -84,10 +85,8 @@ in {
 
     systemd.services."refraction" = {
       enable = true;
-      wantedBy = ["multi-user.target"];
-      after =
-        ["network.target"]
-        ++ optionals (cfg.redisUrl == "local") ["redis-refraction.service"];
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network.target" ] ++ optionals (cfg.redisUrl == "local") [ "redis-refraction.service" ];
 
       script = ''
         ${getExe cfg.package}
@@ -95,9 +94,10 @@ in {
 
       environment = {
         BOT_REDIS_URL =
-          if cfg.redisUrl == "local"
-          then "unix:${config.services.redis.servers.refraction.unixSocket}"
-          else cfg.redisUrl;
+          if cfg.redisUrl == "local" then
+            "unix:${config.services.redis.servers.refraction.unixSocket}"
+          else
+            cfg.redisUrl;
       };
 
       serviceConfig = {
@@ -141,9 +141,7 @@ in {
         };
       };
 
-      groups = mkIf (cfg.group == defaultUser) {
-        ${defaultUser} = {};
-      };
+      groups = mkIf (cfg.group == defaultUser) { ${defaultUser} = { }; };
     };
   };
 }

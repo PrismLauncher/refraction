@@ -2,107 +2,131 @@
   description = "Discord bot for Prism Launcher";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
-    flake-checks.url = "github:getchoo/flake-checks";
+    # Inputs below this are optional
+    # You may remove them with `inputs.<name>.follows = ""`
 
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    flake-checks,
-    rust-overlay,
-  }: let
-    systems = [
-      "x86_64-linux"
-      "aarch64-linux"
-      "x86_64-darwin"
-      "aarch64-darwin"
-    ];
+  outputs =
+    {
+      self,
+      nixpkgs,
+      treefmt-nix,
+    }:
+    let
+      inherit (nixpkgs) lib;
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
 
-    forAllSystems = fn: nixpkgs.lib.genAttrs systems (system: fn nixpkgs.legacyPackages.${system});
-  in {
-    checks = forAllSystems (pkgs: let
-      flake-checks' = flake-checks.lib.mkChecks {
-        inherit pkgs;
-        root = ./.;
+      forAllSystems = lib.genAttrs systems;
+      nixpkgsFor = forAllSystems (system: nixpkgs.legacyPackages.${system});
+      treefmtFor = forAllSystems (system: treefmt-nix.lib.evalModule nixpkgsFor.${system} ./treefmt.nix);
+    in
+    {
+      checks = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgsFor.${system};
+        in
+        {
+          treefmt = treefmtFor.${system}.config.build.check self;
+
+          clippy = self.packages.${system}.refraction.overrideAttrs (oldAttrs: {
+            pname = "check-clippy";
+
+            nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [
+              pkgs.clippy
+              pkgs.clippy-sarif
+              pkgs.sarif-fmt
+            ];
+
+            dontInstall = true;
+            doCheck = false;
+            dontFixup = true;
+
+            buildPhase = ''
+              runHook preBuild
+              cargo clippy \
+                --all-features \
+                --all-targets \
+                --tests \
+                --message-format=json \
+              | clippy-sarif | tee $out | sarif-fmt
+            '';
+          });
+        }
+      );
+
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgsFor.${system};
+        in
+        {
+          default = pkgs.mkShell {
+            packages = with pkgs; [
+              redis
+              self.formatter.${system}
+
+              # linters & formatters
+              actionlint
+              nodePackages.prettier
+
+              # rust tools
+              clippy
+              rustfmt
+              rust-analyzer
+
+              # nix tools
+              nixfmt-rfc-style
+              nil
+              statix
+            ];
+
+            inputsFrom = [ self.packages.${system}.refraction ];
+            RUST_SRC_PATH = toString pkgs.rustPlatform.rustLibSrc;
+          };
+        }
+      );
+
+      formatter = forAllSystems (system: treefmtFor.${system}.config.build.wrapper);
+
+      nixosModules.default = import ./nix/module.nix self;
+
+      packages = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgsFor.${system};
+          packages' = self.packages.${system};
+
+          mkStatic = pkgs.callPackage ./nix/static.nix { };
+          containerize = pkgs.callPackage ./nix/containerize.nix { };
+        in
+        {
+          refraction = pkgs.callPackage ./nix/derivation.nix { };
+
+          static-x86_64 = mkStatic { arch = "x86_64"; };
+          static-aarch64 = mkStatic { arch = "aarch64"; };
+          container-amd64 = containerize packages'.static-x86_64;
+          container-arm64 = containerize packages'.static-aarch64;
+
+          default = packages'.refraction;
+        }
+        // lib.mapAttrs' (name: lib.nameValuePair "check-${name}") self.checks.${system}
+      );
+
+      overlays.default = final: _: {
+        refraction = final.callPackage ./nix/derivation.nix { inherit self; };
       };
-    in {
-      check-actionlint = flake-checks'.actionlint;
-      check-alejandra = flake-checks'.alejandra;
-      check-deadnix = flake-checks'.deadnix;
-      check-rustfmt = flake-checks'.rustfmt;
-      check-statix = flake-checks'.statix;
-    });
-
-    devShells = forAllSystems (pkgs: {
-      default = pkgs.mkShell {
-        packages = with pkgs; [
-          redis
-
-          # linters & formatters
-          actionlint
-          nodePackages.prettier
-
-          # rust tools
-          clippy
-          rustfmt
-          rust-analyzer
-
-          # nix tools
-          self.formatter.${system}
-          deadnix
-          nil
-          statix
-        ];
-
-        inputsFrom = [self.packages.${pkgs.system}.refraction];
-        RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
-      };
-    });
-
-    formatter = forAllSystems (pkgs: pkgs.alejandra);
-
-    nixosModules.default = import ./nix/module.nix self;
-
-    packages = forAllSystems ({
-      lib,
-      pkgs,
-      system,
-      ...
-    }: let
-      packages' = self.packages.${system};
-
-      mkStatic = pkgs.callPackage ./nix/static.nix {
-        inherit (self.packages.${pkgs.system}) refraction;
-        rust-overlay = rust-overlay.packages.${system};
-      };
-
-      mkContainerFor = refraction:
-        pkgs.dockerTools.buildLayeredImage {
-          name = "refraction";
-          tag = "latest-${refraction.stdenv.hostPlatform.qemuArch}";
-          config.Cmd = [(lib.getExe refraction)];
-          inherit (refraction) architecture;
-        };
-    in {
-      refraction = pkgs.callPackage ./nix/derivation.nix {inherit self;};
-
-      static-x86_64 = mkStatic {arch = "x86_64";};
-      static-aarch64 = mkStatic {arch = "aarch64";};
-      container-x86_64 = mkContainerFor packages'.static-x86_64;
-      container-aarch64 = mkContainerFor packages'.static-aarch64;
-
-      default = packages'.refraction;
-    });
-
-    overlays.default = _: prev: {
-      refraction = prev.callPackage ./nix/derivation.nix {inherit self;};
     };
-  };
 }

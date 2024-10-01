@@ -42,7 +42,7 @@ pub async fn handle(
 			// ignore new messages from bots
 			// note: the webhook_id check allows us to still respond to PK users
 			if (new_message.author.bot && new_message.webhook_id.is_none())
-				|| new_message.is_own(ctx)
+				|| (new_message.author == **ctx.cache.current_user())
 			{
 				trace!("Ignoring message {} from bot", new_message.id);
 				return Ok(());
