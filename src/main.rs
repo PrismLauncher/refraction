@@ -85,6 +85,7 @@ async fn main() -> eyre::Result<()> {
 	dotenvy::dotenv().ok();
 	color_eyre::install()?;
 	env_logger::init();
+	rustls::crypto::aws_lc_rs::default_provider().install_default().expect("Couldn't initialize crypto provider");
 
 	let token =
 		std::env::var("DISCORD_BOT_TOKEN").wrap_err("Couldn't find bot token in environment!")?;
