@@ -1233,7 +1233,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4979f22fdb869068da03c9f7528f8297c6fd2606bc3a4affe42e6a823fdb8da4"
 dependencies = [
  "cfg-if",
- "windows-targets 0.48.5",
+ "windows-targets 0.52.6",
 ]
 
 [[package]]
@@ -1392,9 +1392,9 @@ dependencies = [
 
 [[package]]
 name = "octocrab"
-version = "0.41.0"
+version = "0.41.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5dada65f156e4100376ceeaeadae1b4d35ab9cdf4236cfc92fde0d06b930c3b7"
+checksum = "9777748e357cbbd3516a8f8b54976938cd35abf37906f7276b0448ca8cbcbb90"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -1416,7 +1416,7 @@ dependencies = [
  "once_cell",
  "percent-encoding",
  "pin-project",
- "secrecy",
+ "secrecy 0.10.3",
  "serde",
  "serde_json",
  "serde_path_to_error",
@@ -2070,6 +2070,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "secrecy"
+version = "0.10.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e891af845473308773346dc847b2c23ee78fe442e0472ac50e22a18a93d3ae5a"
+dependencies = [
+ "zeroize",
+]
+
+[[package]]
 name = "security-framework"
 version = "2.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2184,7 +2193,7 @@ dependencies = [
  "parking_lot",
  "percent-encoding",
  "reqwest 0.11.27",
- "secrecy",
+ "secrecy 0.8.0",
  "serde",
  "serde_cow",
  "serde_json",
@@ -2752,7 +2761,7 @@ dependencies = [
  "hashbrown 0.14.5",
  "mini-moka",
  "parking_lot",
- "secrecy",
+ "secrecy 0.8.0",
  "serde_json",
  "time",
  "typesize-derive",
