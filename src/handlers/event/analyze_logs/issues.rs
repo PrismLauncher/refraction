@@ -370,7 +370,8 @@ fn java_32_bit(log: &str) -> Issue {
 	);
 
 	let found = log.contains("Could not reserve enough space for ")
-		|| log.contains("Invalid maximum heap size: ");
+		|| log.contains("Invalid maximum heap size: ")
+		|| log.contains("Invalid initial heap size: ");
 	found.then_some(issue)
 }
 
