@@ -109,7 +109,7 @@ pub async fn handle_message(ctx: &Context, message: &Message, data: &Data) -> Re
 				.title("Upload log?")
 				.description(
 					"Discord attachments make it difficult for volunteers to view logs. \
-				 	 Would you like me to upload your log to [mclo.gs](https://mclo.gs/)?",
+				 	 Would you like to upload your log to [mclo.gs](https://mclo.gs/)?",
 				)
 				.color(Colors::Blue),
 		);
