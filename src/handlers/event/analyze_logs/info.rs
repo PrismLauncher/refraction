@@ -24,7 +24,7 @@ fn looks_like_launcher_log(log: &str) -> bool {
 
 	trace!("Guessing whether log is launcher log");
 
-	let qt_log = QT_LOG_REGEX.get_or_init(|| Regex::new(r"\d\.\d{3} [CDFIW] \|").unwrap());
+	let qt_log = QT_LOG_REGEX.get_or_init(|| Regex::new(r"\d+\.\d{3} [CDFIW] \|").unwrap());
 	qt_log.is_match(log)
 }
 
