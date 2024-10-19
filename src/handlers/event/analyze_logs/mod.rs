@@ -74,7 +74,7 @@ pub async fn handle_message(ctx: &Context, message: &Message, data: &Data) -> Re
 	let launcher_log = heuristics::looks_like_launcher_log(&log);
 	let mc_log = !launcher_log && heuristics::looks_like_mc_log(&log);
 
-	debug!("Heuristics: mc_log = {mc_log}, launcher_log = {launcher_log}");
+	debug!("Detections: mc_log = {mc_log}, launcher_log = {launcher_log}");
 
 	let show_analysis = !issues.is_empty() || mc_log;
 	let show_upload_prompt = attachment.is_some() && (mc_log || launcher_log);
@@ -154,18 +154,6 @@ pub async fn handle_component_interaction(
 		return Ok(());
 	}
 
-	// TODO: what is this called? need it to automatically be removed when going out of scope
-	// static ACTIVE_MUTEX_LOCK: OnceLock<Mutex<HashSet<MessageId>>> = OnceLock::new();
-	// let active_mutex = ACTIVE_MUTEX_LOCK.get_or_init(|| Mutex::new(HashSet::new()));
-	//
-	// if !active_mutex.lock().unwrap().insert(interaction.message.id) {
-	// 	debug!(
-	// 		"Already handling upload button {}; returning",
-	// 		interaction.message.id
-	// 	);
-	// 	return Ok(());
-	// }
-
 	let mut embeds: Vec<CreateEmbed> = interaction
 		.message
 		.embeds
@@ -173,25 +161,38 @@ pub async fn handle_component_interaction(
 		.map(|embed| CreateEmbed::from(embed.to_owned()))
 		.collect();
 
-	if yes {
-		// for some reason Discord never sends us the referenced message, only its id
-		let message_reference = interaction
-			.message
-			.message_reference
-			.as_ref()
-			.ok_or_eyre("Missing message reference")?;
-		let referenced_message = ctx
-			.http
-			.get_message(
-				message_reference.channel_id,
-				message_reference
-					.message_id
-					.ok_or_eyre("Reference missing message ID")?,
-			)
-			.await?;
+	// for some reason Discord never sends us the referenced message, only its id
+	let message_reference = interaction
+		.message
+		.message_reference
+		.as_ref()
+		.ok_or_eyre("Missing message reference")?;
 
+	let referenced_message = ctx
+		.http
+		.get_message(
+			message_reference.channel_id,
+			message_reference
+				.message_id
+				.ok_or_eyre("Reference missing message ID")?,
+		)
+		.await;
+
+	let Ok(referenced_message) = referenced_message else {
+		// TODO: make the bot delete its response when the initial message is deleted
+		debug!("Ignoring component interaction on reply to deleted message");
+		return Ok(());
+	};
+
+	// prevent other members from clicking the buttons
+	if interaction.user.id != referenced_message.author.id {
+		debug!("Ignoring component interaction by {} on reply to message by {}", interaction.user.id, referenced_message.author.id);
+		return Ok(());
+	}
+
+	if yes {
 		let first_attachment = first_text_attachment(&referenced_message)
-			.ok_or_eyre("Log attachment disappeared (should not be possible)")?;
+			.ok_or_eyre("Log attachment disappeared - should not be possible!")?;
 		let body = data
 			.http_client
 			.get_request(&first_attachment.url)
@@ -222,7 +223,6 @@ pub async fn handle_component_interaction(
 				)
 				.await?;
 
-			// active_mutex.lock().unwrap().remove(&interaction.message.id);
 			return Err(eyre!("Failed to upload log: {}", &error));
 		}
 
@@ -256,8 +256,6 @@ pub async fn handle_component_interaction(
 			)
 			.await?;
 	}
-
-	// active_mutex.lock().unwrap().remove(&interaction.message.id);
 
 	Ok(())
 }
