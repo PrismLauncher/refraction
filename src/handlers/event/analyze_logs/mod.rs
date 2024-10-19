@@ -1,8 +1,3 @@
-use std::{
-	collections::HashSet,
-	sync::{Mutex, OnceLock},
-};
-
 use crate::{
 	api::{mclogs, HttpClientExt},
 	consts::Colors,
@@ -114,8 +109,11 @@ pub async fn handle_message(ctx: &Context, message: &Message, data: &Data) -> Re
 		message = message.add_embed(
 			CreateEmbed::new()
 				.title("Upload log?")
-				.color(Colors::Blue)
-				.description("Discord attachments make it difficult for volunteers to view logs. Would you like me to upload your log to [mclo.gs](https://mclo.gs/)?"),
+				.description(
+					"Discord attachments make it difficult for volunteers to view logs. \
+				 	 Would you like me to upload your log to [mclo.gs](https://mclo.gs/)?",
+				)
+				.color(Colors::Blue),
 		);
 		message = message
 			.button(
@@ -186,7 +184,10 @@ pub async fn handle_component_interaction(
 
 	// prevent other members from clicking the buttons
 	if interaction.user.id != referenced_message.author.id {
-		debug!("Ignoring component interaction by {} on reply to message by {}", interaction.user.id, referenced_message.author.id);
+		debug!(
+			"Ignoring component interaction by {} on reply to message by {}",
+			interaction.user.id, referenced_message.author.id
+		);
 		return Ok(());
 	}
 
@@ -216,8 +217,8 @@ pub async fn handle_component_interaction(
 							.embed(
 								CreateEmbed::new()
 									.title("Upload failed")
-									.color(Colors::Red)
-									.description(&error),
+									.description(&error)
+									.color(Colors::Red),
 							),
 					),
 				)
@@ -234,15 +235,43 @@ pub async fn handle_component_interaction(
 
 		embeds[length - 1] = CreateEmbed::new()
 			.title("Uploaded log")
-			.color(Colors::Blue)
-			.description(url);
+			.description(url)
+			.color(Colors::Blue);
+
+		let display_upload_guide =
+			!heuristics::looks_like_launcher_log(&body) && heuristics::looks_like_mc_log(&body);
+
+		if display_upload_guide {
+			interaction
+				.create_response(
+					ctx,
+					CreateInteractionResponse::Message(
+						CreateInteractionResponseMessage::new()
+							.ephemeral(true)
+							.embed(
+								CreateEmbed::new()
+									.title("Tip")
+									.description(
+										"Logs can be uploaded directly within the launcher.",
+									)
+									.color(Colors::Yellow)
+									.image("https://cdn.discordapp.com/attachments/1031694870756204566/1156971972232740874/image.png"),
+							),
+					),
+				)
+				.await?;
+		} else {
+			interaction
+				.create_response(ctx, CreateInteractionResponse::Acknowledge)
+				.await?;
+		}
 	} else {
 		embeds.pop();
-	}
 
-	interaction
-		.create_response(ctx, CreateInteractionResponse::Acknowledge)
-		.await?;
+		interaction
+			.create_response(ctx, CreateInteractionResponse::Acknowledge)
+			.await?;
+	}
 
 	if embeds.len() == 0 {
 		interaction.message.delete(ctx).await?;

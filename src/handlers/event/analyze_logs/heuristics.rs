@@ -41,8 +41,9 @@ pub fn looks_like_mc_log(log: &str) -> bool {
 		return true;
 	}
 
-	let log4j = LOG4J_REGEX
-		.get_or_init(|| Regex::new(r"\[\d{2}:\d{2}:\d{2}\] \[.+?/(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)\] ").unwrap());
+	let log4j = LOG4J_REGEX.get_or_init(|| {
+		Regex::new(r"\[\d{2}:\d{2}:\d{2}\] \[.+?/(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)\] ").unwrap()
+	});
 
 	if log4j.is_match(&log) {
 		return true;
