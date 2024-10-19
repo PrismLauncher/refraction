@@ -3,7 +3,23 @@ use std::sync::OnceLock;
 use log::trace;
 use regex::Regex;
 
-pub fn looks_like_launcher_log(log: &str) -> bool {
+// in future, we can add extra data to display in log analysis like Java version
+pub enum Info {
+	Game,
+	Launcher
+}
+
+pub fn find(log: &str) -> Option<Info> {
+	if looks_like_launcher_log(log) { // launcher logs can sometimes seem like a game log
+		Some(Info::Launcher)
+	} else if looks_like_game_log(log) {
+		Some(Info::Game)
+	} else {
+		None
+	}
+}
+
+fn looks_like_launcher_log(log: &str) -> bool {
 	static QT_LOG_REGEX: OnceLock<Regex> = OnceLock::new();
 
 	trace!("Guessing whether log is launcher log");
@@ -12,7 +28,7 @@ pub fn looks_like_launcher_log(log: &str) -> bool {
 	qt_log.is_match(log)
 }
 
-pub fn looks_like_mc_log(log: &str) -> bool {
+fn looks_like_game_log(log: &str) -> bool {
 	static LOG4J_REGEX: OnceLock<Regex> = OnceLock::new();
 
 	trace!("Guessing whether log is Minecraft log");

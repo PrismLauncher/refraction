@@ -7,6 +7,7 @@ use crate::{
 
 use color_eyre::owo_colors::OwoColorize;
 use eyre::{eyre, OptionExt, Result};
+use info::{find, Info};
 use log::{debug, trace};
 use poise::serenity_prelude::{
 	ButtonStyle, ComponentInteraction, Context, CreateAllowedMentions, CreateButton, CreateEmbed,
@@ -14,7 +15,7 @@ use poise::serenity_prelude::{
 	Message, MessageId, MessageType,
 };
 
-mod heuristics;
+mod info;
 mod issues;
 mod providers;
 
@@ -66,13 +67,10 @@ pub async fn handle_message(ctx: &Context, message: &Message, data: &Data) -> Re
 	};
 
 	let issues = issues::find(&log, data).await?;
-	let launcher_log = heuristics::looks_like_launcher_log(&log);
-	let mc_log = !launcher_log && heuristics::looks_like_mc_log(&log);
+	let info = info::find(&log);
 
-	debug!("Detections: mc_log = {mc_log}, launcher_log = {launcher_log}");
-
-	let show_analysis = !issues.is_empty() || mc_log;
-	let show_upload_prompt = attachment.is_some() && (mc_log || launcher_log);
+	let show_analysis = !issues.is_empty() || matches!(info, Some(Info::Game));
+	let show_upload_prompt = attachment.is_some() && info.is_some();
 
 	if !show_analysis && !show_upload_prompt {
 		debug!("Found log but there is nothing to respond with");
@@ -238,10 +236,7 @@ pub async fn handle_component_interaction(
 			.description(url)
 			.color(Colors::Blue);
 
-		let display_upload_guide =
-			!heuristics::looks_like_launcher_log(&body) && heuristics::looks_like_mc_log(&body);
-
-		if display_upload_guide {
+		if matches!(info::find(&body), Some(Info::Game)) {
 			interaction
 				.create_response(
 					ctx,
