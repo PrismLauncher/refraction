@@ -5,14 +5,13 @@ use crate::{
 	Data,
 };
 
-use color_eyre::owo_colors::OwoColorize;
 use eyre::{eyre, OptionExt, Result};
-use info::{find, Info};
+use info::Info;
 use log::{debug, trace};
 use poise::serenity_prelude::{
 	ButtonStyle, ComponentInteraction, Context, CreateAllowedMentions, CreateButton, CreateEmbed,
 	CreateInteractionResponse, CreateInteractionResponseMessage, CreateMessage, EditMessage,
-	Message, MessageId, MessageType,
+	Message, MessageType,
 };
 
 mod info;
@@ -49,21 +48,17 @@ pub async fn handle_message(ctx: &Context, message: &Message, data: &Data) -> Re
 
 	let attachment = first_text_attachment(message);
 
-	let log = match log {
-		Some(log) => log,
-		None => match attachment {
-			Some(attachment) => {
-				data.http_client
-					.get_request(&attachment.url)
-					.await?
-					.text()
-					.await?
-			}
-			None => {
-				debug!("No log found in message! Skipping analysis");
-				return Ok(());
-			}
-		},
+	let log = if let Some(log) = log {
+		log
+	} else if let Some(attachment) = attachment {
+		data.http_client
+			.get_request(&attachment.url)
+			.await?
+			.text()
+			.await?
+	} else {
+		debug!("No log found in message! Skipping analysis");
+		return Ok(());
 	};
 
 	let issues = issues::find(&log, data).await?;
@@ -268,7 +263,7 @@ pub async fn handle_component_interaction(
 			.await?;
 	}
 
-	if embeds.len() == 0 {
+	if embeds.is_empty() {
 		interaction.message.delete(ctx).await?;
 	} else {
 		ctx.http

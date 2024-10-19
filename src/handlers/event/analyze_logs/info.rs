@@ -6,11 +6,12 @@ use regex::Regex;
 // in future, we can add extra data to display in log analysis like Java version
 pub enum Info {
 	Game,
-	Launcher
+	Launcher,
 }
 
 pub fn find(log: &str) -> Option<Info> {
-	if looks_like_launcher_log(log) { // launcher logs can sometimes seem like a game log
+	if looks_like_launcher_log(log) {
+		// launcher logs can sometimes seem like a game log
 		Some(Info::Launcher)
 	} else if looks_like_game_log(log) {
 		Some(Info::Game)
@@ -61,7 +62,7 @@ fn looks_like_game_log(log: &str) -> bool {
 		Regex::new(r"\[\d{2}:\d{2}:\d{2}\] \[.+?/(FATAL|ERROR|WARN|INFO|DEBUG|TRACE)\] ").unwrap()
 	});
 
-	if log4j.is_match(&log) {
+	if log4j.is_match(log) {
 		return true;
 	}
 

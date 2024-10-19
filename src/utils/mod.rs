@@ -17,13 +17,9 @@ pub fn semver_split(version: &str) -> Vec<u32> {
 }
 
 pub fn first_text_attachment(message: &Message) -> Option<&Attachment> {
-	message
-		.attachments
-		.iter()
-		.filter(|a| {
-			a.content_type
-				.as_ref()
-				.is_some_and(|content_type| content_type.starts_with("text/"))
-		})
-		.nth(0)
+	message.attachments.iter().find(|a| {
+		a.content_type
+			.as_ref()
+			.is_some_and(|content_type| content_type.starts_with("text/"))
+	})
 }

@@ -1,4 +1,4 @@
-use crate::api::{mclogs::raw_log, HttpClient, HttpClientExt};
+use crate::api::{mclogs::raw_log, HttpClient};
 
 use std::sync::OnceLock;
 
@@ -19,6 +19,6 @@ impl super::LogProvider for MCLogs {
 	}
 
 	async fn fetch(&self, http: &HttpClient, content: &str) -> Result<String> {
-		Ok(raw_log(&http, content).await?)
+		raw_log(http, content).await
 	}
 }

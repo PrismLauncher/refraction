@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use eyre::{eyre, OptionExt, Result};
+use eyre::Result;
 use serde::{Deserialize, Serialize};
 
 use super::{HttpClient, HttpClientExt};
