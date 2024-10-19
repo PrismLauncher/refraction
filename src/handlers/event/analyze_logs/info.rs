@@ -34,7 +34,7 @@ fn looks_like_game_log(log: &str) -> bool {
 
 	trace!("Guessing whether log is Minecraft log");
 
-	if log.contains("Minecraft process ID: ") {
+	if log.contains("Prism Launcher version: ") || log.contains("Minecraft process ID: ") {
 		return true;
 	}
 
