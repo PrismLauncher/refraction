@@ -32,6 +32,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		java_32_bit,
 		intermediary_mappings,
 		old_forge_new_java,
+		checksum_mismatch,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -398,5 +399,17 @@ fn old_forge_new_java(log: &str) -> Issue {
 	let found = log.contains(
 		"add the flag -Dfml.ignoreInvalidMinecraftCertificates=true to the 'JVM settings'",
 	);
+	found.then_some(issue)
+}
+
+fn checksum_mismatch(log: &str) -> Issue {
+	let issue = (
+        "Outdated cached files".to_string(),
+        "It looks like you need to delete cached files.
+		To do that, press Folders ⟶ View Launcher Root Folder, and **after closing the launcher** delete the folder named \"meta\"."
+            .to_string(),
+    );
+
+	let found = log.contains("Checksum mismatch, download is bad.");
 	found.then_some(issue)
 }
