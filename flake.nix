@@ -80,11 +80,13 @@
           pkgs = nixpkgsFor.${system};
           packages' = self.packages.${system};
 
+          refractionPackages = lib.makeScope pkgs.newScope (lib.flip self.overlays.default pkgs);
+
           mkStatic = pkgs.callPackage ./nix/static.nix { };
           containerize = pkgs.callPackage ./nix/containerize.nix { };
         in
         {
-          refraction = pkgs.callPackage ./nix/package.nix { };
+          inherit (refractionPackages) refraction;
 
           static-x86_64 = mkStatic { arch = "x86_64"; };
           static-aarch64 = mkStatic { arch = "aarch64"; };
@@ -95,8 +97,8 @@
         }
       );
 
-      overlays.default = _: prev: {
-        refraction = prev.callPackage ./nix/package.nix { };
+      overlays.default = final: _: {
+        refraction = final.callPackage ./nix/package.nix { };
       };
     };
 }
