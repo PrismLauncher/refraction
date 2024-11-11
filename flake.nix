@@ -21,6 +21,29 @@
       nixpkgsFor = nixpkgs.legacyPackages;
     in
     {
+      checks = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgsFor.${system};
+          mkCheck =
+            name: deps: script:
+            pkgs.runCommand name { nativeBuildInputs = deps; } ''
+              ${script}
+              touch $out
+            '';
+        in
+        {
+          actionlint = mkCheck "check-actionlint" [ pkgs.actionlint ] "actionlint ${./.github/workflows}/*";
+          deadnix = mkCheck "check-deadnix" [ pkgs.deadnix ] "deadnix --fail ${self}";
+          statix = mkCheck "check-statix" [ pkgs.statix ] "statix check ${self}";
+          nixfmt = mkCheck "check-nixfmt" [ pkgs.nixfmt-rfc-style ] "nixfmt --check ${self}";
+          rustfmt = mkCheck "check-rustfmt" [
+            pkgs.cargo
+            pkgs.rustfmt
+          ] "cd ${self} && cargo fmt -- --check";
+        }
+      );
+
       devShells = forAllSystems (
         system:
         let
