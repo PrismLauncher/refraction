@@ -38,7 +38,7 @@ rustPlatform.buildRustPackage rec {
     RUSTFLAGS = toRustFlags (
       lib.optionalAttrs lto {
         lto = "thin";
-        embed-bicode = "yes";
+        embed-bitcode = "yes";
       }
       // lib.optionalAttrs optimizeSize {
         codegen-units = "1";
