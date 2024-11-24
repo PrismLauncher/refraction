@@ -15,21 +15,18 @@ jobs:
       contents: write
       pull-requests: write
 
-    env:
-      PR_BRANCH: 'update-lockfiles'
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v13
+        uses: DeterminateSystems/nix-installer-action@v16
 
       - name: Update flake.lock
         id: update
-        uses: DeterminateSystems/update-flake-lock@main
+        uses: DeterminateSystems/update-flake-lock@v24
         with:
-          pr-title: "nix: update flake.lock"
+          pr-title: 'nix: update flake.lock'
 
       - name: Enable Pull Request Automerge
         uses: peter-evans/enable-pull-request-automerge@v3

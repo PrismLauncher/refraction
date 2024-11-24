@@ -2,27 +2,30 @@ name: Docker
 
 on:
   push:
-    branches: ['main']
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
 jobs:
   build:
     name: Build image
-    runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
-        arch: [x86_64, aarch64]
+        arch: [amd64, arm64]
+
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v13
+        uses: DeterminateSystems/nix-installer-action@v16
 
       - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v7
+        uses: DeterminateSystems/magic-nix-cache-action@v8
 
       - name: Build Docker image
         id: build
@@ -41,10 +44,26 @@ jobs:
           if-no-files-found: error
           retention-days: 3
 
+  # Make sure all above jobs finished successfully
+  release-gate:
+    name: Docker Release gate
+    needs: [build]
+
+    if: ${{ always() }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Exit with error
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: exit 1
+
   push:
     name: Push image
-
     needs: build
+
+    if: ${{ github.event_name == 'push' }}
+
     runs-on: ubuntu-latest
 
     permissions:
@@ -54,16 +73,15 @@ jobs:
       REGISTRY: ghcr.io
       USERNAME: ${{ github.actor }}
 
-    if: github.event_name == 'push'
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Determine image name
         run: |
           echo "IMAGE_NAME=${REPOSITORY,,}" >> "$GITHUB_ENV"
         env:
-          REPOSITORY: '${{ github.repository }}'
+          REPOSITORY: ${{ github.repository }}
 
       - name: Download images
         uses: actions/download-artifact@v4
@@ -83,15 +101,15 @@ jobs:
         run: |
           set -eu
 
-          architectures=("x86_64" "aarch64")
+          architectures=("amd64" "arm64")
           for arch in "${architectures[@]}"; do
             docker load < images/container-"$arch"/*.tar.gz
             docker tag refraction:latest-"$arch" "$TAG"-"$arch"
-            docker push ${{ env.TAG }}-"$arch"
+            docker push "$TAG"-"$arch"
           done
 
           docker manifest create "$TAG" \
-            --amend "$TAG"-x86_64 \
-            --amend "$TAG"-aarch64
+            --amend "$TAG"-amd64 \
+            --amend "$TAG"-arm64
 
           docker manifest push "$TAG"
