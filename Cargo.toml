@@ -22,8 +22,8 @@ env_logger = "0.11.3"
 eyre = "0.6.12"
 log = "0.4.21"
 poise = "0.6.1"
-octocrab = "0.39.0"
-redis = { version = "0.26.0", features = ["tokio-comp", "tokio-rustls-comp"] }
+octocrab = "0.42.0"
+redis = { version = "0.27.0", features = ["tokio-comp", "tokio-rustls-comp"] }
 regex = "1.10.4"
 reqwest = { version = "0.12.4", default-features = false, features = [
 	"rustls-tls",
@@ -36,6 +36,7 @@ tokio = { version = "1.37.0", features = [
 	"rt-multi-thread",
 	"signal",
 ] }
+rustls = "0.23.13"
 
 [lints.rust]
 unsafe_code = "forbid"

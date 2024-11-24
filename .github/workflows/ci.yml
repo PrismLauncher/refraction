@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            use-nix: true
+          - os: windows-latest
+            use-nix: false
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        if: ${{ !matrix.use-nix }}
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Install Nix
+        if: ${{ matrix.use-nix }}
+        uses: DeterminateSystems/nix-installer-action@v16
+
+      - name: Setup Nix cache
+        if: ${{ matrix.use-nix }}
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Build
+        if: ${{ !matrix.use-nix }}
+        run: cargo build --locked
+
+      - name: Build
+        if: ${{ matrix.use-nix }}
+        run: nix build --print-build-logs .#refraction-debug
+
+  flake:
+    name: Flake checks
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v16
+
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Run checks
+        run: |
+          nix flake check --print-build-logs --show-trace
+
+  # Make sure all above jobs finished successfully
+  release-gate:
+    name: CI Release gate
+    needs: [build, flake]
+
+    if: ${{ always() }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Exit with error
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: exit 1

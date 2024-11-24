@@ -41,6 +41,8 @@ pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()>
 		return Ok(());
 	};
 
+	let log = log.replace("\r\n", "\n");
+
 	let issues = issues::find(&log, data).await?;
 
 	let embed = {

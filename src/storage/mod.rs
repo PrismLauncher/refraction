@@ -35,7 +35,7 @@ impl Storage {
 
 		let mut con = self.client.get_multiplexed_async_connection().await?;
 		// Just store some value. We only care about the presence of this key
-		con.set_ex(key, 0, 7 * 24 * 60 * 60).await?; // 1 week
+		() = con.set_ex(key, 0, 7 * 24 * 60 * 60).await?; // 1 week
 
 		Ok(())
 	}
@@ -54,7 +54,8 @@ impl Storage {
 		debug!("Caching launcher version as {version}");
 
 		let mut con = self.client.get_multiplexed_async_connection().await?;
-		con.set_ex(LAUNCHER_VERSION_KEY, version, 24 * 60 * 60)
+		() = con
+			.set_ex(LAUNCHER_VERSION_KEY, version, 24 * 60 * 60)
 			.await?; // 1 day
 
 		Ok(())
@@ -73,7 +74,8 @@ impl Storage {
 		debug!("Caching stargazer count as {stargazers}");
 
 		let mut con = self.client.get_multiplexed_async_connection().await?;
-		con.set_ex(LAUNCHER_STARGAZER_KEY, stargazers, 60 * 60)
+		() = con
+			.set_ex(LAUNCHER_STARGAZER_KEY, stargazers, 60 * 60)
 			.await?;
 
 		Ok(())
