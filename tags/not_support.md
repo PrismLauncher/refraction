@@ -3,11 +3,11 @@ title: 🚨 This is not the support channel! 🚨
 color: orange
 ---
 
-**Problem in launcher**
-<#1032130809055940690>
+<:waaa_prism:1041361839528878160> **Problem in launcher**
+👉 <#1032130809055940690> 👈 
 
-**Problem with mods**
-<#1245734007254286369>
+<:fried:1032296608768995368> **Problem with mods**
+👉 <#1245734007254286369> 👈
 
-**Simple problem**
-<#1118165588200657006>
+<:catresort:1175503201844346942> **Simple problem**
+👉 <#1118165588200657006> 👈
