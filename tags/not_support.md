@@ -1,5 +1,5 @@
 ---
-title: 🚨 This is not the support channel! 🚨 
+title: 🚨 This is not a support channel! 🚨 
 color: orange
 ---
 
