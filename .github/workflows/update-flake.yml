@@ -33,3 +33,4 @@ jobs:
         with:
           pull-request-number: ${{ steps.update.outputs.pull-request-number }}
           merge-method: rebase
+          github-token: ${{ secrets.AUTOMATA_TOKEN }}
