@@ -3,8 +3,8 @@ title: Please don't crosspost your support questions!
 color: orange
 ---
 
-Crossposting is generally defined as posting the same or similar content across multiple channels. While it may seem like a good idea to post your request across multiple channels, this is in fact really disruptive to any conversations going on in those channels.
+Please be patient and wait for somebody to give support. Reposting your question in multiple channels can be disruptive both for yourself and any others in the channel. This also doesn't get you support quicker.
 
-Generally, crossposting support requests is accepted if you originally posted in the quick-support channel, but the problem becomes complicated enough to warrant its own thread in either launcher-support or mod-support, depending on the possible cause of the problem.
+If you change your mind about where something should be or somebody asks you to move it another channel, that's fine. But, please don't hop between channels trying to get attention.
 
-Additionally, a clear downside of crossposting is people can't easily tell that your problem is solved or being solved by someone else in a different channel or thread. This can cause confusion and conflicting advice, as well as slowing down support processes.
+Also, we'd like it if you could delete the original message if you make a mistake where to put it the first time.
