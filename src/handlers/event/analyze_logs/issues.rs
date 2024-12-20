@@ -428,6 +428,6 @@ fn linux_openal(log: &str) -> Issue {
 	);
 
 	let found = log.contains("Failed to get OpenAL")
-		|| (log.contains("Problematic frame") && log.contains("libopenal.so"));
+		|| log.contains("libopenal.so");
 	found.then_some(issue)
 }
