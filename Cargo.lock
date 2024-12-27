@@ -1394,7 +1394,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc2f4eb4bc735547cfed7c0a4922cbd04a4655978c09b54f1f7b228750664c34"
 dependencies = [
  "cfg-if",
- "windows-targets 0.48.5",
+ "windows-targets 0.52.6",
 ]
 
 [[package]]
@@ -1903,7 +1903,7 @@ dependencies = [
  "poise",
  "redis",
  "regex",
- "reqwest 0.12.10",
+ "reqwest 0.12.11",
  "rustls 0.23.20",
  "serde",
  "serde_json",
@@ -1985,9 +1985,9 @@ dependencies = [
 
 [[package]]
 name = "reqwest"
-version = "0.12.10"
+version = "0.12.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3d3536321cfc54baa8cf3e273d5e1f63f889067829c4b410fcdbac8ca7b80994"
+checksum = "7fe060fe50f524be480214aba758c71f99f90ee8c83c5a36b5e9e1d568eb4eb3"
 dependencies = [
  "base64 0.22.1",
  "bytes",
