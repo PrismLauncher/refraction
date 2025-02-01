@@ -16,7 +16,7 @@ pub async fn handle(ctx: &Context, reaction: &Reaction) -> Result<()> {
 	if let Some(MessageInteractionMetadata::Command(metadata)) =
 		message.interaction_metadata.as_deref()
 	{
-		if metadata.user != user && reaction.emoji.unicode_eq("❌") {
+		if metadata.user == user && reaction.emoji.unicode_eq("❌") {
 			trace!("Deleting our own message at the request of {}", user.tag());
 			message.delete(ctx).await?;
 		}
