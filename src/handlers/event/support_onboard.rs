@@ -21,7 +21,7 @@ pub async fn handle(ctx: &Context, thread: &GuildChannel) -> Result<()> {
 		.name(ctx)
 		.await
 		.unwrap_or_default()
-		!= "support"
+		!= "community-support"
 	{
 		debug!("Not posting onboarding message to threads outside of support");
 		return Ok(());
@@ -34,7 +34,7 @@ pub async fn handle(ctx: &Context, thread: &GuildChannel) -> Result<()> {
 	let msg = format!(
     "<@{}> We've received your support ticket! {} {}",
     owner,
-    "Please upload your logs and post the link here if possible (run `tag log` to find out how).",
+    "Please upload your logs and post the link here if possible (run `/tag log` to find out how).",
     "Please don't ping people for support questions, unless you have their permission."
     );
 
