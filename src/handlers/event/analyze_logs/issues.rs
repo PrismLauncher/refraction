@@ -108,11 +108,12 @@ fn intel_hd(log: &str) -> Issue {
 	let issue =
         (
         "Intel HD Windows 10".to_string(),
-        "Your drivers don't support windows 10 officially
+        "Your drivers don't support Windows 10 officially
         See https://prismlauncher.org/wiki/getting-started/installing-java/#a-note-about-intel-hd-20003000-on-windows-10 for more info".to_string()
     );
 
-	let found = log.contains("org.lwjgl.LWJGLException: Pixel format not accelerated");
+	let found = log.contains("org.lwjgl.LWJGLException: Pixel format not accelerated")
+		&& !log.contains("1.8.0_51");
 	found.then_some(issue)
 }
 
