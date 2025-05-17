@@ -82,7 +82,7 @@ fn flatpak_nvidia(log: &str) -> Issue {
 	);
 
 	let found = log.contains("org.lwjgl.LWJGLException: Could not choose GLX13 config")
-		|| log.contains("GLFW error 65545: GLX: Failed to find a suitable GLXFBConfig");
+		|| log.contains("GLX: Failed to find a suitable GLXFBConfig");
 
 	found.then_some(issue)
 }
