@@ -35,6 +35,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		checksum_mismatch,
 		nvidia_linux,
 		linux_openal,
+		flatpak_crash,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -284,7 +285,7 @@ fn wrong_java(log: &str) -> Issue {
 
 	let issue = (
         "Java compatibility check skipped".to_string(),
-        "The Java major version may not work with your Minecraft instance. Please switch to a compatible version".to_string()
+        "The Java major version may not work with your Minecraft instance. Please switch to a compatible version.".to_string()
     );
 
 	log.contains("Java major version is incompatible. Things might break.")
@@ -441,5 +442,17 @@ hrtf=true```"
 	);
 
 	let found = log.contains("[libopenal.so");
+	found.then_some(issue)
+}
+
+fn flatpak_crash(log: &str) -> Issue {
+	let issue = (
+		"Flatpak crash".to_string(),
+		"To fix this crash, disable \"Fallback to X11 Windowing System\" in Flatseal.".to_string(),
+	);
+
+	let found = log.contains(
+		"Can't connect to X11 window server using ':0.0' as the value of the DISPLAY variable",
+	) || log.contains("Could not open X display connection");
 	found.then_some(issue)
 }
