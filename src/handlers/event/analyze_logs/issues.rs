@@ -33,6 +33,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		intermediary_mappings,
 		old_forge_new_java,
 		checksum_mismatch,
+		nvidia_linux,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -331,7 +332,8 @@ fn offline_launch(log: &str) -> Issue {
 	let issue = (
 		"Missing Libraries".to_string(),
 		"You seem to be missing libraries. This is usually caused by launching offline before they can be downloaded.
-		To fix this, first ensure you are connected to the internet. Then, try selecting Edit > Version > Download All and launching your instance again."
+		To fix this, first ensure you are connected to the internet. Then, try selecting Edit > Version > Download All and launching your instance again.
+		If Minecraft is getting launched offline by default, it's possible your token got expired. To fix this, remove and add back your Microsoft account."
 			.to_string(),
 	);
 
@@ -416,11 +418,11 @@ fn checksum_mismatch(log: &str) -> Issue {
 
 fn nvidia_linux(log: &str) -> Issue {
 	let issue = (
-        "Nvidia drivers on Linux".to_string(),
-        "Nvidia drivers will often cause crashes on Linux.
+		"Nvidia drivers on Linux".to_string(),
+		"Nvidia drivers will often cause crashes on Linux.
 		To fix it, go to Settings ⟶ Enviroment variables and set `__GL_THREADED_OPTIMIZATIONS` to `0`."
-            .to_string(),
-    );
+			.to_string(),
+	);
 
 	let found = log.contains("[libnvidia-glcore.so");
 	found.then_some(issue)
