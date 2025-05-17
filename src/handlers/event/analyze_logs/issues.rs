@@ -34,6 +34,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		old_forge_new_java,
 		checksum_mismatch,
 		nvidia_linux,
+		linux_openal,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -425,5 +426,20 @@ fn nvidia_linux(log: &str) -> Issue {
 	);
 
 	let found = log.contains("[libnvidia-glcore.so");
+	found.then_some(issue)
+}
+
+fn linux_openal(log: &str) -> Issue {
+	let issue = (
+		"Missing .alsoftrc".to_string(),
+		"OpenAL is missing the configuration file.
+		To fix this, create a file named `.alsoftrc` in your home directory with the following content:
+		```
+drivers=alsa
+hrtf=true```"
+			.to_string(),
+	);
+
+	let found = log.contains("[libopenal.so");
 	found.then_some(issue)
 }
