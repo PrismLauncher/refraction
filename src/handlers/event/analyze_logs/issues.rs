@@ -413,3 +413,15 @@ fn checksum_mismatch(log: &str) -> Issue {
 	let found = log.contains("Checksum mismatch, download is bad.");
 	found.then_some(issue)
 }
+
+fn nvidia_linux(log: &str) -> Issue {
+	let issue = (
+        "Nvidia drivers on Linux".to_string(),
+        "Nvidia drivers will often cause crashes on Linux.
+		To fix it, go to Settings ⟶ Enviroment variables and set `__GL_THREADED_OPTIMIZATIONS` to `0`."
+            .to_string(),
+    );
+
+	let found = log.contains("[libnvidia-glcore.so");
+	found.then_some(issue)
+}
