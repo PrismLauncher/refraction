@@ -36,6 +36,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		nvidia_linux,
 		linux_openal,
 		flatpak_crash,
+		spark_macos,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -455,5 +456,17 @@ fn flatpak_crash(log: &str) -> Issue {
 	let found = log.contains(
 		"Can't connect to X11 window server using ':0.0' as the value of the DISPLAY variable",
 	) || log.contains("Could not open X display connection");
+	found.then_some(issue)
+}
+
+fn spark_macos(log: &str) -> Issue {
+	let issue = (
+        "Old Java on MacOS".to_string(),
+        "This crash is caused by an old Java version conflicting with mods, most often Spark, on MacOS.
+		To fix it, either remove Spark or update Java by going to Edit > Settings > Download Java > Adoptium, and selecting the new Java version via Auto-Detect."
+            .to_string(),
+    );
+
+	let found = log.contains("~StubRoutines::SafeFetch32");
 	found.then_some(issue)
 }
