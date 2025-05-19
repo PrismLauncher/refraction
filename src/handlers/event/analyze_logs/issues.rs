@@ -428,14 +428,14 @@ fn nvidia_linux(log: &str) -> Issue {
 			.to_string(),
 	);
 
-	let found = log.contains("[libnvidia-glcore.so");
+	let found = log.contains("# C  [libnvidia-glcore.so");
 	found.then_some(issue)
 }
 
 fn linux_openal(log: &str) -> Issue {
 	let issue = (
 		"Missing .alsoftrc".to_string(),
-		"OpenAL is missing the configuration file.
+		"OpenAL is likely missing the configuration file.
 		To fix this, create a file named `.alsoftrc` in your home directory with the following content:
 		```
 drivers=alsa
@@ -443,7 +443,7 @@ hrtf=true```"
 			.to_string(),
 	);
 
-	let found = log.contains("[libopenal.so");
+	let found = log.contains("# C  [libopenal.so");
 	found.then_some(issue)
 }
 
