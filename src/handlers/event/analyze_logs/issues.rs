@@ -33,6 +33,10 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		intermediary_mappings,
 		old_forge_new_java,
 		checksum_mismatch,
+		nvidia_linux,
+		linux_openal,
+		flatpak_crash,
+		spark_macos,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -81,7 +85,7 @@ fn flatpak_nvidia(log: &str) -> Issue {
 	);
 
 	let found = log.contains("org.lwjgl.LWJGLException: Could not choose GLX13 config")
-		|| log.contains("GLFW error 65545: GLX: Failed to find a suitable GLXFBConfig");
+		|| log.contains("GLX: Failed to find a suitable GLXFBConfig");
 
 	found.then_some(issue)
 }
@@ -105,11 +109,12 @@ fn intel_hd(log: &str) -> Issue {
 	let issue =
         (
         "Intel HD Windows 10".to_string(),
-        "Your drivers don't support windows 10 officially
+        "Your drivers don't support Windows 10 officially
         See https://prismlauncher.org/wiki/getting-started/installing-java/#a-note-about-intel-hd-20003000-on-windows-10 for more info".to_string()
     );
 
-	let found = log.contains("org.lwjgl.LWJGLException: Pixel format not accelerated");
+	let found = log.contains("org.lwjgl.LWJGLException: Pixel format not accelerated")
+		&& !log.contains("1.8.0_51");
 	found.then_some(issue)
 }
 
@@ -282,7 +287,7 @@ fn wrong_java(log: &str) -> Issue {
 
 	let issue = (
         "Java compatibility check skipped".to_string(),
-        "The Java major version may not work with your Minecraft instance. Please switch to a compatible version".to_string()
+        "The Java major version may not work with your Minecraft instance. Please switch to a compatible version.".to_string()
     );
 
 	log.contains("Java major version is incompatible. Things might break.")
@@ -331,7 +336,8 @@ fn offline_launch(log: &str) -> Issue {
 	let issue = (
 		"Missing Libraries".to_string(),
 		"You seem to be missing libraries. This is usually caused by launching offline before they can be downloaded.
-		To fix this, first ensure you are connected to the internet. Then, try selecting Edit > Version > Download All and launching your instance again."
+		To fix this, first ensure you are connected to the internet. Then, try selecting Edit > Version > Download All and launching your instance again.
+		If Minecraft is getting launched offline by default, it's possible your token got expired. To fix this, remove and add back your Microsoft account."
 			.to_string(),
 	);
 
@@ -411,5 +417,56 @@ fn checksum_mismatch(log: &str) -> Issue {
     );
 
 	let found = log.contains("Checksum mismatch, download is bad.");
+	found.then_some(issue)
+}
+
+fn nvidia_linux(log: &str) -> Issue {
+	let issue = (
+		"Nvidia drivers on Linux".to_string(),
+		"Nvidia drivers will often cause crashes on Linux.
+		To fix it, go to Settings ⟶ Enviroment variables and set `__GL_THREADED_OPTIMIZATIONS` to `0`."
+			.to_string(),
+	);
+
+	let found = log.contains("# C  [libnvidia-glcore.so");
+	found.then_some(issue)
+}
+
+fn linux_openal(log: &str) -> Issue {
+	let issue = (
+		"Missing .alsoftrc".to_string(),
+		"OpenAL is likely missing the configuration file.
+		To fix this, create a file named `.alsoftrc` in your home directory with the following content:
+		```
+drivers=alsa
+hrtf=true```"
+			.to_string(),
+	);
+
+	let found = log.contains("# C  [libopenal.so");
+	found.then_some(issue)
+}
+
+fn flatpak_crash(log: &str) -> Issue {
+	let issue = (
+		"Flatpak crash".to_string(),
+		"To fix this crash, disable \"Fallback to X11 Windowing System\" in Flatseal.".to_string(),
+	);
+
+	let found = log.contains(
+		"Can't connect to X11 window server using ':0.0' as the value of the DISPLAY variable",
+	) || log.contains("Could not open X display connection");
+	found.then_some(issue)
+}
+
+fn spark_macos(log: &str) -> Issue {
+	let issue = (
+        "Old Java on MacOS".to_string(),
+        "This crash is caused by an old Java version conflicting with mods, most often Spark, on MacOS.
+		To fix it, either remove Spark or update Java by going to Edit > Settings > Download Java > Adoptium, and selecting the new Java version via Auto-Detect."
+            .to_string(),
+    );
+
+	let found = log.contains("~StubRoutines::SafeFetch32");
 	found.then_some(issue)
 }
