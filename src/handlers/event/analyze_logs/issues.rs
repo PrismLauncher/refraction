@@ -39,6 +39,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		spark_macos,
 		xrandr,
 		folder_name,
+		corrupted_instance,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -494,6 +495,18 @@ fn folder_name(log: &str) -> Issue {
 	let found = Regex::new(r"Minecraft folder is:\n.*!/")
 		.unwrap()
 		.is_match(log);
+
+	found.then_some(issue)
+}
+
+fn corrupted_instance(log: &str) -> Issue {
+	let issue = (
+        "Corrupted instance files".to_string(),
+        "Your instance's `mmc-pack.json` appears to be corrupted. Make a new instance and copy over your data between `.minecraft` folders. To prevent this in the future, ensure your system has sufficient disk space and avoid forcefully shutting down your PC."
+            .to_string(),
+    );
+
+	let found = log.contains("mmc-pack.json as json: illegal value");
 
 	found.then_some(issue)
 }
