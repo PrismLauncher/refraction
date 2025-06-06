@@ -37,6 +37,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		linux_openal,
 		flatpak_crash,
 		spark_macos,
+		xrandr,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -468,5 +469,16 @@ fn spark_macos(log: &str) -> Issue {
     );
 
 	let found = log.contains("~StubRoutines::SafeFetch32");
+	found.then_some(issue)
+}
+
+fn xrandr(log: &str) -> Issue {
+	let issue = (
+        "Missing xrandr".to_string(),
+        "This crash is caused by not having xrandr installed on Linux on Minecraft versions that use LWJGL 2."
+            .to_string(),
+    );
+
+	let found = log.contains("at org.lwjgl.opengl.LinuxDisplay.getAvailableDisplayModes");
 	found.then_some(issue)
 }
