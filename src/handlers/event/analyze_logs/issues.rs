@@ -38,6 +38,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		flatpak_crash,
 		spark_macos,
 		xrandr,
+		folder_name,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -480,5 +481,19 @@ fn xrandr(log: &str) -> Issue {
     );
 
 	let found = log.contains("at org.lwjgl.opengl.LinuxDisplay.getAvailableDisplayModes");
+	found.then_some(issue)
+}
+
+fn folder_name(log: &str) -> Issue {
+	let issue = (
+        "`!` in folder name".to_string(),
+        "Having a `!` in any folder is known to cause issues. If it's in your instance name, make sure to rename the actual instance folder, **not** the instance name in Prism."
+            .to_string(),
+    );
+
+	let found = Regex::new(r"Minecraft folder is:\n.*!/")
+		.unwrap()
+		.is_match(log);
+
 	found.then_some(issue)
 }
