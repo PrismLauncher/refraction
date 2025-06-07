@@ -506,7 +506,9 @@ fn corrupted_instance(log: &str) -> Issue {
             .to_string(),
     );
 
-	let found = log.contains("mmc-pack.json as json: illegal value");
+	let found = Regex::new(r"mmc-pack.json.*illegal value")
+		.unwrap()
+		.is_match(log);
 
 	found.then_some(issue)
 }
