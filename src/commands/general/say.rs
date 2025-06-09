@@ -16,6 +16,7 @@ pub async fn say(
 	#[description = "the message content"] content: String,
 ) -> Result<(), Error> {
 	let channel = ctx.channel_id();
+	let content = content.replace("\\n", "\n");
 	let message = channel.say(ctx, &content).await?;
 	ctx.say("I said what you said!").await?;
 
