@@ -35,7 +35,7 @@ jobs:
 
       - name: Setup Nix cache
         if: ${{ matrix.use-nix }}
-        uses: DeterminateSystems/magic-nix-cache-action@v9
+        uses: DeterminateSystems/magic-nix-cache-action@v11
 
       - name: Build
         if: ${{ !matrix.use-nix }}
@@ -58,7 +58,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v16
 
       - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v9
+        uses: DeterminateSystems/magic-nix-cache-action@v11
 
       - name: Run checks
         run: |
