@@ -23,7 +23,7 @@ eyre = "0.6.12"
 log = "0.4.21"
 poise = "0.6.1"
 octocrab = "0.44.0"
-redis = { version = "0.31.0", features = ["tokio-comp", "tokio-rustls-comp"] }
+redis = { version = "0.32.0", features = ["tokio-comp", "tokio-rustls-comp"] }
 regex = "1.10.4"
 reqwest = { version = "0.12.4", default-features = false, features = [
 	"rustls-tls",
