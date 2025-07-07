@@ -89,6 +89,25 @@ pub async fn handle(error: FrameworkError<'_, Data, Error>) {
 			}
 		}
 
+		FrameworkError::CommandCheckFailed { error, ctx, .. } => {
+			if let Some(error) = error {
+				// just log - it's probably best if people don't find out when they're breaking the perm checking
+				log::error!(
+					"Error checking permissions for {}:\n{error:?}",
+					ctx.command().name
+				);
+			} else if let poise::Context::Application(ctx) = ctx {
+				// only show for application commands - for prefix commands there is no way to hide the response and avoid spam
+				ctx.send(
+					poise::CreateReply::default()
+						.content("❌ You're not allowed to use this command.")
+						.ephemeral(true),
+				)
+				.await
+				.ok();
+			}
+		}
+
 		error => {
 			if let Err(e) = poise::builtins::on_error(error).await {
 				error!("Unhandled error occurred:\n{e:#?}");
