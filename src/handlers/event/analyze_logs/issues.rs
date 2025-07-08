@@ -331,7 +331,7 @@ fn locked_jar(log: &str) -> Issue {
 			.to_string(),
 	);
 
-	let found = log.contains("Couldn't extract native jar");
+	let found = log.contains("Couldn't extract native jar") && !log.contains("(missing)\n");
 	found.then_some(issue)
 }
 
