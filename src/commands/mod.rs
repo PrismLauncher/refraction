@@ -43,5 +43,7 @@ pub fn all() -> Vec<Command> {
 		general!(stars),
 		general!(tag),
 		moderation!(set_welcome),
+		moderation!(support_ban, support_ban),
+		moderation!(support_ban, support_unban),
 	]
 }
