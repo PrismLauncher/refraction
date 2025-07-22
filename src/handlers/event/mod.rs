@@ -5,7 +5,6 @@ use poise::serenity_prelude::{ActivityData, Context, FullEvent, OnlineStatus};
 use poise::FrameworkContext;
 
 mod analyze_logs;
-mod delete_on_reaction;
 mod eta;
 mod expand_link;
 mod give_role;
@@ -64,16 +63,6 @@ pub async fn handle(
 			eta::handle(ctx, new_message).await?;
 			expand_link::handle(ctx, &data.http_client, new_message).await?;
 			analyze_logs::handle(ctx, new_message, data).await?;
-		}
-
-		FullEvent::ReactionAdd { add_reaction } => {
-			trace!(
-				"Received reaction {} on message {} from {}",
-				add_reaction.emoji,
-				add_reaction.message_id.to_string(),
-				add_reaction.user_id.unwrap_or_default().to_string()
-			);
-			delete_on_reaction::handle(ctx, add_reaction).await?;
 		}
 
 		FullEvent::ThreadCreate { thread } => {
