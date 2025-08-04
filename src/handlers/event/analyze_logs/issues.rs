@@ -37,6 +37,9 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		linux_openal,
 		flatpak_crash,
 		spark_macos,
+		xrandr,
+		folder_name,
+		corrupted_instance,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -328,7 +331,7 @@ fn locked_jar(log: &str) -> Issue {
 			.to_string(),
 	);
 
-	let found = log.contains("Couldn't extract native jar");
+	let found = log.contains("Couldn't extract native jar") && !log.contains("(missing)\n");
 	found.then_some(issue)
 }
 
@@ -468,5 +471,44 @@ fn spark_macos(log: &str) -> Issue {
     );
 
 	let found = log.contains("~StubRoutines::SafeFetch32");
+	found.then_some(issue)
+}
+
+fn xrandr(log: &str) -> Issue {
+	let issue = (
+        "Missing xrandr".to_string(),
+        "This crash is caused by not having xrandr installed on Linux on Minecraft versions that use LWJGL 2."
+            .to_string(),
+    );
+
+	let found = log.contains("at org.lwjgl.opengl.LinuxDisplay.getAvailableDisplayModes");
+	found.then_some(issue)
+}
+
+fn folder_name(log: &str) -> Issue {
+	let issue = (
+        "`!` in folder name".to_string(),
+        "Having a `!` in any folder is known to cause issues. If it's in your instance name, make sure to rename the actual instance folder, **not** the instance name in Prism."
+            .to_string(),
+    );
+
+	let found = Regex::new(r"Minecraft folder is:\n.*!/")
+		.unwrap()
+		.is_match(log);
+
+	found.then_some(issue)
+}
+
+fn corrupted_instance(log: &str) -> Issue {
+	let issue = (
+        "Corrupted instance files".to_string(),
+        "Your instance's `mmc-pack.json` appears to be corrupted. Make a new instance and copy over your data between `.minecraft` folders. To prevent this in the future, ensure your system has sufficient disk space and avoid forcefully shutting down your PC."
+            .to_string(),
+    );
+
+	let found = Regex::new(r"mmc-pack.json.*illegal value")
+		.unwrap()
+		.is_match(log);
+
 	found.then_some(issue)
 }
