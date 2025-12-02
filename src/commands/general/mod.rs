@@ -1,3 +1,4 @@
+pub mod delete_interaction;
 pub mod help;
 pub mod joke;
 pub mod members;
