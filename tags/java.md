@@ -3,4 +3,4 @@ title: Java Instructions
 color: orange
 ---
 
-As of 9.0, Prism Launcher can automatically download and configure Java for the version of Minecraft you are using. The instructions can be found [here](https://prismlauncher.org/wiki/getting-started/installing-java/).
+As of 9.0, you can make Prism Launcher automatically download and select Java for each instance by enabling **Autodetect Java version** and **Auto-download Mojang Java** in Prism > top toolbar > **Settings** > **Java**, and disabling **Java installation** in Prism > right click your instance > **Edit** > **Settings**> **Java** if it's ticked. More info about manually managing Java can be found [here](https://prismlauncher.org/wiki/getting-started/installing-java/).
