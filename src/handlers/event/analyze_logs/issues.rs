@@ -41,6 +41,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		folder_name,
 		corrupted_instance,
 		lexforge_zlibng,
+		invalid_proxy,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -456,10 +457,9 @@ fn linux_openal(log: &str) -> Issue {
 	let issue = (
 		"Missing .alsoftrc".to_string(),
 		"OpenAL is likely missing the configuration file.
-		To fix this, create a file named `.alsoftrc` in your home directory with the following content:
+		To fix this, create a file named `.alsoftrc` in your home directory by running this command in your terminal:
 		```
-drivers=alsa
-hrtf=true```"
+echo -e \"drivers=alsa\\nhrtf=true\" > ~/.alsoftrc```"
 			.to_string(),
 	);
 
@@ -526,6 +526,19 @@ fn corrupted_instance(log: &str) -> Issue {
 	let found = Regex::new(r"mmc-pack.json.*illegal value")
 		.unwrap()
 		.is_match(log);
+
+	found.then_some(issue)
+}
+
+fn invalid_proxy(log: &str) -> Issue {
+	let issue = (
+		"Invalid proxy configuration".to_string(),
+		"Your proxy configuration in Prism settings seems to be incorrect.
+		Try undoing it by selecing \"None\" in top toolbar > **Settings** > **Proxy**."
+			.to_string(),
+	);
+
+	let found = log.contains("Connection to proxy refused");
 
 	found.then_some(issue)
 }
