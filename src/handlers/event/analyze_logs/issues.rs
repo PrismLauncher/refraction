@@ -41,6 +41,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		folder_name,
 		corrupted_instance,
 		lexforge_zlibng,
+		invalid_proxy,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -526,6 +527,19 @@ fn corrupted_instance(log: &str) -> Issue {
 	let found = Regex::new(r"mmc-pack.json.*illegal value")
 		.unwrap()
 		.is_match(log);
+
+	found.then_some(issue)
+}
+
+fn invalid_proxy(log: &str) -> Issue {
+	let issue = (
+		"Invalid proxy configuration".to_string(),
+		"Your proxy configuration in Prism settings seems to be incorrect.
+		Try undoing it by selecing \"None\" in top toolbar > **Settings** > **Proxy**."
+			.to_string(),
+	);
+
+	let found = log.contains("Connection to proxy refused");
 
 	found.then_some(issue)
 }
