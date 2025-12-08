@@ -40,6 +40,7 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 		xrandr,
 		folder_name,
 		corrupted_instance,
+		lexforge_zlibng,
 	];
 
 	let mut res: Vec<(String, String)> = issues.iter().filter_map(|issue| issue(log)).collect();
@@ -89,6 +90,22 @@ fn flatpak_nvidia(log: &str) -> Issue {
 
 	let found = log.contains("org.lwjgl.LWJGLException: Could not choose GLX13 config")
 		|| log.contains("GLX: Failed to find a suitable GLXFBConfig");
+
+	found.then_some(issue)
+}
+
+fn lexforge_zlibng(log: &str) -> Issue {
+	let issue = (
+		"Forge on zlib-ng".to_string(),
+		"Some Linux distributions like CachyOS and Fedora
+		use zlib-ng instead of classic zlib, which is 
+		incompatible with MinecraftForge installers. \
+		To fix this, add `-Dforgewrapper.skipHashCheck=true`
+		in Edit > Settings > Java > Java arguments."
+			.to_string(),
+	);
+
+	let found = log.contains("Processor failed, invalid outputs:");
 
 	found.then_some(issue)
 }
