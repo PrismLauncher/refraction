@@ -457,10 +457,9 @@ fn linux_openal(log: &str) -> Issue {
 	let issue = (
 		"Missing .alsoftrc".to_string(),
 		"OpenAL is likely missing the configuration file.
-		To fix this, create a file named `.alsoftrc` in your home directory with the following content:
+		To fix this, create a file named `.alsoftrc` in your home directory by running this command in your terminal:
 		```
-drivers=alsa
-hrtf=true```"
+echo -e \"drivers=alsa\\nhrtf=true\" > ~/.alsoftrc```"
 			.to_string(),
 	);
 
