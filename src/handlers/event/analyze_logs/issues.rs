@@ -247,10 +247,13 @@ async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 	};
 	let latest_version_parts = semver_split(&latest_version);
 
-	if log_version_parts.len() != 2
+	if log_version_parts.len() != 3
 		|| log_version_parts[0] < latest_version_parts[0]
 		|| (log_version_parts[0] == latest_version_parts[0]
 			&& log_version_parts[1] < latest_version_parts[1])
+		|| (log_version_parts[0] == latest_version_parts[0]
+			&& log_version_parts[1] == latest_version_parts[1]
+			&& log_version_parts[2] < latest_version_parts[2])
 	{
 		let issue = if log_version_parts[0] < 8 {
 			(
