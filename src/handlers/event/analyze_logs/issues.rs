@@ -1,6 +1,6 @@
-use crate::{api, utils::semver_split, Data};
+use std::sync::LazyLock;
 
-use std::sync::OnceLock;
+use crate::{api, utils::semver_split, Data};
 
 use eyre::Result;
 use log::trace;
@@ -140,15 +140,12 @@ fn intel_hd(log: &str) -> Issue {
 }
 
 fn java_option(log: &str) -> Issue {
-	static VM_OPTION_REGEX: OnceLock<Regex> = OnceLock::new();
-	static UNRECOGNIZED_OPTION_REGEX: OnceLock<Regex> = OnceLock::new();
+	static VM_OPTION: LazyLock<Regex> =
+		LazyLock::new(|| Regex::new(r"Unrecognized VM option '(.+)'[\r\n]").unwrap());
+	static UNRECOGNIZED_OPTION: LazyLock<Regex> =
+		LazyLock::new(|| Regex::new(r"Unrecognized option: (.+)[\r\n]").unwrap());
 
-	let vm_option =
-		VM_OPTION_REGEX.get_or_init(|| Regex::new(r"Unrecognized VM option '(.+)'[\r\n]").unwrap());
-	let unrecognized_option = UNRECOGNIZED_OPTION_REGEX
-		.get_or_init(|| Regex::new(r"Unrecognized option: (.+)[\r\n]").unwrap());
-
-	if let Some(captures) = vm_option.captures(log) {
+	if let Some(captures) = VM_OPTION.captures(log) {
 		let title = if &captures[1] == "UseShenandoahGC" {
 			"Java 8 and below don't support ShenandoahGC"
 		} else {
@@ -160,7 +157,7 @@ fn java_option(log: &str) -> Issue {
 		));
 	}
 
-	if let Some(captures) = unrecognized_option.captures(log) {
+	if let Some(captures) = UNRECOGNIZED_OPTION.captures(log) {
 		return Some((
 			"Wrong Java Arguments".to_string(),
 			format!("Remove `{}` from your Java arguments", &captures[1]),
@@ -220,12 +217,11 @@ fn optinotfine(log: &str) -> Issue {
 }
 
 async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
-	static OUTDATED_LAUNCHER_REGEX: OnceLock<Regex> = OnceLock::new();
-	let outdated_launcher = OUTDATED_LAUNCHER_REGEX.get_or_init(|| {
+	static OUTDATED_LAUNCHER: LazyLock<Regex> = LazyLock::new(|| {
 		Regex::new("Prism Launcher version: ((?:([0-9]+)\\.)?([0-9]+)\\.([0-9]+))").unwrap()
 	});
 
-	let Some(captures) = outdated_launcher.captures(log) else {
+	let Some(captures) = OUTDATED_LAUNCHER.captures(log) else {
 		return Ok(None);
 	};
 
@@ -296,12 +292,13 @@ which is why the issue was not present."
 }
 
 fn wrong_java(log: &str) -> Issue {
-	static SWITCH_VERSION_REGEX: OnceLock<Regex> = OnceLock::new();
-	let switch_version = SWITCH_VERSION_REGEX.get_or_init(|| Regex::new(
+	static SWITCH_VERSION: LazyLock<Regex> = LazyLock::new(|| {
+		Regex::new(
 		r"(?m)Please switch to one of the following Java versions for this instance:[\r\n]+(Java version [\d.]+)",
-).unwrap());
+).unwrap()
+	});
 
-	if let Some(captures) = switch_version.captures(log) {
+	if let Some(captures) = SWITCH_VERSION.captures(log) {
 		let versions = captures[1].split('\n').collect::<Vec<&str>>().join(", ");
 		return Some((
             "Wrong Java Version".to_string(),

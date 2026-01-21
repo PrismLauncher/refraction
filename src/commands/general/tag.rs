@@ -2,7 +2,7 @@
 use crate::{consts::Colors, tags::Tag, Context, Error};
 use std::env;
 use std::str::FromStr;
-use std::sync::OnceLock;
+use std::sync::LazyLock;
 
 use eyre::eyre;
 use log::trace;
@@ -10,10 +10,8 @@ use poise::serenity_prelude::{Color, CreateAllowedMentions, CreateEmbed, User};
 use poise::CreateReply;
 
 include!(concat!(env!("OUT_DIR"), "/generated.rs"));
-fn tags() -> &'static Vec<Tag> {
-	static TAGS: OnceLock<Vec<Tag>> = OnceLock::new();
-	TAGS.get_or_init(|| serde_json::from_str(env!("TAGS")).unwrap())
-}
+
+static TAGS: LazyLock<Vec<Tag>> = LazyLock::new(|| serde_json::from_str(env!("TAGS")).unwrap());
 
 /// Send a tag
 #[poise::command(
@@ -30,7 +28,7 @@ pub async fn tag(
 	trace!("Running tag command");
 
 	let tag_id = name.as_str();
-	let tag = tags()
+	let tag = TAGS
 		.iter()
 		.find(|t| t.id == tag_id)
 		.ok_or_else(|| eyre!("Tried to get non-existent tag: {tag_id}"))?;
@@ -81,7 +79,7 @@ pub async fn tag(
 }
 
 fn help() -> String {
-	let tag_list = tags()
+	let tag_list = TAGS
 		.iter()
 		.map(|tag| format!("`{}`", tag.id))
 		.collect::<Vec<String>>()
