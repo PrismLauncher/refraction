@@ -37,7 +37,7 @@ jobs:
           echo "path=$(readlink -f result)" >> "$GITHUB_OUTPUT"
 
       - name: Upload image
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: container-${{ matrix.arch }}
           path: ${{ steps.build.outputs.path }}
@@ -84,7 +84,7 @@ jobs:
           REPOSITORY: ${{ github.repository }}
 
       - name: Download images
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           path: images
 
