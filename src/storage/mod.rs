@@ -1,5 +1,6 @@
 use std::fmt::Debug;
 
+use chrono::{Duration, Utc};
 use eyre::Result;
 use log::debug;
 use poise::serenity_prelude::UserId;
@@ -8,6 +9,8 @@ use redis::{AsyncCommands, Client, ConnectionLike};
 const PK_KEY: &str = "pluralkit-v1";
 const LAUNCHER_VERSION_KEY: &str = "launcher-version-v1";
 const LAUNCHER_STARGAZER_KEY: &str = "launcher-stargazer-v1";
+const CHATTINESS_KEY: &str = "chattiness-v1";
+const DAILY_MESSAGES_KEY: &str = "daily-messages-v1";
 
 #[derive(Clone, Debug)]
 pub struct Storage {
@@ -86,6 +89,49 @@ impl Storage {
 
 		let mut con = self.client.get_multiplexed_async_connection().await?;
 		let res: u32 = con.get(LAUNCHER_STARGAZER_KEY).await?;
+
+		Ok(res)
+	}
+
+	pub async fn increase_daily_messages(&self, id: u64) -> Result<i64> {
+		debug!("Increasing daily message count for {id}");
+		let key = format!("{DAILY_MESSAGES_KEY}:{id}");
+
+		let mut con = self.client.get_multiplexed_async_connection().await?;
+		let res: i64 = con.incr(&key, 1).await?;
+
+		let midnight = (Utc::now() + Duration::days(1))
+			.date_naive()
+			.and_hms_opt(0, 0, 0)
+			.expect("could not determine midnight")
+			.and_utc();
+
+		// FIXME(@TheKodeToad): the machine could in theory catch fire in the middle of this and therefore the key would not properly expire
+		if res == 1 {
+			() = con
+				.expire_at(&key, midnight.timestamp())
+				.await?;
+		}
+
+		Ok(res)
+	}
+
+	pub async fn chattiness(&self, id: u64) -> Result<i64> {
+		debug!("Increasing chattiness for {id}");
+		let key = format!("{CHATTINESS_KEY}:{id}");
+
+		let mut con = self.client.get_multiplexed_async_connection().await?;
+		let res: i64 = con.incr(key, 1).await?;
+
+		Ok(res)
+	}
+
+	pub async fn increase_chattiness(&self, id: u64) -> Result<i64> {
+		debug!("Fetching chattiness for {id}");
+		let key = format!("{CHATTINESS_KEY}:{id}");
+
+		let mut con = self.client.get_multiplexed_async_connection().await?;
+		let res: i64 = con.get(key).await?;
 
 		Ok(res)
 	}
