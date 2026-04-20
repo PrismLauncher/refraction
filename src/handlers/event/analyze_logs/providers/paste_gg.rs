@@ -1,6 +1,6 @@
-use crate::api::{paste_gg, HttpClient};
+use std::sync::LazyLock;
 
-use std::sync::OnceLock;
+use crate::api::{paste_gg, HttpClient};
 
 use eyre::{OptionExt, Result};
 use log::trace;
@@ -11,11 +11,11 @@ pub struct PasteGG;
 
 impl super::LogProvider for PasteGG {
 	async fn find_match(&self, message: &Message) -> Option<String> {
-		static REGEX: OnceLock<Regex> = OnceLock::new();
-		let regex = REGEX.get_or_init(|| Regex::new(r"https://paste.gg/p/\w+/(\w+)").unwrap());
+		static REGEX: LazyLock<Regex> =
+			LazyLock::new(|| Regex::new(r"https://paste.gg/p/\w+/(\w+)").unwrap());
 
 		trace!("Checking if message {} is a paste.gg paste", message.id);
-		super::get_first_capture(regex, &message.content)
+		super::get_first_capture(&REGEX, &message.content)
 	}
 
 	async fn fetch(&self, http: &HttpClient, content: &str) -> Result<String> {
