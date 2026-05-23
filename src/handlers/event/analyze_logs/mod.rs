@@ -51,7 +51,7 @@ pub async fn handle(ctx: &Context, message: &Message, data: &Data) -> Result<()>
 		if issues.is_empty() {
 			e = e
 				.color(Colors::Green)
-				.description("The automatic check didn't reveal any issues, but it's possible that some issues went undetected. Please wait for a volunteer to assist you.");
+				.description("**Please wait for a volunteer to assist you.** The automatic check did not find anything but a volunteer might be able to.\n**Please do not delete your message**- else a volunteer will not be able to help you");
 		} else {
 			e = e.color(Colors::Red);
 
