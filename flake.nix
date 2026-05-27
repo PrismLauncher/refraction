@@ -56,7 +56,7 @@
 
               # linters & formatters
               actionlint
-              nodePackages.prettier
+              prettier
 
               # rust tools
               clippy
@@ -69,13 +69,13 @@
               statix
             ];
 
-            inputsFrom = [ self.packages.${pkgs.system}.refraction ];
+            inputsFrom = [ self.packages.${pkgs.stdenv.hostPlatform.system}.refraction ];
             RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
           };
         }
       );
 
-      formatter = forAllSystems (system: nixpkgsFor.${system}.nixfmt-rfc-style);
+      formatter = forAllSystems (system: nixpkgsFor.${system}.nixfmt-tree);
 
       nixosModules.default = import ./nix/module.nix self;
 
