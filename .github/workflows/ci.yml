@@ -33,10 +33,6 @@ jobs:
         if: ${{ matrix.use-nix }}
         uses: DeterminateSystems/nix-installer-action@v22
 
-      - name: Setup Nix cache
-        if: ${{ matrix.use-nix }}
-        uses: DeterminateSystems/magic-nix-cache-action@v13
-
       - name: Build
         if: ${{ !matrix.use-nix }}
         run: cargo build --locked
@@ -56,9 +52,6 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v22
-
-      - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: Run checks
         run: |
