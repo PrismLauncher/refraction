@@ -37,7 +37,7 @@ tokio = { version = "1.37.0", features = [
 	"signal",
 ] }
 rustls = "0.23.13"
-polyhedron = { git = "https://github.com/QazCetelic/polyhedron", rev = "9c816da4bcbaa5aabe5a2c60c355996356b4c113" }
+polyhedron = { git = "https://github.com/QazCetelic/polyhedron", rev = "15660c0cba6babf2d6474af41ea939f48ff2077d" }
 
 [lints.rust]
 unsafe_code = "forbid"
