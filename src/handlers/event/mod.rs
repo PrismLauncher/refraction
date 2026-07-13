@@ -9,6 +9,7 @@ mod eta;
 mod expand_link;
 mod give_role;
 mod pluralkit;
+mod regular_role;
 mod support_onboard;
 
 pub async fn handle(
@@ -35,6 +36,12 @@ pub async fn handle(
 			}
 		}
 
+		FullEvent::GuildMemberAddition { new_member } => {
+			if let Some(storage) = &data.storage {
+				regular_role::handle_member(ctx, storage, new_member).await?;
+			}
+		}
+
 		FullEvent::Message { new_message } => {
 			trace!("Received message {}", new_message.content);
 
@@ -58,6 +65,8 @@ pub async fn handle(
 					debug!("Not replying to unproxied PluralKit message");
 					return Ok(());
 				}
+
+				regular_role::handle_message(ctx, storage, new_message).await?;
 			}
 
 			eta::handle(ctx, new_message).await?;
