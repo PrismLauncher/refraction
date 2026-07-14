@@ -1,6 +1,6 @@
-use crate::{api, utils::semver_split, Data};
+use std::sync::LazyLock;
 
-use std::sync::OnceLock;
+use crate::{api, utils::semver_split, Data};
 
 use eyre::Result;
 use log::trace;
@@ -59,11 +59,11 @@ fn fabric_internal(log: &str) -> Issue {
 	let issue = (
 		"Fabric Internal Access".to_string(),
 		"The mod you are using is using fabric internals that are not meant \
-        to be used by anything but the loader itself.
-        Those mods break both on Quilt and with fabric updates.
-        If you're using fabric, downgrade your fabric loader could work, \
-        on Quilt you can try updating to the latest beta version, \
-        but there's nothing much to do unless the mod author stops using them."
+		to be used by anything but the loader itself.
+		Those mods break both on Quilt and with fabric updates.
+		If you're using fabric, downgrade your fabric loader could work, \
+		on Quilt you can try updating to the latest beta version, \
+		but there's nothing much to do unless the mod author stops using them."
 			.to_string(),
 	);
 
@@ -83,9 +83,9 @@ fn flatpak_nvidia(log: &str) -> Issue {
 	let issue = (
 		"Outdated Nvidia Flatpak Driver".to_string(),
 		"The Nvidia driver for flatpak is outdated.
-        Please run `flatpak update` to fix this issue. \
-        If that does not solve it, \
-        please wait until the driver is added to Flathub and run it again."
+		Please run `flatpak update` to fix this issue. \
+		If that does not solve it, \
+		please wait until the driver is added to Flathub and run it again."
 			.to_string(),
 	);
 
@@ -115,10 +115,10 @@ fn forge_java(log: &str) -> Issue {
 	let issue = (
 		"Forge Java Bug".to_string(),
 		"Old versions of Forge crash with Java 8u321+.
-            To fix this, update forge to the latest version via the Versions tab
-            (right click on Forge, click Change Version, and choose the latest one)
-            Alternatively, you can download 8u312 or lower. \
-            See [archive](https://github.com/adoptium/temurin8-binaries/releases/tag/jdk8u312-b07)"
+			To fix this, update forge to the latest version via the Versions tab
+			(right click on Forge, click Change Version, and choose the latest one)
+			Alternatively, you can download 8u312 or lower. \
+			See [archive](https://github.com/adoptium/temurin8-binaries/releases/tag/jdk8u312-b07)"
 			.to_string(),
 	);
 
@@ -128,11 +128,11 @@ fn forge_java(log: &str) -> Issue {
 
 fn intel_hd(log: &str) -> Issue {
 	let issue =
-        (
-        "Intel HD Windows 10".to_string(),
-        "Your drivers don't support Windows 10 officially
-        See https://prismlauncher.org/wiki/getting-started/installing-java/#a-note-about-intel-hd-20003000-on-windows-10 for more info".to_string()
-    );
+		(
+		"Intel HD Windows 10".to_string(),
+		"Your drivers don't support Windows 10 officially
+		See https://prismlauncher.org/wiki/getting-started/installing-java/#a-note-about-intel-hd-20003000-on-windows-10 for more info".to_string()
+	);
 
 	let found = log.contains("org.lwjgl.LWJGLException: Pixel format not accelerated")
 		&& !log.contains("1.8.0_51");
@@ -140,15 +140,12 @@ fn intel_hd(log: &str) -> Issue {
 }
 
 fn java_option(log: &str) -> Issue {
-	static VM_OPTION_REGEX: OnceLock<Regex> = OnceLock::new();
-	static UNRECOGNIZED_OPTION_REGEX: OnceLock<Regex> = OnceLock::new();
+	static VM_OPTION: LazyLock<Regex> =
+		LazyLock::new(|| Regex::new(r"Unrecognized VM option '(.+)'[\r\n]").unwrap());
+	static UNRECOGNIZED_OPTION: LazyLock<Regex> =
+		LazyLock::new(|| Regex::new(r"Unrecognized option: (.+)[\r\n]").unwrap());
 
-	let vm_option =
-		VM_OPTION_REGEX.get_or_init(|| Regex::new(r"Unrecognized VM option '(.+)'[\r\n]").unwrap());
-	let unrecognized_option = UNRECOGNIZED_OPTION_REGEX
-		.get_or_init(|| Regex::new(r"Unrecognized option: (.+)[\r\n]").unwrap());
-
-	if let Some(captures) = vm_option.captures(log) {
+	if let Some(captures) = VM_OPTION.captures(log) {
 		let title = if &captures[1] == "UseShenandoahGC" {
 			"Java 8 and below don't support ShenandoahGC"
 		} else {
@@ -160,7 +157,7 @@ fn java_option(log: &str) -> Issue {
 		));
 	}
 
-	if let Some(captures) = unrecognized_option.captures(log) {
+	if let Some(captures) = UNRECOGNIZED_OPTION.captures(log) {
 		return Some((
 			"Wrong Java Arguments".to_string(),
 			format!("Remove `{}` from your Java arguments", &captures[1]),
@@ -174,10 +171,10 @@ fn lwjgl_2_java_9(log: &str) -> Issue {
 	let issue = (
 		"Linux: crash with pre-1.13 and Java 9+".to_string(),
 		"Using pre-1.13 (which uses LWJGL 2) with Java 9 or later usually causes a crash. \
-        Switching to Java 8 or below will fix your issue.
-        Alternatively, you can use [Temurin](https://adoptium.net/temurin/releases). \
-        However, multiplayer will not work in versions from 1.8 to 1.11.
-        For more information, type `/tag java`."
+		Switching to Java 8 or below will fix your issue.
+		Alternatively, you can use [Temurin](https://adoptium.net/temurin/releases). \
+		However, multiplayer will not work in versions from 1.8 to 1.11.
+		For more information, type `/tag java`."
 			.to_string(),
 	);
 
@@ -187,8 +184,8 @@ fn lwjgl_2_java_9(log: &str) -> Issue {
 
 fn macos_ns(log: &str) -> Issue {
 	let issue = (
-    "MacOS NSInternalInconsistencyException".to_string(),
-    "You need to downgrade your Java 8 version. See https://prismlauncher.org/wiki/getting-started/installing-java/#older-minecraft-on-macos".to_string()
+	"MacOS NSInternalInconsistencyException".to_string(),
+	"You need to downgrade your Java 8 version. See https://prismlauncher.org/wiki/getting-started/installing-java/#older-minecraft-on-macos".to_string()
 );
 
 	let found =
@@ -208,24 +205,23 @@ fn oom(log: &str) -> Issue {
 
 fn optinotfine(log: &str) -> Issue {
 	let issue = (
-        "Potential OptiFine Incompatibilities".to_string(),
-        "OptiFine is known to cause problems when paired with other mods. \
-        Try to disable OptiFine and see if the issue persists.
-        Check `/tag optifine` for more info & some typically more compatible alternatives you can use."
-            .to_string(),
-    );
+		"Potential OptiFine Incompatibilities".to_string(),
+		"OptiFine is known to cause problems when paired with other mods. \
+		Try to disable OptiFine and see if the issue persists.
+		Check `/tag optifine` for more info & some typically more compatible alternatives you can use."
+			.to_string(),
+	);
 
 	let found = log.contains("[✔] OptiFine_") || log.contains("[✔] optifabric-");
 	found.then_some(issue)
 }
 
 async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
-	static OUTDATED_LAUNCHER_REGEX: OnceLock<Regex> = OnceLock::new();
-	let outdated_launcher = OUTDATED_LAUNCHER_REGEX.get_or_init(|| {
+	static OUTDATED_LAUNCHER: LazyLock<Regex> = LazyLock::new(|| {
 		Regex::new("Prism Launcher version: ((?:([0-9]+)\\.)?([0-9]+)\\.([0-9]+))").unwrap()
 	});
 
-	let Some(captures) = outdated_launcher.captures(log) else {
+	let Some(captures) = OUTDATED_LAUNCHER.captures(log) else {
 		return Ok(None);
 	};
 
@@ -275,8 +271,8 @@ async fn outdated_launcher(log: &str, data: &Data) -> Result<Issue> {
 
 fn pre_1_12_native_transport_java_9(log: &str) -> Issue {
 	let issue = (
-        "Linux: broken multiplayer with 1.8-1.11 and Java 9+".to_string(),
-        "These versions of Minecraft use an outdated version of Netty which does not properly support Java 9.
+		"Linux: broken multiplayer with 1.8-1.11 and Java 9+".to_string(),
+		"These versions of Minecraft use an outdated version of Netty which does not properly support Java 9.
 
 Switching to Java 8 or below will fix this issue. For more information, type `/tag java`.
 
@@ -285,34 +281,35 @@ If you must use a newer version, do the following:
 - Find `useNativeTransport:true` and change it to `useNativeTransport:false`.
 Note: whilst Netty was introduced in 1.7, this option did not exist \
 which is why the issue was not present."
-            .to_string(),
-    );
+			.to_string(),
+	);
 
 	let found = log.contains(
-        "java.lang.RuntimeException: Unable to access address of buffer\n\tat io.netty.channel.epoll"
-    );
+		"java.lang.RuntimeException: Unable to access address of buffer\n\tat io.netty.channel.epoll"
+	);
 
 	found.then_some(issue)
 }
 
 fn wrong_java(log: &str) -> Issue {
-	static SWITCH_VERSION_REGEX: OnceLock<Regex> = OnceLock::new();
-	let switch_version = SWITCH_VERSION_REGEX.get_or_init(|| Regex::new(
-		r"(?m)Please switch to one of the following Java versions for this instance:[\r\n]+(Java version [\d.]+)",
-).unwrap());
+	static SWITCH_VERSION: LazyLock<Regex> = LazyLock::new(|| {
+		Regex::new(
+			r"(?m)Please switch to one of the following Java versions for this instance:[\r\n]+(Java version [\d.]+)",
+		).unwrap()
+	});
 
-	if let Some(captures) = switch_version.captures(log) {
+	if let Some(captures) = SWITCH_VERSION.captures(log) {
 		let versions = captures[1].split('\n').collect::<Vec<&str>>().join(", ");
 		return Some((
-            "Wrong Java Version".to_string(),
-            format!("Please switch to one of the following: `{versions}`\nFor more information, type `/tag java`"),
-        ));
+			"Wrong Java Version".to_string(),
+			format!("Please switch to one of the following: `{versions}`\nFor more information, type `/tag java`"),
+		));
 	}
 
 	let issue = (
-        "Java compatibility check skipped".to_string(),
-        "The Java major version may not work with your Minecraft instance. Please switch to a compatible version.".to_string()
-    );
+		"Java compatibility check skipped".to_string(),
+		"The Java major version may not work with your Minecraft instance. Please switch to a compatible version.".to_string()
+	);
 
 	log.contains("Java major version is incompatible. Things might break.")
 		.then_some(issue)
@@ -336,7 +333,7 @@ fn legacyjavafixer(log: &str) -> Issue {
 		"You are using a modern Java version with an old Forge version, which is causing this crash.
 		MinecraftForge provides a coremod to fix this issue, download it [here](https://dist.creeper.host/FTB2/maven/net/minecraftforge/lex/legacyjavafixer/1.0/legacyjavafixer-1.0.jar)."
 			.to_string(),
-    );
+	);
 
 	let found = log.contains(
 		"[SEVERE] [ForgeModLoader] Unable to launch\njava.util.ConcurrentModificationException",
@@ -420,11 +417,11 @@ fn intermediary_mappings(log: &str) -> Issue {
 
 fn old_forge_new_java(log: &str) -> Issue {
 	let issue = (
-        "Forge on old Minecraft versions".to_string(),
-        "This crash is caused by using an old Forge version with a modern Java version.
+		"Forge on old Minecraft versions".to_string(),
+		"This crash is caused by using an old Forge version with a modern Java version.
 		To fix it, add the flag `-Dfml.ignoreInvalidMinecraftCertificates=true` to Edit > Settings > Java arguments."
-            .to_string(),
-    );
+			.to_string(),
+	);
 
 	let found = log.contains(
 		"add the flag -Dfml.ignoreInvalidMinecraftCertificates=true to the 'JVM settings'",
@@ -434,11 +431,11 @@ fn old_forge_new_java(log: &str) -> Issue {
 
 fn checksum_mismatch(log: &str) -> Issue {
 	let issue = (
-        "Outdated cached files".to_string(),
-        "It looks like you need to delete cached files.
+		"Outdated cached files".to_string(),
+		"It looks like you need to delete cached files.
 		To do that, press Folders ⟶ View Launcher Root Folder, and **after closing the launcher** delete the folder named \"meta\"."
-            .to_string(),
-    );
+			.to_string(),
+	);
 
 	let found = log.contains("Checksum mismatch, download is bad.");
 	found.then_some(issue)
@@ -484,11 +481,11 @@ fn flatpak_crash(log: &str) -> Issue {
 
 fn spark_macos(log: &str) -> Issue {
 	let issue = (
-        "Old Java on MacOS".to_string(),
-        "This crash is caused by an old Java version conflicting with mods, most often Spark, on MacOS.
+		"Old Java on MacOS".to_string(),
+		"This crash is caused by an old Java version conflicting with mods, most often Spark, on MacOS.
 		To fix it, either remove Spark or update Java by going to Edit > Settings > Download Java > Adoptium, and selecting the new Java version via Auto-Detect."
-            .to_string(),
-    );
+			.to_string(),
+	);
 
 	let found = log.contains("~StubRoutines::SafeFetch32");
 	found.then_some(issue)
@@ -496,10 +493,10 @@ fn spark_macos(log: &str) -> Issue {
 
 fn xrandr(log: &str) -> Issue {
 	let issue = (
-        "Missing xrandr".to_string(),
-        "This crash is caused by not having xrandr installed on Linux on Minecraft versions that use LWJGL 2."
-            .to_string(),
-    );
+		"Missing xrandr".to_string(),
+		"This crash is caused by not having xrandr installed on Linux on Minecraft versions that use LWJGL 2."
+			.to_string(),
+	);
 
 	let found = log.contains("at org.lwjgl.opengl.LinuxDisplay.getAvailableDisplayModes");
 	found.then_some(issue)
@@ -507,10 +504,10 @@ fn xrandr(log: &str) -> Issue {
 
 fn folder_name(log: &str) -> Issue {
 	let issue = (
-        "`!` in folder name".to_string(),
-        "Having a `!` in any folder is known to cause issues. If it's in your instance name, make sure to rename the actual instance folder, **not** the instance name in Prism."
-            .to_string(),
-    );
+		"`!` in folder name".to_string(),
+		"Having a `!` in any folder is known to cause issues. If it's in your instance name, make sure to rename the actual instance folder, **not** the instance name in Prism."
+			.to_string(),
+	);
 
 	let found = Regex::new(r"Minecraft folder is:\n.*!/")
 		.unwrap()
@@ -521,10 +518,10 @@ fn folder_name(log: &str) -> Issue {
 
 fn corrupted_instance(log: &str) -> Issue {
 	let issue = (
-        "Corrupted instance files".to_string(),
-        "Your instance's `mmc-pack.json` appears to be corrupted. Make a new instance and copy over your data between `.minecraft` folders. To prevent this in the future, ensure your system has sufficient disk space and avoid forcefully shutting down your PC."
-            .to_string(),
-    );
+		"Corrupted instance files".to_string(),
+		"Your instance's `mmc-pack.json` appears to be corrupted. Make a new instance and copy over your data between `.minecraft` folders. To prevent this in the future, ensure your system has sufficient disk space and avoid forcefully shutting down your PC."
+			.to_string(),
+	);
 
 	let found = Regex::new(r"mmc-pack.json.*illegal value")
 		.unwrap()
