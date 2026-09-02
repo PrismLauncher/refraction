@@ -1,6 +1,6 @@
-use crate::api::{HttpClient, HttpClientExt};
+use std::sync::LazyLock;
 
-use std::sync::OnceLock;
+use crate::api::{HttpClient, HttpClientExt};
 
 use eyre::Result;
 use log::trace;
@@ -14,12 +14,11 @@ pub struct PasteBin;
 
 impl super::LogProvider for PasteBin {
 	async fn find_match(&self, message: &Message) -> Option<String> {
-		static REGEX: OnceLock<Regex> = OnceLock::new();
-		let regex =
-			REGEX.get_or_init(|| Regex::new(r"https://pastebin\.com(?:/raw)?/(\w+)").unwrap());
+		static REGEX: LazyLock<Regex> =
+			LazyLock::new(|| Regex::new(r"https://pastebin\.com(?:/raw)?/(\w+)").unwrap());
 
 		trace!("Checking if message {} is a pastebin paste", message.id);
-		super::get_first_capture(regex, &message.content)
+		super::get_first_capture(&REGEX, &message.content)
 	}
 
 	async fn fetch(&self, http: &HttpClient, content: &str) -> Result<String> {

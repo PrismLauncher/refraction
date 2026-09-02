@@ -1,14 +1,11 @@
-use std::{sync::OnceLock, time::SystemTime};
+use std::{sync::LazyLock, time::SystemTime};
 
 use eyre::Result;
 use log::trace;
 use poise::serenity_prelude::{Context, Message};
 use regex::Regex;
 
-fn regex() -> &'static Regex {
-	static REGEX: OnceLock<Regex> = OnceLock::new();
-	REGEX.get_or_init(|| Regex::new(r"(?i)\beta\b").unwrap())
-}
+static REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?i)\beta\b").unwrap());
 
 const MESSAGES: [&str; 16] = [
 	"Sometime",
@@ -30,7 +27,7 @@ const MESSAGES: [&str; 16] = [
 ];
 
 pub async fn handle(ctx: &Context, message: &Message) -> Result<()> {
-	if !regex().is_match(&message.content) {
+	if !REGEX.is_match(&message.content) {
 		trace!(
 			"The message '{}' (probably) doesn't say ETA",
 			message.content
