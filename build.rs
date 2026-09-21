@@ -58,24 +58,24 @@ fn main() {
 
 	writeln!(
 		file,
-		r#"#[allow(non_camel_case_types, clippy::upper_case_acronyms)]
+		r"#[allow(non_camel_case_types, clippy::upper_case_acronyms)]
 #[derive(Clone, Debug, poise::ChoiceParameter)]
 pub enum Choice {{
     {}
-}}"#,
+}}",
 		tag_names.join("\n")
 	)
 	.unwrap();
 
 	writeln!(
 		file,
-		r#"impl Choice {{
+		r"impl Choice {{
   fn as_str(&self) -> &str {{
     match &self {{
       {}
     }}
   }}
-}}"#,
+}}",
 		tag_matches.join("\n")
 	)
 	.unwrap();
