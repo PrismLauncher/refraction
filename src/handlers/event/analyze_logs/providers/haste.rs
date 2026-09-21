@@ -13,7 +13,7 @@ const RAW: &str = "/raw";
 pub struct Haste;
 
 impl super::LogProvider for Haste {
-	async fn find_match(&self, message: &Message) -> Option<String> {
+	fn find_match(&self, message: &Message) -> Option<String> {
 		static REGEX: LazyLock<Regex> =
 			LazyLock::new(|| Regex::new(r"https://hst\.sh(?:/raw)?/(\w+(?:\.\w*)?)").unwrap());
 

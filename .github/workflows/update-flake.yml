@@ -17,20 +17,19 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v22
+        uses: NixOS/nix-installer-action@v1
 
       - name: Update flake.lock
         id: update
-        uses: DeterminateSystems/update-flake-lock@v28
+        uses: DeterminateSystems/update-flake-lock@v29
         with:
           pr-title: 'nix: update flake.lock'
 
       - name: Enable Pull Request Automerge
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          pull-request-number: ${{ steps.update.outputs.pull-request-number }}
-          merge-method: rebase
-          github-token: ${{ secrets.AUTOMATA_TOKEN }}
+        run: gh pr merge --rebase --auto "$PR_NUMBER"
+        env:
+          PR_NUMBER: ${{ steps.update.outputs.pull-request-number }}
+          GH_TOKEN: ${{ secrets.AUTOMATA_TOKEN }}

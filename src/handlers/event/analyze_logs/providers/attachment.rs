@@ -7,7 +7,7 @@ use poise::serenity_prelude::Message;
 pub struct Attachment;
 
 impl super::LogProvider for Attachment {
-	async fn find_match(&self, message: &Message) -> Option<String> {
+	fn find_match(&self, message: &Message) -> Option<String> {
 		trace!("Checking if message {} has text attachments", message.id);
 
 		message

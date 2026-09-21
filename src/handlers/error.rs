@@ -40,13 +40,7 @@ pub async fn handle(error: FrameworkError<'_, Data, Error>) {
 			ctx.send(reply).await.ok();
 		}
 
-		FrameworkError::EventHandler {
-			error,
-			ctx: _,
-			event,
-			framework: _,
-			..
-		} => {
+		FrameworkError::EventHandler { error, event, .. } => {
 			error!(
 				"Error while handling event {}:\n{error:?}",
 				event.snake_case_name()

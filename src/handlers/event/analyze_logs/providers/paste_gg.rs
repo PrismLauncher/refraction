@@ -10,7 +10,7 @@ use regex::Regex;
 pub struct PasteGG;
 
 impl super::LogProvider for PasteGG {
-	async fn find_match(&self, message: &Message) -> Option<String> {
+	fn find_match(&self, message: &Message) -> Option<String> {
 		static REGEX: LazyLock<Regex> =
 			LazyLock::new(|| Regex::new(r"https://paste.gg/p/\w+/(\w+)").unwrap());
 
