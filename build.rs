@@ -19,33 +19,30 @@ fn main() {
 		.collect();
 
 	let mut tags: Vec<Tag> = tag_files
-        .clone()
-        .into_iter()
-        .map(|name| {
-            let file_name = format!("{TAG_DIR}/{name}");
-            let file_content = fs::read_to_string(&file_name).unwrap();
+		.clone()
+		.into_iter()
+		.map(|name| {
+			let file_name = format!("{TAG_DIR}/{name}");
+			let file_content = fs::read_to_string(&file_name).unwrap();
 
-            let matter = Matter::<engine::YAML>::new();
-            let parsed = matter.parse(&file_content);
-            let content = parsed.content;
-            let data = parsed
-                .data
-                .unwrap()
-                .deserialize()
-                .unwrap_or_else(|e| {
+			let matter = Matter::<engine::YAML>::new();
+			let parsed = matter.parse::<TagFrontmatter>(&file_content).unwrap_or_else(|e| {
                     // actually handling the error since this is the most likely thing to fail -getchoo
                     panic!(
-                        "Failed to parse file {file_name}! Here's what it looked like:\n{content}\n\nReported Error:\n{e}\n",
+                        "Failed to parse file {file_name}! Here's what it looked like:\n{file_content}\n\nReported Error:\n{e}\n",
                     )
                 });
 
-            Tag {
-                content,
-                id: name.trim_end_matches(".md").to_string(),
-                frontmatter: data,
-            }
-        })
-        .collect();
+			let content = parsed.content;
+			let data = parsed.data.unwrap();
+
+			Tag {
+				content,
+				id: name.trim_end_matches(".md").to_string(),
+				frontmatter: data,
+			}
+		})
+		.collect();
 
 	tags.sort_by(|t1, t2| t1.id.cmp(&t2.id));
 

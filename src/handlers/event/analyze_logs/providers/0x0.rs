@@ -10,7 +10,7 @@ use regex::Regex;
 pub struct _0x0;
 
 impl super::LogProvider for _0x0 {
-	async fn find_match(&self, message: &Message) -> Option<String> {
+	fn find_match(&self, message: &Message) -> Option<String> {
 		static REGEX: LazyLock<Regex> =
 			LazyLock::new(|| Regex::new(r"https://0x0\.st/\w*.\w*").unwrap());
 
