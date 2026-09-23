@@ -1,7 +1,9 @@
 ---
 title: Upload Minecraft Logs
 color: orange
-image: https://cdn.discordapp.com/attachments/1391519298094239844/1419342362982744294/TagLogNew1.png
+image: https://cdn.discordapp.com/attachments/1391519298094239844/1551997081869221989/image.png
 ---
-Please __upload your log directly from Prism's Upload feature__ after reproducing your issue. **Edit** > **Minecraft log** > **Upload**. __Paste the resulting link in this channel__
--# Uploading a log as a file means anyone helping you needs to download the log and open it in a text editor themselves. Discord only shows 500 lines of a log under "View Entire File".
+Please reproduce your issue and then __send your log using Prism's upload feature__- even if the log doesn't appear to contain useful information.
+> **Edit** > **Minecraft log** > **Upload** > **Confirm the pop-up** > **Paste here or a support channel**.
+> Logs provide a ton of information and logs directly from Prism Launcher provide even more information like Java version, Minecraft Version, Mods, System specs, etc that crash reports or the `latest` log might not provide.
+*Logs from Prism's upload feature are prefered as helpers aren't required to download your log and the aforementioned extra info*
