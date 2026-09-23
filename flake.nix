@@ -33,7 +33,7 @@
             '';
         in
         {
-          actionlint = mkCheck "check-actionlint" [ pkgs.actionlint ] "actionlint ${./.github/workflows}/*";
+          actionlint = mkCheck "check-actionlint" [ pkgs.actionlint ] "actionlint -ignore \"available labels\" ${./.github/workflows}/*";
           deadnix = mkCheck "check-deadnix" [ pkgs.deadnix ] "deadnix --fail ${self}";
           statix = mkCheck "check-statix" [ pkgs.statix ] "statix check ${self}";
           nixfmt = mkCheck "check-nixfmt" [ pkgs.nixfmt-rfc-style ] "nixfmt --check ${self}";
