@@ -30,6 +30,7 @@ serde = "1.0.229"
 serde_json = "1.0.151"
 tokio = { version = "1.53.1", features = ["macros", "rt-multi-thread", "signal"] }
 rustls = "0.23.45"
+polyhedron = { git = "https://github.com/QazCetelic/polyhedron", rev = "15660c0cba6babf2d6474af41ea939f48ff2077d" }
 
 [lints.rust]
 unsafe_code = "forbid"
