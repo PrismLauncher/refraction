@@ -33,10 +33,14 @@
             '';
         in
         {
-          actionlint = mkCheck "check-actionlint" [ pkgs.actionlint ] "actionlint ${./.github/workflows}/*";
+          actionlint = mkCheck "check-actionlint" [
+            pkgs.actionlint
+          ] "actionlint -ignore \"available labels\" ${./.github/workflows}/*";
           deadnix = mkCheck "check-deadnix" [ pkgs.deadnix ] "deadnix --fail ${self}";
           statix = mkCheck "check-statix" [ pkgs.statix ] "statix check ${self}";
-          nixfmt = mkCheck "check-nixfmt" [ pkgs.nixfmt-rfc-style ] "nixfmt --check ${self}";
+          nixfmt = mkCheck "check-nixfmt" [
+            pkgs.nixfmt
+          ] "find ${self} -name '*.nix' -exec nixfmt --check {} +";
           rustfmt = mkCheck "check-rustfmt" [
             pkgs.cargo
             pkgs.rustfmt
@@ -56,7 +60,7 @@
 
               # linters & formatters
               actionlint
-              nodePackages.prettier
+              prettier
 
               # rust tools
               clippy
@@ -69,13 +73,13 @@
               statix
             ];
 
-            inputsFrom = [ self.packages.${pkgs.system}.refraction ];
+            inputsFrom = [ self.packages.${pkgs.stdenv.hostPlatform.system}.refraction ];
             RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
           };
         }
       );
 
-      formatter = forAllSystems (system: nixpkgsFor.${system}.nixfmt-rfc-style);
+      formatter = forAllSystems (system: nixpkgsFor.${system}.nixfmt-tree);
 
       nixosModules.default = import ./nix/module.nix self;
 

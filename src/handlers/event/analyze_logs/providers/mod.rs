@@ -22,7 +22,7 @@ mod pastebin;
 
 #[enum_dispatch]
 pub trait LogProvider {
-	async fn find_match(&self, message: &Message) -> Option<String>;
+	fn find_match(&self, message: &Message) -> Option<String>;
 	async fn fetch(&self, http: &HttpClient, content: &str) -> Result<String>;
 }
 
@@ -60,7 +60,7 @@ pub async fn find_log(http: &HttpClient, message: &Message) -> Result<Option<Str
 	let providers = Provider::iterator();
 
 	for provider in providers {
-		if let Some(found) = provider.find_match(message).await {
+		if let Some(found) = provider.find_match(message) {
 			let log = provider.fetch(http, &found).await?;
 			return Ok(Some(log));
 		}

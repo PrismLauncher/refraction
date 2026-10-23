@@ -26,7 +26,7 @@ pub async fn support_ban(ctx: Context<'_>, member: Member) -> Result<(), Error> 
 	}
 
 	member.add_role(ctx.http(), ROLE_ID).await?;
-	ctx.say(format!("✅ Banned `{}` from support!", &member.user.tag()))
+	ctx.say(format!("✅ Banned `{}` from support!", member.user.tag()))
 		.await?;
 
 	Ok(())
@@ -51,11 +51,8 @@ pub async fn support_unban(ctx: Context<'_>, member: Member) -> Result<(), Error
 	}
 
 	member.remove_role(ctx.http(), ROLE_ID).await?;
-	ctx.say(format!(
-		"✅ Unbanned `{}` from support!",
-		&member.user.tag()
-	))
-	.await?;
+	ctx.say(format!("✅ Unbanned `{}` from support!", member.user.tag()))
+		.await?;
 
 	Ok(())
 }

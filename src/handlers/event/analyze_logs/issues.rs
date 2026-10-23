@@ -1,6 +1,6 @@
 use crate::{api, utils::semver_split, Data};
 
-use std::{io::Cursor, sync::OnceLock};
+use std::{io::Cursor, sync::LazyLock};
 
 use eyre::Result;
 use log::trace;
@@ -36,12 +36,11 @@ pub async fn find(log: &str, data: &Data) -> Result<Vec<(String, String)>> {
 }
 
 async fn outdated_launcher(log: &str, data: &Data) -> Result<FormattedIssue> {
-	static OUTDATED_LAUNCHER_REGEX: OnceLock<Regex> = OnceLock::new();
-	let outdated_launcher = OUTDATED_LAUNCHER_REGEX.get_or_init(|| {
+	static OUTDATED_LAUNCHER_REGEX: LazyLock<Regex> = LazyLock::new(|| {
 		Regex::new("Prism Launcher version: ((?:([0-9]+)\\.)?([0-9]+)\\.([0-9]+))").unwrap()
 	});
 
-	let Some(captures) = outdated_launcher.captures(log) else {
+	let Some(captures) = OUTDATED_LAUNCHER_REGEX.captures(log) else {
 		return Ok(None);
 	};
 

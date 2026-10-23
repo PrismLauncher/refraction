@@ -27,8 +27,8 @@ pub async fn members(ctx: Context<'_>) -> Result<(), Error> {
 		.ok_or_else(|| eyre!("Couldn't get online count for guild {guild_id}!"))?;
 
 	let embed = CreateEmbed::new()
-		.title(format!("{member_count} total members!",))
-		.description(format!("{online_count} online members",))
+		.title(format!("{member_count} total members!"))
+		.description(format!("{online_count} online members"))
 		.color(Colors::Blue);
 	let reply = CreateReply::default().embed(embed);
 

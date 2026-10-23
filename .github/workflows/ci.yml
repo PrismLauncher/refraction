@@ -23,19 +23,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Install Rust
         if: ${{ !matrix.use-nix }}
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v2
 
       - name: Install Nix
         if: ${{ matrix.use-nix }}
-        uses: DeterminateSystems/nix-installer-action@v21
-
-      - name: Setup Nix cache
-        if: ${{ matrix.use-nix }}
-        uses: DeterminateSystems/magic-nix-cache-action@v13
+        uses: NixOS/nix-installer-action@v1
 
       - name: Build
         if: ${{ !matrix.use-nix }}
@@ -52,13 +48,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v21
-
-      - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v13
+        uses: NixOS/nix-installer-action@v1
 
       - name: Run checks
         run: |
