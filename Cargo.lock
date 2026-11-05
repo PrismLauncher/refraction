@@ -575,14 +575,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "derivative"
-version = "2.2.0"
+name = "derive-where"
+version = "1.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fcc3dd5e9e9c0b295d6e1e4d811fb6f157d5ffd784b8d202fc62eac8035a770b"
+checksum = "2e2b94854e8576378ccda7c8de8a66ed8b4e8acbd2c50ec3418ea6c8aaf4b567"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 1.0.109",
+ "syn 3.0.9",
 ]
 
 [[package]]
@@ -1708,21 +1708,33 @@ checksum = "f6b464fbc74e149a392436b17d523f769e057cb6877f6a5c4618bc6f11800548"
 
 [[package]]
 name = "poise"
-version = "0.6.2"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "711433114bca9ff68582aa58af5cbcf573e83250a8714c2dca1c36f453cad3ae"
+checksum = "2f17581b49c7da59e7eb044e55a113a75e9e933647b8616b204de5aa78fa8b7f"
 dependencies = [
  "async-trait",
- "derivative",
+ "derive-where",
  "futures-util",
  "indexmap",
  "parking_lot",
+ "poise_macros",
  "regex",
  "serenity",
- "serenity_poise_macros",
  "tokio",
  "tracing",
  "trim-in-place",
+]
+
+[[package]]
+name = "poise_macros"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "98025778ad675ec550e4ae7b65222a309575d648be4e9b0b47e3061208c9b5ad"
+dependencies = [
+ "darling",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
 ]
 
 [[package]]
@@ -2426,18 +2438,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "serenity_poise_macros"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9bc8407893be0d973a7bb48325e10e0160a0db44f4099467c83179688220e5f5"
-dependencies = [
- "darling",
- "proc-macro2",
- "quote",
- "syn 2.0.119",
-]
-
-[[package]]
 name = "sha1"
 version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2608,17 +2608,6 @@ name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
-
-[[package]]
-name = "syn"
-version = "1.0.109"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "72b64191b275b66ffe2469e8af2c1cfe3bafa67b529ead792a6d0160888b4237"
-dependencies = [
- "proc-macro2",
- "quote",
- "unicode-ident",
-]
 
 [[package]]
 name = "syn"
