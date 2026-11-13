@@ -6,7 +6,7 @@ use poise::serenity_prelude::CreateEmbed;
 use poise::CreateReply;
 
 /// Returns the number of members in the server
-#[poise::command(slash_command, prefix_command, guild_only = true, track_edits = true)]
+#[poise::command(slash_command, guild_only = true)]
 pub async fn members(ctx: Context<'_>) -> Result<(), Error> {
 	trace!("Running members command");
 

@@ -8,7 +8,7 @@ use poise::CreateReply;
 const PING_PREFIX: &str = "<:catstareback:1078622789885497414> Pong!";
 
 /// Replies with pong!
-#[poise::command(slash_command, prefix_command, track_edits = true, ephemeral)]
+#[poise::command(slash_command, ephemeral)]
 pub async fn ping(ctx: Context<'_>) -> Result<(), Error> {
 	trace!("Running ping command!");
 
