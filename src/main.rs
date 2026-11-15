@@ -1,10 +1,10 @@
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
 
 use eyre::Context as _;
 use log::{info, trace, warn};
 use poise::{
 	serenity_prelude::{self as serenity, CreateAllowedMentions},
-	EditTracker, Framework, FrameworkOptions, PrefixFrameworkOptions,
+	Framework, FrameworkOptions,
 };
 use tokio::signal::ctrl_c;
 #[cfg(target_family = "unix")]
@@ -106,14 +106,6 @@ async fn main() -> eyre::Result<()> {
 
 		event_handler: |ctx, event, framework, data| {
 			Box::pin(handlers::handle_event(ctx, event, framework, data))
-		},
-
-		prefix_options: PrefixFrameworkOptions {
-			prefix: Some(".".into()),
-			edit_tracker: Some(Arc::from(EditTracker::for_timespan(Duration::from_secs(
-				3600,
-			)))),
-			..Default::default()
 		},
 
 		allowed_mentions: Some(CreateAllowedMentions::new()),

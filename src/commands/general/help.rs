@@ -4,7 +4,7 @@ use log::trace;
 use poise::samples::HelpConfiguration;
 
 /// View the help menu
-#[poise::command(slash_command, prefix_command, track_edits = true)]
+#[poise::command(slash_command)]
 pub async fn help(
 	ctx: Context<'_>,
 	#[description = "Provide information about a specific command"] command: Option<String>,

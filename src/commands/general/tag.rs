@@ -14,12 +14,7 @@ include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 static TAGS: LazyLock<Vec<Tag>> = LazyLock::new(|| serde_json::from_str(env!("TAGS")).unwrap());
 
 /// Send a tag
-#[poise::command(
-	slash_command,
-	prefix_command,
-	track_edits = true,
-	help_text_fn = help
-)]
+#[poise::command(slash_command, track_edits = true)]
 pub async fn tag(
 	ctx: Context<'_>,
 	#[description = "the tag to send"] name: Choice,
@@ -76,14 +71,4 @@ pub async fn tag(
 	ctx.send(reply).await?;
 
 	Ok(())
-}
-
-fn help() -> String {
-	let tag_list = TAGS
-		.iter()
-		.map(|tag| format!("`{}`", tag.id))
-		.collect::<Vec<String>>()
-		.join(", ");
-
-	format!("Available tags: {tag_list}")
 }
