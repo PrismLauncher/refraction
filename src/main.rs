@@ -92,8 +92,7 @@ async fn main() -> eyre::Result<()> {
 	let token =
 		std::env::var("DISCORD_BOT_TOKEN").wrap_err("Couldn't find bot token in environment!")?;
 
-	let intents =
-		serenity::GatewayIntents::non_privileged() | serenity::GatewayIntents::MESSAGE_CONTENT;
+	let intents = serenity::GatewayIntents::non_privileged();
 
 	let options = FrameworkOptions {
 		commands: commands::all(),

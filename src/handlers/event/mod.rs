@@ -36,6 +36,10 @@ pub async fn handle(
 		}
 
 		FullEvent::Message { new_message } => {
+			if new_message.content.is_empty() {
+				return Ok(());
+			}
+
 			trace!("Received message {}", new_message.content);
 
 			// ignore new messages from bots
