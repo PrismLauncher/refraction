@@ -5,6 +5,8 @@
   rustPlatform,
   lto ? !optimizeSize,
   optimizeSize ? false,
+  aws-lc,
+  pkg-config,
 }:
 
 let
@@ -30,6 +32,10 @@ rustPlatform.buildRustPackage rec {
   };
 
   cargoLock.lockFile = ../Cargo.lock;
+
+  nativeBuildInputs = [ pkg-config ];
+
+  buildInputs = [ aws-lc ];
 
   # `panic=abort` breaks tests womp womp
   doCheck = stdenv.buildPlatform.canExecute stdenv.hostPlatform && !optimizeSize;
